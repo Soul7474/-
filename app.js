@@ -77,6 +77,7 @@ $('#gate-form').addEventListener('submit', event => {
     $('#password').setAttribute('aria-invalid', 'true'); $('#password').select(); return;
   }
   state.level = Math.max(state.level, gateLevel); save(); renderArchive();
+  if (doorMode === 'closed') { doorMode = 'open'; renderDoor(); }
   $('#password').removeAttribute('aria-invalid'); closeDialog($('#gate-dialog'));
   if (gateDestination === 'interior' && document.body.dataset.page === 'inicio') crossDoor();
   else location.hash = gateDestination;
@@ -92,7 +93,7 @@ function showDocument(id) {
 }
 document.addEventListener('click', event => {
   const entrance = event.target.closest('[data-cross-door]');
-  if (entrance) { if (state.level >= 1) crossDoor(); else openGate(1, 'interior'); return; }
+  if (entrance) { if (ritual.busy) return; if (state.level >= 1) crossDoor(); else touchClosedDoor(entrance); return; }
   const gate = event.target.closest('[data-gate]'); if (gate) openGate(Number(gate.dataset.gate));
   const vision = event.target.closest('[data-vision]');
   if (vision) { showVision(vision.dataset.vision); return; }
@@ -253,7 +254,7 @@ document.querySelectorAll('[data-omen]').forEach(eye => eye.addEventListener('cl
     eye.classList.add('eye-awake');
     setTimeout(() => eye.classList.remove('eye-awake'), 1200);
   }
-  showOmen();
+  if (!ritualEye(eye)) showOmen();
 }));
 $('#omens-toggle').addEventListener('click', () => {
   omensEnabled = !omensEnabled;
@@ -266,39 +267,287 @@ document.addEventListener('keydown', event => { if (event.key === 'Escape') dism
 document.addEventListener('visibilitychange', () => { if (document.hidden) dismissOmen(); });
 updateOmenControl();
 
-// Zoom around the actual dark opening of the existing photograph.
-let passageAnimation = null;
+// The threshold door stays shut until three things are done, in order:
+// wake the three open eyes, name the echo with the wall runes, knock three times.
+const ritualWord = ['e', 'c', 'o'];
+const ritualClues = [
+  ['Los ojos cosidos no pueden verte. Despierta a los tres que siguen abiertos.', 'Los que siguen abiertos no tienen hilo. Son pequeños y parecen de verdad.', 'Busca los ojos que parecen fotografías, no dibujos.'],
+  ['Ahora nómbralo con los arañazos de la pared: lo que te devuelve la voz en una habitación vacía.', 'Tres letras. Lo que vuelve cuando llamas.', 'Se llama eco. Escríbelo con las runas, en orden.'],
+  ['Ya sabe que estás aquí. Llama a la puerta. Tres veces.', 'Tres golpes sobre la puerta, seguidos, antes de que se apague el anterior.']
+];
+const runeKey = 'ᛖ e · ᚲ c · ᛟ o · ᚾ n · ᚱ r · ᚦ th · ᛉ z · ᛇ i';
+const ritual = { step: 0, misses: 0, eyes: new Set(), runes: [], knocks: 0, knockTimer: 0, busy: false };
+let doorMode = state.level >= 1 ? 'open' : 'closed';
+
+function pulse(node, className) { node.classList.remove(className); void node.offsetWidth; node.classList.add(className); }
+function currentClue() { const hints = ritualClues[ritual.step]; return hints[Math.min(ritual.misses, hints.length - 1)]; }
+function whisper(text, withKey = false) {
+  const box = $('#door-whisper'); box.replaceChildren();
+  if (text) box.append(element('span', text));
+  if (withKey) box.append(element('small', runeKey, 'rune-key'));
+  pulse(box, 'stir');
+}
+function whisperClue(prefix = '') { whisper((prefix ? prefix + ' ' : '') + currentClue(), ritual.step === 1); }
+function renderDoor() {
+  $('.door-recording .door-stage').dataset.door = doorMode;
+  $('.door-surface').setAttribute('aria-label', doorMode === 'closed' ? 'Llamar a la puerta cerrada' : 'Entrar por la puerta');
+  if (doorMode === 'closed') whisperClue();
+  else whisper(doorMode === 'peeked' ? 'La puerta se ha abierto. Algo se asoma desde dentro.' : '');
+}
+function ritualMiss(message) { ritual.misses++; whisperClue(message); showOmen(); }
+function advanceRitual() {
+  ritual.step++; ritual.misses = 0;
+  if (ritual.step === ritualClues.length) finishRitual(); else whisperClue();
+}
+// Returns true when the touch belongs to the ritual and must not summon an apparition.
+function ritualEye(eye) {
+  if (state.level >= 1 || ritual.busy || !eye.closest('#entry-portal')) return false;
+  const open = eye.classList.contains('photographic-eye');
+  if (ritual.step !== 0) return open;
+  if (!open) {
+    const closed = ritual.eyes.size > 0;
+    ritual.eyes.forEach(awake => awake.classList.remove('eye-open')); ritual.eyes.clear();
+    ritualMiss(closed ? 'Ese no puede verte. Los otros se han vuelto a cerrar.' : 'Ese no puede verte.');
+    return true;
+  }
+  if (ritual.eyes.has(eye)) return true;
+  ritual.eyes.add(eye); eye.classList.add('eye-open');
+  if (ritual.eyes.size === 3) advanceRitual();
+  else whisper(ritual.eyes.size === 1 ? 'Uno te mira.' : 'Dos te miran.');
+  return true;
+}
+document.querySelectorAll('[data-rune]').forEach(rune => rune.addEventListener('click', () => {
+  if (state.level >= 1 || ritual.busy) { pulse(rune, 'flick'); return; }
+  if (ritual.step !== 1) { pulse(rune, 'flick'); whisperClue(ritual.step === 0 ? 'Todavía no te ven.' : ''); return; }
+  if (rune.dataset.rune === ritualWord[ritual.runes.length]) {
+    ritual.runes.push(rune); rune.classList.add('rune-lit');
+    if (ritual.runes.length === ritualWord.length) advanceRitual();
+    return;
+  }
+  ritual.runes.forEach(lit => lit.classList.remove('rune-lit')); ritual.runes = [];
+  pulse(rune, 'flick'); ritualMiss('No es su nombre.');
+}));
+function knockSound() {
+  if (!ambient || audio?.state !== 'running') return;
+  const tone = audio.createOscillator(); const volume = audio.createGain();
+  tone.frequency.setValueAtTime(95, audio.currentTime); tone.frequency.exponentialRampToValueAtTime(42, audio.currentTime + .12);
+  volume.gain.setValueAtTime(.08, audio.currentTime); volume.gain.exponentialRampToValueAtTime(.001, audio.currentTime + .16);
+  tone.connect(volume); volume.connect(audio.destination); tone.start(); tone.stop(audio.currentTime + .18);
+  tone.onended = () => { tone.disconnect(); volume.disconnect(); };
+}
+function touchClosedDoor(target) {
+  const door = $('.door-recording');
+  if (ritual.step === 2 && target.classList.contains('door-surface')) {
+    clearTimeout(ritual.knockTimer);
+    ritual.knocks++; pulse(door, 'knock'); knockSound();
+    if (ritual.knocks === 3) { advanceRitual(); return; }
+    whisper(ritual.knocks === 1 ? 'Toc.' : 'Toc. Toc.');
+    ritual.knockTimer = setTimeout(() => { ritual.knocks = 0; ritual.misses++; whisperClue('El golpe se ha apagado.'); }, 2400);
+    return;
+  }
+  pulse(door, 'rattle'); whisperClue('Cerrada.');
+}
+function finishRitual() {
+  ritual.busy = true;
+  state.level = Math.max(state.level, 1); save(); renderArchive();
+  $('#log-whisper').textContent = 'la puerta se ha abierto_';
+  whisper('…');
+  setTimeout(() => {
+    ritual.busy = false;
+    if (motionQuery.matches || !omensEnabled || document.body.dataset.page !== 'inicio') { doorMode = 'peeked'; renderDoor(); return; }
+    openingScene();
+  }, 900);
+}
+
+// Both passages work on a copy of the door, enlarged from its place on the page,
+// inside a rig that can shake without uncovering the page beneath.
+let passageAnimations = [];
 let passageActive = false;
+let passageId = 0;
 function cancelDoorPassage() {
-  passageActive = false;
-  passageAnimation?.cancel(); passageAnimation = null;
-  $('#door-passage').hidden = true;
+  passageActive = false; passageId++;
+  passageAnimations.forEach(animation => animation.cancel()); passageAnimations = [];
+  stopStatic();
+  const passage = $('#door-passage'); passage.hidden = true; passage.replaceChildren();
   $('#entry-portal').removeAttribute('aria-busy');
   document.querySelectorAll('[data-cross-door]').forEach(button => button.disabled = false);
 }
-async function crossDoor() {
+function mountPassage(mode) {
+  const stage = $('.door-recording .door-stage');
+  const bounds = stage.getBoundingClientRect();
+  if (!bounds.width || !bounds.height || typeof stage.animate !== 'function') return null;
+  const copy = stage.cloneNode(true); copy.dataset.door = mode;
+  Object.assign(copy.style, { left: bounds.left + 'px', top: bounds.top + 'px', width: bounds.width + 'px', height: bounds.height + 'px' });
+  const rig = element('div', undefined, 'passage-rig'); rig.append(copy);
+  const passage = $('#door-passage'); passage.replaceChildren(rig); passage.hidden = false;
+  passageActive = true; passageId++;
+  $('#entry-portal').setAttribute('aria-busy', 'true');
+  document.querySelectorAll('[data-cross-door]').forEach(button => button.disabled = true);
+  return { copy, rig, bounds, id: passageId };
+}
+// Transform (origin 0 0) that brings the point (fx, fy) of the door to the centre of the screen.
+function focusOn(bounds, fx, fy, scale) {
+  const x = innerWidth / 2 - bounds.left - bounds.width * fx * scale;
+  const y = innerHeight / 2 - bounds.top - bounds.height * fy * scale;
+  return `translate(${x}px, ${y}px) scale(${scale})`;
+}
+function play(node, frames, options) {
+  const animation = node.animate(frames, { fill: 'forwards', ...options });
+  passageAnimations.push(animation); return animation;
+}
+// Resolves true when every animation ended and the same passage is still running.
+async function settled(id, ...animations) {
+  try { await Promise.all(animations.map(animation => animation.finished)); } catch { return false; }
+  return passageActive && passageId === id;
+}
+async function runPassage(id, animation) {
+  if (!await settled(id, animation)) return;
+  cancelDoorPassage(); location.hash = 'interior';
+}
+function crossDoor() {
   if (passageActive) return;
   if (motionQuery.matches || !omensEnabled) { location.hash = 'interior'; return; }
   dismissOmen();
-  const original = $('.door-recording img');
-  const bounds = original.getBoundingClientRect();
-  if (!bounds.width || !bounds.height || typeof original.animate !== 'function') { location.hash = 'interior'; return; }
-  const passage = $('#door-passage'); const image = passage.querySelector('img');
-  passageActive = true; passage.hidden = false;
-  $('#entry-portal').setAttribute('aria-busy', 'true');
-  document.querySelectorAll('[data-cross-door]').forEach(button => button.disabled = true);
-  Object.assign(image.style, { left: bounds.left + 'px', top: bounds.top + 'px', width: bounds.width + 'px', height: bounds.height + 'px', transformOrigin: '65% 48%' });
-  const dx = innerWidth / 2 - (bounds.left + bounds.width * .65);
-  const dy = innerHeight / 2 - (bounds.top + bounds.height * .48);
+  const mount = mountPassage(doorMode); if (!mount) { location.hash = 'interior'; return; }
+  const { copy, bounds, id } = mount;
   const scale = Math.max(innerWidth / (bounds.width * .18), innerHeight / (bounds.height * .7));
-  passageAnimation = image.animate([
+  runPassage(id, play(copy, [
     { transform: 'translate(0px, 0px) scale(1)', filter: 'grayscale(1) brightness(1)' },
-    { offset: .78, transform: `translate(${dx}px, ${dy}px) scale(${scale * .8})`, filter: 'grayscale(1) brightness(.45)' },
-    { transform: `translate(${dx}px, ${dy}px) scale(${scale})`, filter: 'grayscale(1) brightness(0)' }
-  ], { duration: 1600, easing: 'cubic-bezier(.62,.06,.52,1)', fill: 'forwards' });
-  try { await passageAnimation.finished; } catch { return; }
-  if (!passageActive) return;
-  cancelDoorPassage(); location.hash = 'interior';
+    { offset: .78, transform: focusOn(bounds, .65, .48, scale * .8), filter: 'grayscale(1) brightness(.45)' },
+    { transform: focusOn(bounds, .65, .48, scale), filter: 'grayscale(1) brightness(0)' }
+  ], { duration: 1600, easing: 'cubic-bezier(.62,.06,.52,1)' }));
+}
+
+// Low-contrast static drawn into a tiny canvas: grain, never a flash.
+let staticFrame = 0;
+function startStatic(canvas) {
+  const context = canvas.getContext('2d'); if (!context) return;
+  const image = context.createImageData(canvas.width, canvas.height); let tick = 0;
+  const draw = () => {
+    if (!canvas.isConnected) return;
+    if (tick++ % 2 === 0) {
+      for (let i = 0; i < image.data.length; i += 4) { const v = Math.random() * 90; image.data[i] = image.data[i + 1] = image.data[i + 2] = v; image.data[i + 3] = 255; }
+      context.putImageData(image, 0, 0);
+    }
+    staticFrame = requestAnimationFrame(draw);
+  };
+  draw();
+}
+function stopStatic() { cancelAnimationFrame(staticFrame); staticFrame = 0; }
+function hiss(seconds) {
+  if (!ambient || audio?.state !== 'running') return;
+  const buffer = audio.createBuffer(1, audio.sampleRate * seconds, audio.sampleRate); const samples = buffer.getChannelData(0);
+  for (let i = 0; i < samples.length; i++) samples[i] = (Math.random() * 2 - 1) * .05 * (1 - i / samples.length);
+  const noise = audio.createBufferSource(); noise.buffer = buffer;
+  const filter = audio.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 1800;
+  noise.connect(filter); filter.connect(audio.destination); noise.start();
+  noise.onended = () => { noise.disconnect(); filter.disconnect(); };
+}
+
+// After the ritual: the door opens; a hand grips the frame; a face comes closer out of the dark;
+// the hand takes you by the throat and drags you in; you fall, and something is waiting.
+async function openingScene() {
+  if (passageActive) return;
+  dismissOmen();
+  const mount = mountPassage('closed');
+  doorMode = 'open'; renderDoor();
+  if (!mount) { location.hash = 'interior'; return; }
+  const { copy, rig, bounds, id } = mount;
+  const leaf = copy.querySelector('.door-leaf'); const face = copy.querySelector('.peeker'); const frameHand = copy.querySelector('.frame-hand');
+  const depth = leaf.offsetWidth * 3.2;
+  const near = Math.max(innerHeight * 1.5 / bounds.height, innerWidth * .62 / bounds.width);
+  const view = focusOn(bounds, .6, .45, near);
+  const closer = focusOn(bounds, .62, .43, near * 1.18);
+
+  // Approach and the door swinging open into the dark.
+  const approach = play(copy, [
+    { transform: 'translate(0px, 0px) scale(1)', filter: 'grayscale(1) brightness(1)' },
+    { transform: view, filter: 'grayscale(1) brightness(.9)' }
+  ], { duration: 1500, easing: 'cubic-bezier(.55,.05,.35,1)' });
+  const opening = play(leaf, [
+    { transform: `perspective(${depth}px) rotateY(0deg)`, filter: 'grayscale(1) brightness(1)', opacity: .96 },
+    { offset: .14, transform: `perspective(${depth}px) rotateY(5deg)` },
+    { offset: .3, transform: `perspective(${depth}px) rotateY(4deg)` },
+    { offset: .9, transform: `perspective(${depth}px) rotateY(72deg)`, filter: 'grayscale(1) brightness(.25)', opacity: .96 },
+    { transform: `perspective(${depth}px) rotateY(80deg)`, filter: 'grayscale(1) brightness(.1)', opacity: 0 }
+  ], { delay: 1300, duration: 1900, easing: 'ease-in' });
+  if (!await settled(id, approach, opening)) return;
+
+  // a) Fingers curl out of the dark and grip the door frame.
+  const grip = play(frameHand, [
+    { opacity: 0, transform: 'translateX(38%) scale(.96)' },
+    { offset: .6, opacity: .9, transform: 'translateX(8%) scale(1)' },
+    { opacity: 1, transform: 'translateX(0%) scale(1)' }
+  ], { duration: 1100, easing: 'cubic-bezier(.2,.6,.3,1)' });
+  if (!await settled(id, grip, play(copy, [{ transform: view }, { transform: view }], { duration: 1500 }))) return;
+
+  // b) A face comes out of the gap, closer and closer.
+  const emerge = play(face, [
+    { opacity: 0, transform: 'scale(.45)', filter: 'grayscale(1) contrast(1.15) brightness(.3) blur(3px)' },
+    { offset: .4, opacity: .8, transform: 'scale(.7)', filter: 'grayscale(1) contrast(1.15) brightness(.8) blur(1px)' },
+    { opacity: 1, transform: 'scale(1.2)', filter: 'grayscale(1) contrast(1.15) brightness(1.2) blur(0px)' }
+  ], { duration: 3300, easing: 'cubic-bezier(.4,0,.6,1)' });
+  const lean = play(copy, [
+    { transform: view, filter: 'grayscale(1) brightness(.9)' },
+    { transform: closer, filter: 'grayscale(1) brightness(.9)' }
+  ], { duration: 3300, easing: 'ease-in-out' });
+  if (!await settled(id, emerge, lean)) return;
+
+  // c) The hand lets go of the frame and comes for your throat.
+  const from = frameHand.getBoundingClientRect();
+  const hand = element('img', undefined, 'grab-hand'); hand.src = frameHand.src; hand.alt = '';
+  Object.assign(hand.style, { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' });
+  rig.append(hand); frameHand.style.visibility = 'hidden';
+  // Fingers end up across the bottom of the screen, where your throat would be.
+  const reach = Math.max(innerWidth * .78, innerHeight * .95) / from.width;
+  const dx = innerWidth * .55 - (from.left + from.width / 2);
+  const dy = innerHeight * 1.04 - (from.top + from.height / 2);
+  const lunge = play(hand, [
+    { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
+    { transform: `translate(${dx}px, ${dy}px) scale(${reach}) rotate(-7deg)` }
+  ], { duration: 420, easing: 'cubic-bezier(.6,0,.9,.5)' });
+  if (!await settled(id, lunge)) return;
+  const squeeze = play(hand, [
+    { transform: `translate(${dx}px, ${dy}px) scale(${reach}) rotate(-7deg)` },
+    { offset: .4, transform: `translate(${dx}px, ${dy + 10}px) scale(${reach * .97}) rotate(-8deg)` },
+    { transform: `translate(${dx}px, ${dy + 4}px) scale(${reach * .98}) rotate(-7deg)` }
+  ], { duration: 320, easing: 'ease-out' });
+  const jolt = play(rig, [
+    { transform: 'translate(0px, 0px)' }, { transform: 'translate(-6px, 4px)' }, { transform: 'translate(5px, -3px)' }, { transform: 'translate(-2px, 2px)' }, { transform: 'translate(0px, 0px)' }
+  ], { duration: 320 });
+  if (!await settled(id, squeeze, jolt)) return;
+  // ...and drags you through the doorway: fast zoom, slight shake, the frame sliding to the door.
+  const drag = play(copy, [
+    { transform: closer, filter: 'grayscale(1) brightness(.9)' },
+    { offset: .6, transform: focusOn(bounds, .64, .5, near * 2.4), filter: 'grayscale(1) brightness(.5)' },
+    { transform: focusOn(bounds, .64, .55, near * 5), filter: 'grayscale(1) brightness(0)' }
+  ], { duration: 800, easing: 'cubic-bezier(.7,0,.85,.4)' });
+  const pulled = play(hand, [
+    { transform: `translate(${dx}px, ${dy + 4}px) scale(${reach * .98}) rotate(-7deg)` },
+    { transform: `translate(${dx}px, ${dy - innerHeight * .08}px) scale(${reach * 1.08}) rotate(-4deg)`, opacity: 1, offset: .7 },
+    { transform: `translate(${dx}px, ${dy - innerHeight * .1}px) scale(${reach * 1.1}) rotate(-4deg)`, opacity: 0 }
+  ], { duration: 800, easing: 'ease-in' });
+  const shake = play(rig, Array.from({ length: 11 }, (_, i) => ({ transform: i === 0 || i === 10 ? 'translate(0px, 0px) rotate(0deg)' : `translate(${(i % 2 ? 5 : -5) * (1 - i / 12)}px, ${(i % 3 - 1) * 4}px) rotate(${i % 2 ? .5 : -.5}deg)` })), { duration: 800 });
+  if (!await settled(id, drag, pulled, shake)) return;
+
+  // d) Inside: the camera falls, static, and a voice in text. Then the interior.
+  const scene = element('div', undefined, 'fall-scene');
+  const shaft = element('div', undefined, 'fall-shaft');
+  const noise = element('canvas', undefined, 'fall-noise'); noise.width = 160; noise.height = 90;
+  const hud = element('div', '● REC  CAM_09 / SEÑAL PERDIDA', 'fall-hud');
+  const text = element('p', 'Te estábamos esperando.', 'fall-text');
+  scene.append(shaft, noise, hud, text); $('#door-passage').append(scene);
+  startStatic(noise); hiss(2.6);
+  const inside = play(scene, [{ opacity: 0 }, { opacity: 1, offset: .07 }, { opacity: 1, offset: .9 }, { opacity: 0 }], { duration: 2900 });
+  play(shaft, [
+    { backgroundPosition: '0px 0px', transform: 'rotate(-3deg) translateY(0px)', easing: 'cubic-bezier(.5,0,1,1)' },
+    { offset: .45, backgroundPosition: '0px -2600px', transform: 'rotate(11deg) translateY(0px)' },
+    { offset: .52, backgroundPosition: '0px -2660px', transform: 'rotate(9deg) translateY(14px)' },
+    { offset: .6, backgroundPosition: '0px -2665px', transform: 'rotate(10deg) translateY(0px)' },
+    { backgroundPosition: '0px -2665px', transform: 'rotate(10deg) translateY(0px)', filter: 'blur(1.2px) brightness(.5)' }
+  ], { duration: 2900 });
+  play(text, [{ opacity: 0, letterSpacing: '6px' }, { offset: .5, opacity: 0, letterSpacing: '6px' }, { offset: .7, opacity: 1, letterSpacing: '2px' }, { offset: .9, opacity: 1 }, { opacity: 0 }], { duration: 2900 });
+  runPassage(id, inside);
 }
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && passageActive) { cancelDoorPassage(); $('.threshold-enter').focus(); }
@@ -306,4 +555,4 @@ document.addEventListener('keydown', event => {
 window.addEventListener('resize', () => { if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; } });
 motionQuery.addEventListener('change', () => { if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; } });
 
-renderArchive(); renderGuests(); route(); applyMotionPreference();
+renderArchive(); renderGuests(); renderDoor(); route(); applyMotionPreference();

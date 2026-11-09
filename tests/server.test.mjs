@@ -15,6 +15,9 @@ test('serves the Spanish station and its working client scripts', async () => {
   const html = await page.text();
   assert.match(html, /lang="es"/);
   assert.match(html, /id="gate-form"/);
+  assert.match(html, /data-door="closed"/);
+  assert.match(html, /id="door-whisper"/);
+  for (const rune of ['e', 'c', 'o']) assert.match(html, new RegExp(`data-rune="${rune}"`));
   for (const path of ['/app.js', '/style.css']) {
     const response = await fetch(base + path);
     assert.equal(response.status, 200);
@@ -47,7 +50,7 @@ test('serves real GIF images, a reduced-motion image and a favicon', async () =>
   const presence = await fetch(base + '/assets/presence.png');
   assert.equal(presence.status, 200);
   assert.equal(presence.headers.get('content-type'), 'image/png');
-  for (const path of ['/assets/inner-relic.png', '/assets/echo-form.svg', '/assets/trace-form.svg']) {
+  for (const path of ['/assets/inner-relic.png', '/assets/echo-form.svg', '/assets/trace-form.svg', '/assets/door-shut.svg', '/assets/cutouts/presence-face.png', '/assets/cutouts/presence-hand.png', '/images/c2f15d46dadaea0d78573a3436c1f21d.png', '/images/2483130d0df7e07e5d073b244c4f0aad.png']) {
     assert.equal((await fetch(base + path)).status, 200, path);
   }
 });
@@ -66,14 +69,14 @@ test('HEAD returns resource headers without a body', async () => {
 
 test('serves supplied originals unchanged and transparent cutout PNGs', async () => {
   const originals = await readdir(new URL('../images/', import.meta.url));
-  assert.equal(originals.length, 13);
+  assert.equal(originals.length, 17);
   for (const name of originals) {
     const response = await fetch(base + '/images/' + name);
     assert.equal(response.status, 200);
-    assert.equal(response.headers.get('content-type'), 'image/jpeg');
+    assert.equal(response.headers.get('content-type'), name.endsWith('.png') ? 'image/png' : 'image/jpeg');
     assert.deepEqual(Buffer.from(await response.arrayBuffer()), await readFile(new URL('../images/' + name, import.meta.url)));
   }
-  for (const name of ['sentinel', 'revelation', 'sewn-eye']) {
+  for (const name of ['sentinel', 'revelation', 'sewn-eye', 'presence-face', 'presence-hand']) {
     const response = await fetch(base + '/assets/cutouts/' + name + '.png');
     assert.equal(response.status, 200);
     assert.equal(response.headers.get('content-type'), 'image/png');
