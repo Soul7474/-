@@ -4,6 +4,6 @@
   "private": true,
   "type": "module",
   "description": "Un archivo web abandonado. Ficción interactiva en español.",
-  "scripts": { "dev": "node server.mjs", "start": "node server.mjs", "test": "node --test", "test:browser": "node checks/interior.cjs" },
+  "scripts": { "dev": "node server.mjs", "start": "node server.mjs", "test": "node --test", "test:browser": "node checks/interior.cjs", "test:door": "node checks/door.cjs" },
   "engines": { "node": ">=20" }
 }

@@ -92,6 +92,13 @@ function showDocument(id) {
   body.append(element('p', doc.content)); openDialog($('#document-dialog'));
 }
 document.addEventListener('click', event => {
+  const replay = event.target.closest('[data-replay-opening]');
+  if (replay) {
+    if (passageActive || state.level < 1) return;
+    if (motionQuery.matches) { whisper('El movimiento reducido del navegador omite la escena.'); return; }
+    if (!omensEnabled) { whisper('Activa «invocar» para repetir la escena.'); return; }
+    openingScene(); return;
+  }
   const entrance = event.target.closest('[data-cross-door]');
   if (entrance) { if (ritual.busy) return; if (state.level >= 1) crossDoor(); else touchClosedDoor(entrance); return; }
   const gate = event.target.closest('[data-gate]'); if (gate) openGate(Number(gate.dataset.gate));
@@ -149,7 +156,9 @@ $('#guest-form').addEventListener('submit', event => {
 });
 for (const id of ['forget-button', 'reset-session']) $('#' + id).addEventListener('click', () => openDialog($('#reset-dialog')));
 $('#confirm-reset').addEventListener('click', () => {
-  state = { level: 0, guests: [] }; save(); stopAmbient(); closeDialog($('#reset-dialog')); location.hash = 'inicio'; location.reload();
+  state = { level: 0, guests: [] }; save();
+  try { localStorage.removeItem(doorSceneKey); } catch {}
+  doorSceneSeen = false; stopAmbient(); closeDialog($('#reset-dialog')); location.hash = 'inicio'; location.reload();
 });
 let audio;
 let ambient;
@@ -338,6 +347,10 @@ const ritualClues = [
 const runeKey = 'ᛖ e · ᚲ c · ᛟ o · ᚾ n · ᚱ r · ᚦ th · ᛉ z · ᛇ i';
 const ritual = { step: 0, misses: 0, eyes: new Set(), runes: [], knocks: 0, knockTimer: 0, busy: false };
 let doorMode = state.level >= 1 ? 'open' : 'closed';
+// Older visitors may have an open gate without ever seeing this new entrance scene.
+const doorSceneKey = 'estacion09-door-scene-v1';
+let doorSceneSeen = false;
+try { doorSceneSeen = localStorage.getItem(doorSceneKey) === 'seen'; } catch {}
 
 function pulse(node, className) { node.classList.remove(className); void node.offsetWidth; node.classList.add(className); }
 function currentClue() { const hints = ritualClues[ritual.step]; return hints[Math.min(ritual.misses, hints.length - 1)]; }
@@ -351,6 +364,7 @@ function whisperClue(prefix = '') { whisper((prefix ? prefix + ' ' : '') + curre
 function renderDoor() {
   $('.door-recording .door-stage').dataset.door = doorMode;
   $('.door-surface').setAttribute('aria-label', doorMode === 'closed' ? 'Llamar a la puerta cerrada' : 'Entrar por la puerta');
+  $('[data-replay-opening]').hidden = state.level < 1;
   if (doorMode === 'closed') whisperClue();
   else whisper(doorMode === 'peeked' ? 'La puerta se ha abierto. Algo se asoma desde dentro.' : '');
 }
@@ -464,13 +478,18 @@ async function settled(id, ...animations) {
   try { await Promise.all(animations.map(animation => animation.finished)); } catch { return false; }
   return passageActive && passageId === id;
 }
-async function runPassage(id, animation) {
+async function runPassage(id, animation, completesScene = false) {
   if (!await settled(id, animation)) return;
+  if (completesScene) {
+    doorSceneSeen = true;
+    try { localStorage.setItem(doorSceneKey, 'seen'); } catch {}
+  }
   cancelDoorPassage(); location.hash = 'interior';
 }
 function crossDoor() {
   if (passageActive) return;
   if (motionQuery.matches || !omensEnabled) { location.hash = 'interior'; return; }
+  if (!doorSceneSeen) { openingScene(); return; }
   dismissOmen();
   const mount = mountPassage(doorMode); if (!mount) { location.hash = 'interior'; return; }
   const { copy, bounds, id } = mount;
@@ -725,6 +744,7 @@ async function openingScene() {
   ], { duration: fall });
   letters.forEach((letter, i) => play(letter, [{ opacity: 0 }, { opacity: 1 }], { delay: fall * (impact + .1) + i * 40, duration: 40 }));
   if (!await settled(id, inside)) return;
+  markDoorSceneSeen();
   cancelDoorPassage(); location.hash = 'interior'; unveil();
 }
 // The interior fades up out of the black instead of cutting straight to the lit room.
@@ -744,7 +764,8 @@ function armSkip(id) {
   clearTimeout(skipTimer);
   skipTimer = setTimeout(() => { if (passageActive && passageId === id) $('#scene-skip').hidden = false; }, 2000);
 }
-function skipPassage() { if (!passageActive) return; cancelDoorPassage(); location.hash = 'interior'; }
+function skipPassage() { if (!passageActive) return; markDoorSceneSeen(); cancelDoorPassage(); location.hash = 'interior'; }
+function markDoorSceneSeen() { doorSceneSeen = true; try { localStorage.setItem(doorSceneKey, 'seen'); } catch {} }
 $('#scene-skip').addEventListener('click', skipPassage);
 let lastTap = { time: -Infinity, x: 0, y: 0 };
 $('#door-passage').addEventListener('pointerup', event => {

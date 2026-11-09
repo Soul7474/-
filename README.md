@@ -38,7 +38,7 @@ Al completar el ritual, la puerta tiembla, las runas y los ojos se funden en neg
 
 Todo está hecho con CSS y la Web Animations API, sin librerías ni recursos externos (el grano es un SVG de ruido incrustado). Ningún efecto brusco dura más de 850 ms y no hay destellos ni parpadeos fuertes. Si el sonido ambiente está activado, la caída añade un siseo de estática sintetizado.
 
-**Saltar.** A los 2 s aparece un botón discreto «saltar ›» abajo a la izquierda, y un doble toque en cualquier punto también salta: los dos llevan directamente al interior. Escape, en cambio, cancela la escena y te deja en el umbral con la puerta abierta. Con «calma» o con movimiento reducido no hay animación: la puerta queda abierta con la mano en el marco y la cara en el hueco, quietas. Los encuadres se calculan a partir del tamaño de la ventana, en escritorio y en móvil.
+**Saltar.** A los 2 s aparece un botón discreto «saltar ›» abajo a la izquierda, y un doble toque en cualquier punto también salta: los dos llevan directamente al interior y cuentan como escena vista. Escape, en cambio, cancela la escena, te deja en el umbral con la puerta abierta y no la marca como vista. Con «calma» o con movimiento reducido no hay animación: la puerta queda abierta con la mano en el marco y la cara en el hueco, quietas. Los encuadres se calculan a partir del tamaño de la ventana, en escritorio y en móvil.
 
 Con el sello ya abierto, la fotografía de la puerta es interactiva. Al tocarla, un acercamiento de 1,6 segundos enfoca el hueco de la puerta y termina en negro. Después abre `#interior`: una cámara con una forma orgánica abstracta original y cuatro accesos simbólicos, con nombres breves, a los restos, voces, huellas y subsuelo. Escape cancela el acercamiento; se omite con movimiento reducido o «calma».
 
@@ -157,7 +157,15 @@ Las contraseñas son una mecánica narrativa en JavaScript, **no autenticación 
 npm test
 ```
 
-Para volver a ver la puerta cerrada y la escena de entrada, usa «Olvidar esta visita» o borra el `localStorage` del sitio y recarga. Comprueba que «calma» no esté activado, porque esa preferencia se guarda aparte.
+Los accesos de visitas anteriores ya no implican haber visto la nueva escena de la puerta. El indicador `estacion09-door-scene-v1` solo se guarda al completarla. Si el visitante ya tenía acceso antes de esta actualización, su siguiente entrada con efectos activos muestra la escena completa sin borrar accesos ni mensajes. Si se cancela antes de terminar, puede intentarse de nuevo.
+
+El botón `[ repetir ]` permite volver a ver la escena una vez abierta la puerta. Respeta «calma» y movimiento reducido; si están activos, explica por qué se omite. «Olvidar esta visita» borra también el indicador de escena vista. La preferencia «calma» se conserva por separado.
+
+Verificación de visitantes antiguos, repetición y preferencias (requiere Playwright y Chromium):
+
+```sh
+npm run test:door
+```
 
 Los tests de Node verifican el HTML y los recursos (incluidas las runas, la puerta cerrada y los recortes con transparencia), los GIFs, respuestas HEAD, errores 404 y el bloqueo de archivos de configuración. Durante el desarrollo también se recorrieron las puertas, la navegación, los documentos, el libro de visitas, la persistencia, el audio, el reinicio y movimiento reducido mediante Chromium/Playwright, en escritorio y móvil.
 
