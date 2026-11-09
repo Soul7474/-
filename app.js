@@ -417,6 +417,7 @@ let passageActive = false;
 let passageId = 0;
 function cancelDoorPassage() {
   passageActive = false; passageId++;
+  clearTimeout(skipTimer); $('#scene-skip').hidden = true;
   passageAnimations.forEach(animation => animation.cancel()); passageAnimations = [];
   stopStatic();
   const passage = $('#door-passage'); passage.hidden = true; passage.replaceChildren();
@@ -510,38 +511,39 @@ async function openingScene() {
   const view = focusOn(bounds, .6, .45, near);
   const closer = focusOn(bounds, .62, .43, near * 1.18);
 
-  // Approach and the door swinging open into the dark.
+  armSkip(id);
+
+  // Approach and the door swinging open into the dark; the fingers find the frame
+  // while the door is still moving, so there is no empty wait before the face.
   const approach = play(copy, [
     { transform: 'translate(0px, 0px) scale(1)', filter: 'grayscale(1) brightness(1)' },
     { transform: view, filter: 'grayscale(1) brightness(.9)' }
-  ], { duration: 1500, easing: 'cubic-bezier(.55,.05,.35,1)' });
+  ], { duration: 1200, easing: 'cubic-bezier(.55,.05,.35,1)' });
   const opening = play(leaf, [
     { transform: `perspective(${depth}px) rotateY(0deg)`, filter: 'grayscale(1) brightness(1)', opacity: .96 },
     { offset: .14, transform: `perspective(${depth}px) rotateY(5deg)` },
     { offset: .3, transform: `perspective(${depth}px) rotateY(4deg)` },
     { offset: .9, transform: `perspective(${depth}px) rotateY(72deg)`, filter: 'grayscale(1) brightness(.25)', opacity: .96 },
     { transform: `perspective(${depth}px) rotateY(80deg)`, filter: 'grayscale(1) brightness(.1)', opacity: 0 }
-  ], { delay: 1300, duration: 1900, easing: 'ease-in' });
-  if (!await settled(id, approach, opening)) return;
-
+  ], { delay: 900, duration: 1500, easing: 'ease-in' });
   // a) Fingers curl out of the dark and grip the door frame.
   const grip = play(frameHand, [
     { opacity: 0, transform: 'translateX(38%) scale(.96)' },
     { offset: .6, opacity: .9, transform: 'translateX(8%) scale(1)' },
     { opacity: 1, transform: 'translateX(0%) scale(1)' }
-  ], { duration: 1100, easing: 'cubic-bezier(.2,.6,.3,1)' });
-  if (!await settled(id, grip, play(copy, [{ transform: view }, { transform: view }], { duration: 1500 }))) return;
+  ], { delay: 1900, duration: 900, easing: 'cubic-bezier(.2,.6,.3,1)' });
+  if (!await settled(id, approach, opening, grip)) return;
 
   // b) A face comes out of the gap, closer and closer.
   const emerge = play(face, [
     { opacity: 0, transform: 'scale(.45)', filter: 'grayscale(1) contrast(1.15) brightness(.3) blur(3px)' },
     { offset: .4, opacity: .8, transform: 'scale(.7)', filter: 'grayscale(1) contrast(1.15) brightness(.8) blur(1px)' },
     { opacity: 1, transform: 'scale(1.2)', filter: 'grayscale(1) contrast(1.15) brightness(1.2) blur(0px)' }
-  ], { duration: 3300, easing: 'cubic-bezier(.4,0,.6,1)' });
+  ], { duration: 3000, easing: 'cubic-bezier(.4,0,.6,1)' });
   const lean = play(copy, [
     { transform: view, filter: 'grayscale(1) brightness(.9)' },
     { transform: closer, filter: 'grayscale(1) brightness(.9)' }
-  ], { duration: 3300, easing: 'ease-in-out' });
+  ], { duration: 3000, easing: 'ease-in-out' });
   if (!await settled(id, emerge, lean)) return;
 
   // c) The hand lets go of the frame and comes for your throat.
@@ -602,6 +604,20 @@ async function openingScene() {
 }
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && passageActive) { cancelDoorPassage(); $('.threshold-enter').focus(); }
+});
+// Phones have no Escape: a quiet "saltar" appears after 2 s, and a double tap anywhere skips too.
+let skipTimer = 0;
+function armSkip(id) {
+  clearTimeout(skipTimer);
+  skipTimer = setTimeout(() => { if (passageActive && passageId === id) $('#scene-skip').hidden = false; }, 2000);
+}
+function skipPassage() { if (!passageActive) return; cancelDoorPassage(); location.hash = 'interior'; }
+$('#scene-skip').addEventListener('click', skipPassage);
+let lastTap = { time: -Infinity, x: 0, y: 0 };
+$('#door-passage').addEventListener('pointerup', event => {
+  const now = performance.now();
+  if (now - lastTap.time < 350 && Math.hypot(event.clientX - lastTap.x, event.clientY - lastTap.y) < 40) { lastTap.time = -Infinity; skipPassage(); return; }
+  lastTap = { time: now, x: event.clientX, y: event.clientY };
 });
 window.addEventListener('resize', () => { if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; } });
 motionQuery.addEventListener('change', () => { if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; } });

@@ -69,7 +69,7 @@ body[data-page="inicio"]:after{display:none}
 .door-surface{display:block;width:100%;padding:0;border:0;background:none;line-height:0;cursor:pointer}
 .door-surface:hover .door-photo,.door-surface:hover .door-leaf{filter:grayscale(1) brightness(1.12)}
 .door-surface:disabled{cursor:wait}
-#door-passage{position:fixed;inset:0;z-index:70;background:#030303;overflow:hidden;pointer-events:none}
+#door-passage{position:fixed;inset:0;z-index:70;background:#030303;overflow:hidden;touch-action:manipulation;user-select:none}
 #door-passage .door-stage{position:absolute;transform-origin:0 0;will-change:transform,filter}
 body:not([data-page="inicio"]){background:#050505}
 body:not([data-page="inicio"]):after{background:repeating-linear-gradient(transparent 0,transparent 2px,#0003 2px,#0003 3px);opacity:.6}
@@ -175,3 +175,7 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 .door-whisper.stir{animation:whisper-stir 1s ease-out 1}
 @keyframes whisper-stir{0%{opacity:0;filter:blur(2px)}60%{opacity:.85}100%{opacity:1;filter:none}}
 @media(max-width:540px){.rune-scratches .rune{line-height:2.3;padding:0 6px}.door-whisper{font-size:10px;max-width:84vw}}
+/* Skip the entrance scene: quiet, bottom-left (calma sits bottom-right), from 2 s on. */
+.scene-skip{position:fixed;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:80;min-width:44px;min-height:44px;padding:10px 14px;border:0;background:#030303a6;color:#bdbdb2;font:11px/1.4 'Courier New',monospace;letter-spacing:2px;text-decoration:underline;text-underline-offset:4px;opacity:.42;animation:skip-in .6s ease-out 1}
+.scene-skip:hover,.scene-skip:focus-visible{opacity:.95;background:#030303d9;color:#eee}
+@keyframes skip-in{from{opacity:0}to{opacity:.42}}
