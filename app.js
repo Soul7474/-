@@ -87,7 +87,7 @@ function showDocument(id) {
   const doc = documents.find(item => item.id === id); if (!doc) return;
   if (doc.level > state.level) { openGate(doc.level); return; }
   $('#document-title').textContent = doc.name;
-  const body = $('#document-body'); body.replaceChildren();
+  const body = $('#document-body'); releaseGIFs(body); body.replaceChildren();
   if (doc.image) { const img = element('img'); img.src = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'assets/corridor-still.jpg' : 'assets/corridor.gif'; img.alt = 'Imagen recuperada del pasillo B.'; body.append(img); }
   body.append(element('p', doc.content)); openDialog($('#document-dialog'));
 }
@@ -104,9 +104,15 @@ function showVision(name) {
   if (!visionFiles.has(name)) return;
   const original = document.querySelector(`[data-vision="${name}"] img`);
   const image = element('img'); image.src = original.getAttribute('src');
-  image.className = original.className; image.alt = 'Vestigio del archivo visual.';
+  image.className = original.className; image.alt = original.alt || 'Vestigio del archivo visual.';
+  if (original.dataset.gif) {
+    image.dataset.gif = original.dataset.gif; image.dataset.still = original.dataset.still;
+    image.dataset.explicit = original.dataset.explicit || ''; image.dataset.playing = 'true';
+  }
   $('#document-title').textContent = '∴';
+  releaseGIFs($('#document-body'));
   $('#document-body').replaceChildren(image); openDialog($('#document-dialog'));
+  registerGIFs($('#document-body'));
 }
 const viewNames = ['inicio', 'interior', 'archivo', 'fragmentos', 'transmisiones', 'visitantes', 'subsuelo'];
 let currentView = '';
@@ -155,10 +161,10 @@ function drone(volume) {
   const nodes = [48, 49.4, 96].map(frequency => { const oscillator = ctx.createOscillator(); oscillator.type = 'sine'; oscillator.frequency.value = frequency; oscillator.connect(gain); oscillator.start(); return oscillator; });
   return { stop() { nodes.forEach(node => node.stop()); gain.disconnect(); } };
 }
-function stopAmbient() { ambient?.stop(); ambient = null; $('#sound-toggle').setAttribute('aria-pressed', 'false'); $('#sound-toggle').innerHTML = '<span aria-hidden="true">▥</span> SONIDO: DESACTIVADO'; }
+function stopAmbient() { ambient?.stop(); ambient = null; $('#sound-toggle').setAttribute('aria-pressed', 'false'); $('#sound-toggle').innerHTML = '<span aria-hidden="true">▥</span> SONIDO: DESACTIVADO'; window.dispatchEvent(new CustomEvent('station:sound')); }
 $('#sound-toggle').addEventListener('click', async () => {
   if (ambient) { stopAmbient(); return; }
-  try { await audioContext().resume(); ambient = drone(.025); $('#sound-toggle').setAttribute('aria-pressed', 'true'); $('#sound-toggle').innerHTML = '<span aria-hidden="true">▥</span> SONIDO: ACTIVADO'; }
+  try { await audioContext().resume(); ambient = drone(.025); $('#sound-toggle').setAttribute('aria-pressed', 'true'); $('#sound-toggle').innerHTML = '<span aria-hidden="true">▥</span> SONIDO: ACTIVADO'; window.dispatchEvent(new CustomEvent('station:sound')); }
   catch { $('#sound-toggle').textContent = 'AUDIO NO DISPONIBLE'; }
 });
 function stopTransmission() {
@@ -179,6 +185,7 @@ $('#transmission-play').addEventListener('click', async () => {
     $('#transmission-play').innerHTML = 'DETENER TRANSMISIÓN <span>■</span>';
     $('#transmission-status').textContent = 'Recibiendo interferencia… 9 segundos de señal. La transcripción aparece debajo.';
     transmissionTimer = setTimeout(stopTransmission, 9000);
+    window.dispatchEvent(new CustomEvent('station:transmission'));
   } catch { $('#transmission-status').textContent = 'El receptor de audio no está disponible. Puedes leer la transcripción.'; }
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { stopAmbient(); if (transmissionNodes) stopTransmission(); } });
@@ -220,13 +227,22 @@ function dismissOmen() {
 function updateOmenControl() {
   const enabled = omensEnabled && !motionQuery.matches;
   document.body.classList.toggle('quiet', !enabled);
+  refreshGIFs();
   $('#omens-toggle').textContent = enabled ? 'calma' : 'invocar';
   $('#omens-toggle').setAttribute('aria-pressed', String(enabled));
   $('#omens-toggle').setAttribute('aria-label', enabled ? 'Desactivar sobresaltos visuales' : 'Activar sobresaltos visuales');
   $('#omens-toggle').disabled = motionQuery.matches;
+  document.querySelectorAll('[data-tape-play]').forEach(button => {
+    button.disabled = !enabled;
+    if (!enabled) { button.setAttribute('aria-pressed', 'false'); button.querySelector('[data-gif]').dataset.playing = 'false'; }
+  });
   if (motionQuery.matches) $('#omens-toggle').textContent = 'en calma';
+  refreshGIFs();
 }
-function showOmen() {
+function showOmen(fromInterior = false) {
+  if (!fromInterior && document.body.dataset.page !== 'inicio' && window.EstacionRitual) {
+    window.EstacionRitual.request('touch'); return;
+  }
   if (passageActive || !omensEnabled || motionQuery.matches || document.hidden || performance.now() - lastOmen < 18000) return;
   lastOmen = performance.now();
   const apparition = $('#apparition');
@@ -265,6 +281,41 @@ $('#omens-toggle').addEventListener('click', () => {
 motionQuery.addEventListener('change', () => { dismissOmen(); updateOmenControl(); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape') dismissOmen(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) dismissOmen(); });
+// GIFs load and animate only while visible; stills are real browser captures of each original.
+const watchedGIFs = new Map();
+function refreshGIF(image) {
+  const visible = watchedGIFs.get(image);
+  const allowed = visible && !document.hidden && omensEnabled && !motionQuery.matches &&
+    (image.dataset.explicit !== 'true' || image.dataset.playing === 'true');
+  const source = allowed ? image.dataset.gif : image.dataset.still;
+  if (image.getAttribute('src') !== source) image.setAttribute('src', source);
+}
+function refreshGIFs() { for (const image of watchedGIFs.keys()) refreshGIF(image); }
+const gifObserver = new IntersectionObserver(entries => {
+  for (const entry of entries) { watchedGIFs.set(entry.target, entry.isIntersecting); refreshGIF(entry.target); }
+}, { threshold: .05 });
+function registerGIFs(root = document) {
+  root.querySelectorAll('img[data-gif]').forEach(image => {
+    if (watchedGIFs.has(image)) return;
+    watchedGIFs.set(image, false); gifObserver.observe(image);
+  });
+}
+function releaseGIFs(root) {
+  root.querySelectorAll('img[data-gif]').forEach(image => {
+    gifObserver.unobserve(image); watchedGIFs.delete(image);
+  });
+}
+document.addEventListener('click', event => {
+  const button = event.target.closest('[data-tape-play]'); if (!button) return;
+  const image = button.querySelector('[data-gif]');
+  if (!omensEnabled || motionQuery.matches) return;
+  image.dataset.playing = String(image.dataset.playing !== 'true');
+  button.setAttribute('aria-pressed', image.dataset.playing); refreshGIF(image);
+});
+document.addEventListener('visibilitychange', refreshGIFs);
+motionQuery.addEventListener('change', refreshGIFs);
+registerGIFs();
+
 updateOmenControl();
 
 // The threshold door stays shut until three things are done, in order:
@@ -556,3 +607,13 @@ window.addEventListener('resize', () => { if (passageActive) { cancelDoorPassage
 motionQuery.addEventListener('change', () => { if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; } });
 
 renderArchive(); renderGuests(); renderDoor(); route(); applyMotionPreference();
+
+// Interior extension contract. Keep entrance and passage implementation independent.
+window.EstacionInterior = Object.freeze({
+  view: () => document.body.dataset.page,
+  effects: () => omensEnabled && !motionQuery.matches && !document.hidden,
+  sound: () => ambient && audio?.state === 'running' ? audio : null,
+  apparition: () => showOmen(true),
+  inspect: showVision,
+  subsoil: () => openGate(2),
+});

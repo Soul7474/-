@@ -18,7 +18,7 @@ test('serves the Spanish station and its working client scripts', async () => {
   assert.match(html, /data-door="closed"/);
   assert.match(html, /id="door-whisper"/);
   for (const rune of ['e', 'c', 'o']) assert.match(html, new RegExp(`data-rune="${rune}"`));
-  for (const path of ['/app.js', '/style.css']) {
+  for (const path of ['/app.js', '/style.css', '/interior.js', '/interior.css']) {
     const response = await fetch(base + path);
     assert.equal(response.status, 200);
     assert.ok((await response.text()).length > 1000);
@@ -83,5 +83,23 @@ test('serves supplied originals unchanged and transparent cutout PNGs', async ()
     const bytes = Buffer.from(await response.arrayBuffer());
     assert.equal(bytes.subarray(1, 4).toString(), 'PNG');
     assert.equal(bytes[25], 6, 'PNG has RGBA channels');
+  }
+});
+
+test('serves the seven uploaded tapes unchanged with their still alternatives', async () => {
+  const names = await readdir(new URL('../gifs/', import.meta.url));
+  assert.equal(names.length, 7);
+  for (const name of names) {
+    const response = await fetch(base + '/gifs/' + encodeURIComponent(name));
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('content-type'), 'image/gif');
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assert.deepEqual(bytes, await readFile(new URL('../gifs/' + name, import.meta.url)));
+  }
+  for (let i = 0; i < 7; i++) {
+    const response = await fetch(base + '/assets/gif-stills/' + i + '.png');
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('content-type'), 'image/png');
+    assert.equal(Buffer.from(await response.arrayBuffer()).subarray(1, 4).toString(), 'PNG');
   }
 });
