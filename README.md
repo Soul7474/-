@@ -47,6 +47,22 @@ Se prepararon tres versiones con fondo transparente y tinta clara mediante edici
 
 El resto se integra con inversión monocroma y mezcla `screen` en CSS: el papel claro desaparece visualmente sobre negro, sin modificar los archivos. Las apariciones alternan tres imágenes aportadas; siguen respetando «calma», movimiento reducido y el intervalo entre sustos. La animación de entrada por la puerta se conserva.
 
+## Cintas animadas
+
+Los siete archivos de `gifs/` se conservan sin modificaciones:
+
+| Archivo | Ubicación |
+| --- | --- |
+| `giphy.gif` | Ojos de la entrada |
+| `giphy (1).gif` | Archivo |
+| `giphy (2).gif` | Fondo del interior |
+| `giphy (3).gif` | Subsuelo, reproducción explícita |
+| `giphy (4).gif` | Voces |
+| `giphy (5).gif` | Fragmentos |
+| `giphy (6).gif` | Huellas |
+
+También pueden abrirse en **Fragmentos → cintas**. Los fotogramas de `assets/gif-stills/` son capturas del navegador de los GIFs originales. Se muestran de entrada; `IntersectionObserver` carga la animación cuando entra en pantalla. Se vuelve al fotograma cuando sale de pantalla, se oculta la pestaña, se activa «calma» o el navegador pide movimiento reducido. La cinta con cortes más marcados no se reproduce automáticamente: requiere pulsarla o abrirla desde «cintas». Los GIFs no añaden audio.
+
 ## Recorrido
 
 - **Umbral:** entrada, cámara animada, registro y primeros documentos.
