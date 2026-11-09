@@ -168,11 +168,14 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 #door-passage .choke{position:absolute;inset:-35%;pointer-events:none;opacity:0;background:radial-gradient(ellipse 46% 42% at 50% 46%,transparent 26%,#000 80%);will-change:transform,opacity}
 #door-passage .pull-streaks{position:fixed;pointer-events:none;opacity:0;border-radius:50%;background:repeating-conic-gradient(#0000 0deg 2.6deg,#d8d8d022 2.9deg,#0000 3.3deg 6.2deg);-webkit-mask-image:radial-gradient(closest-side,transparent 8%,#000 40%,transparent 100%);mask-image:radial-gradient(closest-side,transparent 8%,#000 40%,transparent 100%);will-change:transform,opacity}
 #door-passage .fall-scene{position:absolute;inset:0;background:#000;overflow:hidden;opacity:0;display:grid;place-items:center}
-#door-passage .fall-shaft{position:absolute;inset:-40%;background:repeating-linear-gradient(180deg,transparent 0 44px,#1d1d1c 44px 47px,transparent 47px 101px,#121212 101px 109px,transparent 109px 160px);filter:blur(1.2px);will-change:transform,background-position}
+#door-passage .fall-shaft{position:absolute;inset:-40%;background:repeating-linear-gradient(180deg,#0000 0,#171716 26px,#232322 52px,#171716 78px,#0000 110px,#0000 230px),repeating-linear-gradient(180deg,#0000 0,#0f0f0f 40px,#1b1b1a 80px,#0f0f0f 120px,#0000 170px,#0000 420px);will-change:transform,background-position}
+#door-passage .fall-scene::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#000 0,#0000 22%,#0000 78%,#000 100%),radial-gradient(ellipse 70% 60% at 50% 50%,#0000 40%,#000c 100%)}
+#door-passage .fall-light{position:absolute;left:-10%;width:120%;top:0;height:34%;pointer-events:none;background:linear-gradient(180deg,#0000,#ffffff12 45%,#ffffff1a 50%,#ffffff12 55%,#0000);opacity:0;will-change:transform,opacity}
 #door-passage .fall-noise{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;opacity:.2;mix-blend-mode:screen}
-#door-passage .fall-hud{position:absolute;left:18px;top:14px;font:10px/1.6 'Courier New',monospace;letter-spacing:1px;color:#8c8c86}
-#door-passage .fall-text{position:relative;margin:0 16px;font:15px/1.6 'Courier New',monospace;letter-spacing:2px;color:#d8d8cf;text-align:center;opacity:0}
-@media(max-width:540px){#door-passage .fall-text{font-size:13px;letter-spacing:1px}}
+#door-passage .fall-hud{position:absolute;z-index:2;left:18px;top:14px;font:10px/1.6 'Courier New',monospace;letter-spacing:1px;color:#8c8c86}
+#door-passage .fall-text{position:relative;z-index:1;margin:0 16px;font:clamp(18px,2.6vw,42px)/1.4 'Courier New',monospace;letter-spacing:.14em;color:#dcdcd2;text-align:center;text-shadow:0 0 8px #ffffff2e}
+#door-passage .fall-text span{opacity:0}
+@media(max-width:540px){#door-passage .fall-text{letter-spacing:.06em}}
 .door-stage .door-leaf{position:absolute;left:53.8%;top:10.9%;width:20.2%;height:89.1%;max-width:none;opacity:.96;transform-origin:0 50%;filter:grayscale(1)}
 .door-stage:not([data-door="closed"]) .door-leaf{display:none}
 .door-recording.rattle{animation:door-rattle .34s linear 1}
@@ -196,3 +199,5 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 .scene-skip:hover,.scene-skip:focus-visible{opacity:.95;background:#030303d9;color:#eee}
 @keyframes skip-in{from{opacity:0}to{opacity:.42}}
 body.quiet .presence-grain{animation:none}
+/* The interior fades up from black after the scene. */
+#scene-veil{position:fixed;inset:0;z-index:69;background:#000;pointer-events:none}

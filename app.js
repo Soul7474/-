@@ -556,7 +556,7 @@ async function openingScene() {
     { opacity: 0, transform: 'translateX(38%) scale(.96)' },
     { offset: .6, opacity: .9, transform: 'translateX(8%) scale(1)' },
     { opacity: 1, transform: 'translateX(0%) scale(1)' }
-  ], { delay: 1900, duration: 900, easing: 'cubic-bezier(.2,.6,.3,1)' });
+  ], { delay: 1700, duration: 900, easing: 'cubic-bezier(.2,.6,.3,1)' });
   if (!await settled(id, approach, opening, grip)) return;
 
   // b) A face comes out of the gap, closer and closer. It is alive: the head tilts slowly and
@@ -606,7 +606,7 @@ async function openingScene() {
     { offset: .2, opacity: 1 },
     { offset: .75, filter: 'grayscale(1) brightness(.3) contrast(1.15) blur(6px)' },
     { transform: held, filter: dark + ' blur(0px)', opacity: 1 }
-  ], { delay: 140, duration: 440, easing: 'cubic-bezier(.3,.55,.35,1)' });
+  ], { delay: 80, duration: 440, easing: 'cubic-bezier(.3,.55,.35,1)' });
   if (!await settled(id, lunge)) return;
   // The fist closes: fingers curl in towards you, the thumb comes down over them.
   const curl = play(grab.fingers, [
@@ -677,24 +677,51 @@ async function openingScene() {
   const blackout = play(vignette, [{ opacity: 1, transform: 'scale(.84)' }, { opacity: 1, transform: 'scale(.62)' }], { duration: 700, easing: 'ease-in' });
   if (!await settled(id, drag, rush, hold, blackout)) return;
 
-  // d) Inside: the camera falls, static, and a voice in text. Then the interior.
+  // d) Inside: the camera falls past the walls, hits the bottom, and something types to you.
   const scene = element('div', undefined, 'fall-scene');
   const shaft = element('div', undefined, 'fall-shaft');
+  const light = element('div', undefined, 'fall-light');
   const noise = element('canvas', undefined, 'fall-noise'); noise.width = 160; noise.height = 90;
   const hud = element('div', '● REC  CAM_09 / SEÑAL PERDIDA', 'fall-hud');
-  const text = element('p', 'Te estábamos esperando.', 'fall-text');
-  scene.append(shaft, noise, hud, text); $('#door-passage').append(scene);
-  startStatic(noise); hiss(2.6);
-  const inside = play(scene, [{ opacity: 0 }, { opacity: 1, offset: .07 }, { opacity: 1, offset: .9 }, { opacity: 0 }], { duration: 2900 });
+  const text = element('p', undefined, 'fall-text');
+  const letters = [...'Te estábamos esperando.'].map(char => { const letter = element('span', char); text.append(letter); return letter; });
+  scene.append(shaft, light, noise, hud, text); $('#door-passage').append(scene);
+  startStatic(noise); hiss(2.2);
+  const fall = 2300; const impact = .4;
+  const inside = play(scene, [
+    { offset: 0, opacity: 0, transform: 'translateY(0px)', filter: 'brightness(1)' },
+    { offset: .06, opacity: 1 },
+    { offset: impact, transform: 'translateY(0px)', filter: 'brightness(1)' },
+    { offset: impact + .03, transform: 'translateY(34px)', filter: 'brightness(.28)' },
+    { offset: impact + .08, transform: 'translateY(-10px)', filter: 'brightness(.55)' },
+    { offset: impact + .13, transform: 'translateY(0px)', filter: 'brightness(1)' },
+    { offset: .9, opacity: 1 },
+    { offset: 1, opacity: 0, transform: 'translateY(0px)', filter: 'brightness(1)' }
+  ], { duration: fall });
   play(shaft, [
-    { backgroundPosition: '0px 0px', transform: 'rotate(-3deg) translateY(0px)', easing: 'cubic-bezier(.5,0,1,1)' },
-    { offset: .45, backgroundPosition: '0px -2600px', transform: 'rotate(11deg) translateY(0px)' },
-    { offset: .52, backgroundPosition: '0px -2660px', transform: 'rotate(9deg) translateY(14px)' },
-    { offset: .6, backgroundPosition: '0px -2665px', transform: 'rotate(10deg) translateY(0px)' },
-    { backgroundPosition: '0px -2665px', transform: 'rotate(10deg) translateY(0px)', filter: 'blur(1.2px) brightness(.5)' }
-  ], { duration: 2900 });
-  play(text, [{ opacity: 0, letterSpacing: '6px' }, { offset: .5, opacity: 0, letterSpacing: '6px' }, { offset: .7, opacity: 1, letterSpacing: '2px' }, { offset: .9, opacity: 1 }, { opacity: 0 }], { duration: 2900 });
-  runPassage(id, inside);
+    { offset: 0, backgroundPosition: '0px 0px, 0px 0px', transform: 'rotate(-3deg)', easing: 'cubic-bezier(.45,0,1,1)' },
+    { offset: impact, backgroundPosition: '0px -1700px, 0px -2900px', transform: 'rotate(10deg)' },
+    { offset: impact + .05, backgroundPosition: '0px -1730px, 0px -2950px', transform: 'rotate(8deg)' },
+    { offset: 1, backgroundPosition: '0px -1730px, 0px -2950px', transform: 'rotate(9deg)', filter: 'brightness(.5)' }
+  ], { duration: fall });
+  play(light, [
+    { offset: 0, transform: 'translateY(130%)', opacity: 0 },
+    { offset: .08, opacity: 1 }, { offset: .2, transform: 'translateY(-160%)', opacity: 1 },
+    { offset: .2001, transform: 'translateY(130%)' }, { offset: .27, transform: 'translateY(130%)' },
+    { offset: .37, transform: 'translateY(-160%)', opacity: .7 }, { offset: .38, opacity: 0 },
+    { offset: 1, transform: 'translateY(-160%)', opacity: 0 }
+  ], { duration: fall });
+  letters.forEach((letter, i) => play(letter, [{ opacity: 0 }, { opacity: 1 }], { delay: fall * (impact + .1) + i * 40, duration: 40 }));
+  if (!await settled(id, inside)) return;
+  cancelDoorPassage(); location.hash = 'interior'; unveil();
+}
+// The interior fades up out of the black instead of cutting straight to the lit room.
+function unveil() {
+  const veil = $('#scene-veil'); veil.hidden = false;
+  const hide = () => { veil.hidden = true; };
+  if (typeof veil.animate !== 'function') { hide(); return; }
+  veil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 550, easing: 'ease-out' }).finished.then(hide, hide);
+  setTimeout(hide, 1000);
 }
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && passageActive) { cancelDoorPassage(); $('.threshold-enter').focus(); }
