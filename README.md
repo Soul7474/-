@@ -17,7 +17,9 @@ Para futuras tareas en la nube, usa este checkout existente. Cada tarea ya está
 
 ## Identidad visual
 
-La entrada es una única pantalla negra: una imagen pequeña, «no estaba ahí antes» y un enlace para entrar. No muestra el archivo al hacer scroll ni reproduce audio. La imagen `assets/door-009.png` es una escena ficticia original generada para el proyecto; no es una cámara real ni una fotografía de un visitante.
+La entrada es una única pantalla negra: una imagen pequeña rodeada de runas, trazos rituales y siete ojos interactivos, con un solo enlace para entrar. No muestra nombres de archivo, frases de bienvenida ni el archivo al hacer scroll. Dentro quedan otros dos ojos y una marca rúnica. No hay marcadores de nivel ni puntuaciones. La imagen `assets/door-009.png` es una escena ficticia original generada para el proyecto; no es una cámara real ni una fotografía de un visitante.
+
+Tocar un ojo o fallar una palabra puede invocar una aparición visual de 850 ms, sin destellos, con un intervalo mínimo de 18 segundos. Escape la oculta, cambiar de página o pestaña también. El control «calma» desactiva las apariciones y guarda la preferencia; con movimiento reducido se desactivan. El sonido sigue siendo optativo, activado por el control existente. `assets/presence.png` es un fragmento fotográfico original generado para esta web.
 
 La primera puerta conserva su contraseña y una pista accesible. Tras entrar se muestran la navegación y los archivos existentes. El archivo público sigue disponible directamente en `#archivo`, sin acertijos obligatorios. La vista `#fragmentos` conserva el material de la antigua portada. Las secciones interiores mantienen la estética monocroma, los formularios, el audio optativo y el respeto a movimiento reducido.
 

@@ -28,3 +28,39 @@ body[data-page="inicio"]:after{display:none}
 #gate-dialog[data-level="1"] .enter-button{font-size:10px;background:#0b0b0b}
 #gate-dialog[data-level="1"] details{font-size:10px;border-color:#222}
 @media(max-width:540px){.entry-portal{padding:45px 24px 65px}.door-recording{width:min(265px,78vw);transform:translateX(-9px);margin-bottom:32px}.entry-portal h1{font-size:11px}.identity{font-size:25px;letter-spacing:1px}}
+
+/* Marks and watchers: deliberately uneven, quiet until touched. */
+.symbol-library{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important}
+.entry-portal{position:relative;isolation:isolate;padding-bottom:70px;overflow:hidden}
+.door-recording{z-index:1;margin-bottom:30px}
+.threshold-enter{position:relative;z-index:2;margin-top:0}
+.rune-scratches{position:absolute;color:#71716c;font-family:serif;font-size:23px;line-height:2.7;user-select:none;pointer-events:none;z-index:-1}
+.rune-left{left:calc(50% - 245px);top:calc(50% - 180px);transform:rotate(-8deg)}
+.rune-right{left:calc(50% + 225px);top:calc(50% - 100px);transform:rotate(9deg);font-size:19px;color:#53534f}
+.ritual-scratch{position:absolute;width:460px;max-width:95vw;height:auto;top:50%;left:50%;transform:translate(-50%,-55%) rotate(-4deg);color:#343431;pointer-events:none;z-index:-1}
+.watcher{position:absolute;padding:6px;background:none;border:0;color:#888881;line-height:0;opacity:.72;min-width:44px;min-height:44px;display:grid;place-items:center;z-index:2;border-radius:0}
+.watcher svg{display:block;width:100%;height:auto;overflow:visible}
+.watcher:hover,.watcher:focus-visible{color:#d0d0c5;opacity:1;background:none;text-shadow:none}
+.watcher .eye-pupil{transition:transform .3s ease}
+.watcher:hover .eye-pupil{transform:translate(3px,1px)}
+.watcher-1{width:86px;left:18%;top:22%;transform:rotate(-11deg)}
+.watcher-2{width:61px;right:15%;top:34%;transform:rotate(14deg)}
+.watcher-3{width:47px;left:30%;top:13%;color:#5e5e58}
+.watcher-4{width:104px;right:24%;bottom:19%;transform:rotate(-6deg)}
+.watcher-5{width:57px;left:11%;bottom:24%;transform:rotate(17deg);color:#5b5b57}
+.watcher-6{width:46px;right:9%;top:12%;transform:rotate(-22deg);color:#5b5b57}
+.watcher-7{width:66px;left:39%;bottom:10%;transform:rotate(4deg);color:#65655f}
+.eye-awake{color:#e0e0d5;opacity:1}
+.inner-watchers{position:relative;height:40px;margin-top:20px;color:#73736d;text-align:center}
+.inner-eye-left{width:65px;left:2%;top:0;transform:rotate(-8deg)}
+.inner-eye-right{width:52px;right:5%;top:6px;transform:rotate(11deg)}
+.inner-runes{font:17px/40px serif;letter-spacing:11px;color:#77776e}
+.gate-runes{font:17px/1.5 serif;letter-spacing:8px;color:#aaa99c}
+.apparition{position:fixed;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;z-index:100;display:grid;place-items:center;background:#010101ed;pointer-events:none;overflow:hidden}
+.apparition::backdrop{background:transparent;pointer-events:none}
+.apparition img{width:min(1050px,110vw);height:auto;max-height:100%;object-fit:contain;filter:grayscale(1) contrast(1.2);opacity:.92}
+.omens-toggle{position:fixed;right:18px;bottom:13px;z-index:25;padding:7px 10px;background:#030303;border:0;font:10px/1.5 'Courier New',monospace;color:#999990;text-decoration:underline;text-underline-offset:3px}
+.omens-toggle:hover{color:#ddd}.omens-toggle:disabled{cursor:default;text-decoration:none;color:#777}
+@media(max-width:540px){.rune-left{left:7%;top:calc(50% - 165px);font-size:17px}.rune-right{left:auto;right:7%;top:calc(50% - 70px);font-size:16px}.ritual-scratch{width:355px;opacity:.8}.door-recording{width:min(245px,64vw);transform:translateX(-4px);margin-bottom:28px}.watcher-1{left:7%;top:17%;width:65px}.watcher-2{right:9%;top:26%;width:49px}.watcher-3{left:47%;top:9%;width:44px}.watcher-4{right:10%;bottom:21%;width:75px}.watcher-5{left:5%;bottom:29%;width:48px}.watcher-6{right:3%;top:4%;width:44px}.watcher-7{left:29%;bottom:12%;width:58px}.omens-toggle{font-size:9px;right:8px;bottom:8px}.inner-watchers{margin-top:10px}}
+@media(prefers-reduced-motion:reduce){.apparition{display:none!important}.watcher .eye-pupil{transition:none}.watcher:hover .eye-pupil{transform:none}}

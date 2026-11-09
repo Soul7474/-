@@ -27,14 +27,14 @@ function renderArchive() {
     const button = element('button', undefined, `file-row${locked ? ' locked-file' : ''}`);
     button.dataset[locked ? 'gate' : 'document'] = locked ? doc.level : doc.id;
     button.append(element('span', locked ? '⌑' : doc.image ? '▧' : '▤', 'file-icon'));
-    const label = element('span'); label.append(element('b', doc.name), element('small', locked ? `Acceso restringido. Nivel 0${doc.level}.` : doc.description));
+    const label = element('span'); label.append(element('b', doc.name), element('small', locked ? 'Sellado.' : doc.description));
     const meta = element('span', locked ? 'CIFRADO ' : doc.size + ' ', 'file-meta' + (locked ? ' red' : '')); meta.append(element('b', locked ? '⌑' : '↗'));
     button.append(label, meta); list.append(button);
   });
-  $('#unlock-status').textContent = `NIVEL 0${state.level}`;
-  $('.bottom-note>span:last-child').textContent = `ESTÁS EN LA CAPA 0${state.level}`;
+  $('#unlock-status').textContent = state.level ? 'un sello ha cedido' : 'sellado';
+  $('.bottom-note>span:last-child').textContent = state.level ? 'la puerta recuerda' : 'la puerta escucha';
   const homeLocked = $('.locked-file[data-gate]');
-  if (homeLocked && state.level >= 1) { delete homeLocked.dataset.gate; homeLocked.dataset.document = 'noabrir'; homeLocked.classList.remove('locked-file'); homeLocked.querySelector('small').textContent = 'Acceso recuperado. Nivel 01.'; homeLocked.querySelector('.file-meta').textContent = 'ABIERTO ↗'; }
+  if (homeLocked && state.level >= 1) { delete homeLocked.dataset.gate; homeLocked.dataset.document = 'noabrir'; homeLocked.classList.remove('locked-file'); homeLocked.querySelector('small').textContent = 'El sello ha cedido.'; homeLocked.querySelector('.file-meta').textContent = 'ABIERTO ↗'; }
 }
 function renderGuests() {
   const defaults = [
@@ -73,6 +73,7 @@ $('#gate-form').addEventListener('submit', event => {
   const answer = $('#password').value.trim().toLocaleLowerCase('es');
   if (answer !== (gateLevel === 1 ? 'eco' : '1998')) {
     $('#gate-error').textContent = 'No es esa. Algo se ha movido al otro lado.';
+    showOmen();
     $('#password').setAttribute('aria-invalid', 'true'); $('#password').select(); return;
   }
   state.level = Math.max(state.level, gateLevel); save(); renderArchive();
@@ -100,6 +101,7 @@ function route() {
   if (name === 'subsuelo' && state.level < 2) {
     history.replaceState(null, '', '#inicio'); route(); openGate(2); return;
   }
+  dismissOmen();
   document.body.dataset.page = name;
   $('#entry-portal').hidden = name !== 'inicio';
   document.querySelectorAll('.view').forEach(view => view.hidden = view.id !== `view-${name}`);
@@ -176,4 +178,61 @@ function applyMotionPreference() {
   const badge = $('.web-badges img'); badge.hidden = motionQuery.matches;
 }
 motionQuery.addEventListener('change', applyMotionPreference);
+// Ritual interactions are user-triggered; never interrupt a first visit automatically.
+let omensEnabled = true;
+try { omensEnabled = localStorage.getItem('estacion09-omens') !== 'quiet'; } catch {}
+let omenTimer;
+let lastOmen = -Infinity;
+function dismissOmen() {
+  clearTimeout(omenTimer);
+  const apparition = $('#apparition');
+  if (typeof apparition.hidePopover === 'function' && apparition.matches(':popover-open')) apparition.hidePopover();
+  apparition.hidden = true;
+  document.body.classList.remove('observed');
+}
+function updateOmenControl() {
+  const enabled = omensEnabled && !motionQuery.matches;
+  $('#omens-toggle').textContent = enabled ? 'calma' : 'invocar';
+  $('#omens-toggle').setAttribute('aria-pressed', String(enabled));
+  $('#omens-toggle').setAttribute('aria-label', enabled ? 'Desactivar sobresaltos visuales' : 'Activar sobresaltos visuales');
+  $('#omens-toggle').disabled = motionQuery.matches;
+  if (motionQuery.matches) $('#omens-toggle').textContent = 'en calma';
+}
+function showOmen() {
+  if (!omensEnabled || motionQuery.matches || document.hidden || performance.now() - lastOmen < 18000) return;
+  lastOmen = performance.now();
+  const apparition = $('#apparition');
+  apparition.hidden = false;
+  if (typeof apparition.showPopover === 'function') apparition.showPopover();
+  else apparition.removeAttribute('popover');
+  document.body.classList.add('observed');
+  // Sound remains opt-in through the existing audio control.
+  if (ambient && audio?.state === 'running') {
+    const tone = audio.createOscillator(); const volume = audio.createGain();
+    tone.type = 'sine'; tone.frequency.setValueAtTime(118, audio.currentTime);
+    tone.frequency.exponentialRampToValueAtTime(43, audio.currentTime + .3);
+    volume.gain.setValueAtTime(.025, audio.currentTime);
+    volume.gain.exponentialRampToValueAtTime(.001, audio.currentTime + .32);
+    tone.connect(volume); volume.connect(audio.destination); tone.start(); tone.stop(audio.currentTime + .35);
+    tone.onended = () => { tone.disconnect(); volume.disconnect(); };
+  }
+  omenTimer = setTimeout(dismissOmen, 850);
+}
+document.querySelectorAll('[data-omen]').forEach(eye => eye.addEventListener('click', () => {
+  if (!motionQuery.matches) {
+    eye.classList.add('eye-awake');
+    setTimeout(() => eye.classList.remove('eye-awake'), 1200);
+  }
+  showOmen();
+}));
+$('#omens-toggle').addEventListener('click', () => {
+  omensEnabled = !omensEnabled;
+  try { localStorage.setItem('estacion09-omens', omensEnabled ? 'active' : 'quiet'); } catch {}
+  dismissOmen(); updateOmenControl();
+});
+motionQuery.addEventListener('change', () => { dismissOmen(); updateOmenControl(); });
+document.addEventListener('keydown', event => { if (event.key === 'Escape') dismissOmen(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) dismissOmen(); });
+updateOmenControl();
+
 renderArchive(); renderGuests(); route(); applyMotionPreference();
