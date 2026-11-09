@@ -46,3 +46,17 @@
 #view-interior [data-haunting="3"] .sentinel-presence{transform:translate(18px,-10px) rotate(2deg)}
 #memory-content{padding:15px}.memory-image{min-height:190px}.signal-word{font-size:11px;letter-spacing:6px;line-height:2}.signal-reveal{right:5px;bottom:4px}.sealed-fragment{height:45svh;min-height:245px}}
 @media(prefers-reduced-motion:reduce){#view-interior .sentinel-presence,#view-interior .chamber-ghost{transition:none!important;animation:none!important}}
+
+/* Soul: a quiet route through the existing artwork; no entrance selectors. */
+#view-interior .chamber-door{opacity:1}
+#view-interior .chamber-door:not(.path-invitation) .door-emblem{opacity:.55}
+#view-interior .chamber-door.path-invitation .door-emblem{opacity:1}
+#view-interior .chamber-door:hover,#view-interior .chamber-door:focus-visible{opacity:1}
+#view-interior .path-invitation{opacity:1;color:#d3d3c2}
+#view-interior .path-invitation small{color:#d3d3c2;text-decoration:underline;text-underline-offset:4px}
+#view-interior .mark-seal.path-invitation{outline:1px dotted #5d5d51;outline-offset:3px}
+.route-thread{display:flex;align-items:center;justify-content:center;gap:35px;min-height:64px;margin:25px auto 15px;border-top:1px dotted #25251f;max-width:540px}
+.route-thread a,.route-thread button{display:grid;place-items:center;min-width:48px;min-height:44px;padding:8px 12px;background:none;border:0;color:#b3b3a1;font:25px/1 Georgia,serif;text-decoration:none}
+.route-thread a:hover,.route-thread button:hover{background:#11110d;color:#e1e1ce;text-shadow:none}
+.route-thread a:focus-visible,.route-thread button:focus-visible{outline:1px solid #c4c4b0;outline-offset:3px}
+@media(max-width:540px){.route-thread{margin-top:22px;gap:30px}}

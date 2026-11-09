@@ -10,11 +10,15 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const key = 'estacion09-interior';
   let memory = { visits: 0, unlocked: false };
+  let trail = { archive: false, signal: false };
   try {
     const value = JSON.parse(sessionStorage.getItem(key));
-    if (value) memory = { visits: Number.isSafeInteger(value.visits) ? Math.max(0, value.visits) : 0, unlocked: value.unlocked === true };
+    if (value) {
+      memory = { visits: Number.isSafeInteger(value.visits) ? Math.max(0, value.visits) : 0, unlocked: value.unlocked === true };
+      trail = { archive: value.trail?.archive === true, signal: value.trail?.signal === true };
+    }
   } catch {}
-  const save = () => { try { sessionStorage.setItem(key, JSON.stringify(memory)); } catch {} };
+  const save = () => { try { sessionStorage.setItem(key, JSON.stringify({ ...memory, trail })); } catch {} };
   const active = () => station.view() !== 'inicio';
   const allowed = () => active() && station.effects() && !reduce.matches;
   const visibleDialog = () => Boolean(document.querySelector('dialog[open]'));
@@ -35,9 +39,10 @@
   let signalHideTimer;
   const sounds = new Set();
   function applyMemory() {
-    chamber.dataset.haunting = allowed() ? String(memory.visits % 4) : '0';
+    chamber.dataset.haunting = allowed() ? String(Math.min(memory.visits, 3)) : '0';
     $('.mark-seal').dataset.open = String(memory.unlocked);
     $('.mark-seal').setAttribute('aria-label', memory.unlocked ? 'Abrir el fragmento del sello' : 'Examinar el sello cerrado');
+    updateTrail();
   }
   function clearPending() { clearTimeout(pending); pending = null; }
   function stopSounds() {
@@ -90,8 +95,10 @@
   function afterInspection() {
     if (!active()) return;
     memory.visits++; save(); applyMemory();
-    if (allowed()) noise(memory.visits % 2 ? 'tape' : 'knock');
-    if (memory.visits % 3 === 0) request('return');
+    if (station.view() === 'archivo') trail.archive = true;
+    save(); updateTrail();
+    if (allowed() && memory.visits <= 3) noise(memory.visits % 2 ? 'tape' : 'knock');
+    if ([3, 6].includes(memory.visits)) request('return');
   }
   $('#document-dialog').addEventListener('close', afterInspection);
   function clearBody() { body.replaceChildren(); }
@@ -170,6 +177,7 @@
       if (station.view() !== 'transmisiones' || document.hidden) return;
       signal.textContent = '⊙  ·  ⋔  ·  ☾\nUMBRA'; signal.hidden = false;
       $('.haunted-screen').classList.add('tuned');
+      trail.signal = true; save(); updateTrail();
       signalHideTimer = setTimeout(endSignal, reduce.matches ? 14000 : 9000);
     };
     if (reduce.matches || !station.effects()) reveal(); else signalTimer = setTimeout(reveal, 1600);
@@ -191,5 +199,48 @@
     hushUntil = performance.now() + 20000; clearPending(); stopSounds(); endSignal();
   });
   $('#confirm-reset').addEventListener('click', () => { try { sessionStorage.removeItem(key); } catch {} });
+  // Soul's route thread. Additive: keep the companion's depth/parallax code independent.
+  const routeThreads = new Map();
+  const makeLink = (target, label, name) => {
+    const link = node('a', label); link.href = target; link.setAttribute('aria-label', name); return link;
+  };
+  function thread(view, label) {
+    const section = $('#view-' + view);
+    const nav = node('nav', undefined, 'route-thread'); nav.setAttribute('aria-label', label);
+    section.append(nav); routeThreads.set(view, nav); return nav;
+  }
+  const archiveThread = thread('archivo', 'Continuar desde los restos');
+  archiveThread.append(makeLink('#interior', '↶', 'Volver al interior'));
+  const towardSignal = makeLink('#transmisiones', '∿', 'Seguir la señal hacia voces');
+  archiveThread.append(towardSignal);
+  const signalThread = thread('transmisiones', 'Continuar desde la señal');
+  signalThread.append(makeLink('#interior', '↶', 'Volver al interior'));
+  const towardSeal = node('button', '∵'); towardSeal.type = 'button'; towardSeal.setAttribute('aria-label', 'Volver al sello con la señal');
+  towardSeal.addEventListener('click', () => {
+    if (station.view() === 'interior') openSeal();
+    else { sealOnReturn = true; location.hash = 'interior'; }
+  });
+  signalThread.append(towardSeal);
+  const traceThread = thread('visitantes', 'Volver desde las huellas');
+  traceThread.append(makeLink('#interior', '↶', 'Volver al interior'));
+  let sealOnReturn = false;
+  function updateTrail() {
+    if (!routeThreads.size) return;
+    towardSignal.hidden = !trail.archive;
+    towardSeal.hidden = !trail.signal;
+    const next = memory.unlocked ? '.below-door' : trail.signal ? '.mark-seal' : trail.archive ? '.voice-door' : '.relic-door';
+    chamber.querySelectorAll('.path-invitation').forEach(item => item.classList.remove('path-invitation'));
+    chamber.querySelector(next)?.classList.add('path-invitation');
+    chamber.dataset.thread = memory.unlocked ? 'open' : trail.signal ? 'seal' : trail.archive ? 'voice' : 'remains';
+  }
+  window.addEventListener('hashchange', () => {
+    updateTrail();
+    if (sealOnReturn && station.view() === 'interior') {
+      sealOnReturn = false;
+      queueMicrotask(() => { if (station.view() === 'interior' && !dialog.open) openSeal(); });
+    }
+    else if (station.view() !== 'transmisiones') sealOnReturn = false;
+  });
+
   environmentChanged();
 })();
