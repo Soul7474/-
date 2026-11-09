@@ -15,7 +15,7 @@ test('serves the Spanish station and its working client scripts', async () => {
   const html = await page.text();
   assert.match(html, /lang="es"/);
   assert.match(html, /id="gate-form"/);
-  for (const path of ['/app.js', '/style.css']) {
+  for (const path of ['/app.js', '/style.css', '/interior.js', '/interior.css']) {
     const response = await fetch(base + path);
     assert.equal(response.status, 200);
     assert.ok((await response.text()).length > 1000);

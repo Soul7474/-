@@ -160,10 +160,10 @@ function drone(volume) {
   const nodes = [48, 49.4, 96].map(frequency => { const oscillator = ctx.createOscillator(); oscillator.type = 'sine'; oscillator.frequency.value = frequency; oscillator.connect(gain); oscillator.start(); return oscillator; });
   return { stop() { nodes.forEach(node => node.stop()); gain.disconnect(); } };
 }
-function stopAmbient() { ambient?.stop(); ambient = null; $('#sound-toggle').setAttribute('aria-pressed', 'false'); $('#sound-toggle').innerHTML = '<span aria-hidden="true">▥</span> SONIDO: DESACTIVADO'; }
+function stopAmbient() { ambient?.stop(); ambient = null; $('#sound-toggle').setAttribute('aria-pressed', 'false'); $('#sound-toggle').innerHTML = '<span aria-hidden="true">▥</span> SONIDO: DESACTIVADO'; window.dispatchEvent(new CustomEvent('station:sound')); }
 $('#sound-toggle').addEventListener('click', async () => {
   if (ambient) { stopAmbient(); return; }
-  try { await audioContext().resume(); ambient = drone(.025); $('#sound-toggle').setAttribute('aria-pressed', 'true'); $('#sound-toggle').innerHTML = '<span aria-hidden="true">▥</span> SONIDO: ACTIVADO'; }
+  try { await audioContext().resume(); ambient = drone(.025); $('#sound-toggle').setAttribute('aria-pressed', 'true'); $('#sound-toggle').innerHTML = '<span aria-hidden="true">▥</span> SONIDO: ACTIVADO'; window.dispatchEvent(new CustomEvent('station:sound')); }
   catch { $('#sound-toggle').textContent = 'AUDIO NO DISPONIBLE'; }
 });
 function stopTransmission() {
@@ -184,6 +184,7 @@ $('#transmission-play').addEventListener('click', async () => {
     $('#transmission-play').innerHTML = 'DETENER TRANSMISIÓN <span>■</span>';
     $('#transmission-status').textContent = 'Recibiendo interferencia… 9 segundos de señal. La transcripción aparece debajo.';
     transmissionTimer = setTimeout(stopTransmission, 9000);
+    window.dispatchEvent(new CustomEvent('station:transmission'));
   } catch { $('#transmission-status').textContent = 'El receptor de audio no está disponible. Puedes leer la transcripción.'; }
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { stopAmbient(); if (transmissionNodes) stopTransmission(); } });
@@ -237,7 +238,10 @@ function updateOmenControl() {
   if (motionQuery.matches) $('#omens-toggle').textContent = 'en calma';
   refreshGIFs();
 }
-function showOmen() {
+function showOmen(fromInterior = false) {
+  if (!fromInterior && document.body.dataset.page !== 'inicio' && window.EstacionRitual) {
+    window.EstacionRitual.request('touch'); return;
+  }
   if (passageActive || !omensEnabled || motionQuery.matches || document.hidden || performance.now() - lastOmen < 18000) return;
   lastOmen = performance.now();
   const apparition = $('#apparition');
@@ -354,3 +358,13 @@ window.addEventListener('resize', () => { if (passageActive) { cancelDoorPassage
 motionQuery.addEventListener('change', () => { if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; } });
 
 renderArchive(); renderGuests(); route(); applyMotionPreference();
+
+// Interior extension contract. Keep entrance and passage implementation independent.
+window.EstacionInterior = Object.freeze({
+  view: () => document.body.dataset.page,
+  effects: () => omensEnabled && !motionQuery.matches && !document.hidden,
+  sound: () => ambient && audio?.state === 'running' ? audio : null,
+  apparition: () => showOmen(true),
+  inspect: showVision,
+  subsoil: () => openGate(2),
+});

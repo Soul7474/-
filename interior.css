@@ -1,0 +1,48 @@
+/* Interior-only extension. Do not style the threshold or the photographed door here. */
+#view-interior .memory-marks{position:absolute;inset:0;z-index:5;pointer-events:none}
+#view-interior .memory-mark{position:absolute;pointer-events:auto;display:grid;place-items:center;width:44px;height:44px;padding:0;color:#9d9d8f;background:transparent;border:0;font:24px/1 Georgia,serif;opacity:.65}
+#view-interior .memory-mark:hover,#view-interior .memory-mark:focus-visible{color:#e3e3d2;opacity:1;background:#05050588}
+.mark-witness{left:48%;top:19%}.mark-touch{left:23%;top:54%}.mark-absence{right:19%;top:17%}.mark-seal{left:47%;bottom:13%;font-size:30px!important}.mark-seal[data-open=true]{color:#d4d4bd!important}
+/* Only presences change. Navigation positions and hit areas stay fixed. */
+#view-interior [data-haunting="1"] .sentinel-presence{transform:translate(-42px,8px) rotate(-2deg)}
+#view-interior [data-haunting="1"] .ghost-moon{right:6%;top:25%;opacity:.24}
+#view-interior [data-haunting="1"] .ghost-arms{transform:translate(24px,-15px) rotate(4deg)}
+#view-interior [data-haunting="2"] .ghost-moon{opacity:0}
+#view-interior [data-haunting="2"] .ghost-arms{transform:translate(32px,-30px) scale(.93);opacity:.33}
+#view-interior [data-haunting="2"] .chamber-crowd{opacity:.23}
+#view-interior [data-haunting="3"] .sentinel-presence{transform:translate(35px,-12px) rotate(2deg)}
+#view-interior [data-haunting="3"] .ghost-moon{left:9%;right:auto;top:15%;transform:scaleX(-1) rotate(-5deg);opacity:.3}
+#view-interior [data-haunting="3"] .ghost-arms{opacity:.08}
+#view-interior [data-haunting="3"] .chamber-crowd{opacity:.3}
+#memory-dialog{width:530px;max-width:calc(100% - 28px);background:#030303;border:1px solid #41413b;padding:0;max-height:88svh}
+#memory-dialog::backdrop{background:#000e}
+.memory-top{display:flex;align-items:center;justify-content:space-between;padding:6px 13px;border-bottom:1px solid #20201d}
+.memory-top h2{font:17px/1.5 Georgia,serif;color:#9c9c8e;margin:0}.memory-top h2:before{content:none}
+.memory-top button{padding:3px 8px;background:none;border:0;color:#aaa;font-size:22px;line-height:1}
+#memory-content{padding:20px;overflow:auto;max-height:calc(88svh - 45px)}
+.memory-image{position:relative;display:flex;align-items:center;justify-content:center;min-height:220px;max-height:65svh}
+.memory-image img{display:block;max-width:100%;width:auto;max-height:60svh;object-fit:contain;filter:grayscale(1) brightness(.65)}
+.memory-image img.ink-source{filter:grayscale(1) invert(1) contrast(1.35);opacity:.7}
+.hidden-inscription{position:absolute;bottom:12%;right:12%;font:25px/1 Georgia,serif;color:#b0b09e;opacity:.8}
+.seal-form{max-width:340px;margin:8px auto 0}.seal-choices{display:flex;justify-content:space-around;margin:10px 0 15px}
+.seal-choices button{min-width:54px;min-height:54px;padding:8px;background:none;border:1px solid #36362e;color:#b6b6a3;font:30px/1.2 Georgia,serif}
+.seal-choices button:hover{border-color:#8a8a77;color:#dedec6}
+.seal-impression{display:block;min-height:33px;text-align:center;color:#9b9b8d;font:22px/1.5 Georgia,serif;letter-spacing:8px}
+.seal-form label{font:10px/1.8 'Courier New',monospace;color:#99998c;margin-top:25px}
+.seal-form input{border-color:#45453b;background:#050505;font-size:13px;padding:8px 10px}
+.seal-submit{display:block;margin:12px 0 0 auto;background:none;color:#bbbba8;border:1px solid #44443a;padding:6px 16px;min-width:44px;min-height:36px}
+.seal-status{min-height:20px;font-size:10px;color:#aaa;margin:10px 0}
+.seal-hint{font-size:10px;color:#99998d;border-top:1px solid #24241f;padding-top:12px;margin-top:18px}.seal-hint summary{cursor:pointer;text-decoration:underline;text-underline-offset:3px}.seal-hint p{line-height:1.9}
+.sealed-fragment{position:relative;min-height:290px;height:55svh;max-height:500px;isolation:isolate;overflow:hidden}
+.fragment-crowd{position:absolute;bottom:0;left:0;width:100%;height:100%;object-fit:cover;opacity:.45;filter:grayscale(1);mask-image:linear-gradient(transparent,#000 38%)}
+.fragment-presence{position:absolute;inset:0;width:100%;height:85%;object-fit:contain;filter:grayscale(1) brightness(.5);opacity:.8}
+.fragment-date{position:absolute;bottom:8%;left:0;width:100%;margin:0;text-align:center;font:13px/2 'Courier New',monospace;letter-spacing:5px;color:#c5c5b0}
+.fragment-below{display:block;width:48px;height:48px;margin:10px auto 0;background:none;border:0;color:#b8b8a4;font:27px/1 Georgia,serif}
+.haunted-screen{position:relative}.signal-reveal{position:absolute;right:11px;bottom:10px;z-index:2;min-width:44px;min-height:44px;border:0;background:#050505b0;color:#b8b8a5;font-size:23px;padding:4px}
+.signal-word{position:absolute;left:5%;top:39%;width:90%;text-align:center;white-space:pre-line;color:#d2d2bd;background:#030303c9;letter-spacing:9px;font:14px/2.4 'Courier New',monospace;pointer-events:none;z-index:1}
+.haunted-screen.tuned img{filter:grayscale(1) brightness(.4)}
+@media(max-width:540px){.mark-witness{left:46%;top:21%}.mark-touch{left:14%;top:48%}.mark-absence{right:14%;top:19%}.mark-seal{left:44%;bottom:16%}#view-interior .memory-mark{font-size:21px}
+#view-interior [data-haunting="1"] .sentinel-presence{transform:translate(-20px,8px) rotate(-2deg)}
+#view-interior [data-haunting="3"] .sentinel-presence{transform:translate(18px,-10px) rotate(2deg)}
+#memory-content{padding:15px}.memory-image{min-height:190px}.signal-word{font-size:11px;letter-spacing:6px;line-height:2}.signal-reveal{right:5px;bottom:4px}.sealed-fragment{height:45svh;min-height:245px}}
+@media(prefers-reduced-motion:reduce){#view-interior .sentinel-presence,#view-interior .chamber-ghost{transition:none!important;animation:none!important}}

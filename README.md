@@ -63,6 +63,30 @@ Los siete archivos de `gifs/` se conservan sin modificaciones:
 
 También pueden abrirse en **Fragmentos → cintas**. Los fotogramas de `assets/gif-stills/` son capturas del navegador de los GIFs originales. Se muestran de entrada; `IntersectionObserver` carga la animación cuando entra en pantalla. Se vuelve al fotograma cuando sale de pantalla, se oculta la pestaña, se activa «calma» o el navegador pide movimiento reducido. La cinta con cortes más marcados no se reproduce automáticamente: requiere pulsarla o abrirla desde «cintas». Los GIFs no añaden audio.
 
+## Interior cambiante (fases 2–5)
+
+La extensión está separada en `interior.js` y `interior.css`. La entrada y `crossDoor()` siguen en `app.js`; el contrato `window.EstacionInterior` expone únicamente consulta del estado, contexto de audio ya activado, apariciones y apertura del subsuelo. Los eventos `station:sound` y `station:transmission` comunican acciones confirmadas. No modificar la puerta para añadir comportamientos al interior.
+
+Cerrar un documento, vestigio o marca cambia las posiciones de las presencias. Los cuatro accesos permanecen fijos. La memoria se guarda en `sessionStorage` durante la sesión; «Olvidar esta visita» también la borra. «Calma» y movimiento reducido fijan la escena y cancelan los sucesos pendientes.
+
+Las apariciones interiores requieren una interacción, tienen un retardo breve y al menos 48 segundos entre invocaciones. No se lanzan en segundo plano, al mirar un diálogo ni al entrar por primera vez. Escape cancela los sonidos añadidos y las invocaciones pendientes, con una pausa de 20 segundos. El sonido ambiental solo se amplía después de activar el control existente: roce de cinta, filtrado grave y golpes lejanos; los nodos se liberan al terminar y al desactivar el sonido, cambiar de vista o esconder la pestaña.
+
+<details><summary>Pistas y soluciones del sello (spoilers)</summary>
+
+Las tres marcas se examinan en el interior. El orden `⊙ ⋔ ☾` (ojo, mano, luna) abre el sello. «Voces» contiene un pequeño sintonizador `⌁`: revela ese orden y `UMBRA` entre interferencias, también con sonido desactivado. La palabra `umbra` permite abrir el mismo sello por otra vía. Con movimiento reducido o «calma» la señal se revela inmediatamente.
+
+El fragmento abierto conserva la fecha `MCMXCVIII`, que corresponde a `1998`, la palabra de la puerta del subsuelo existente. Las rutas públicas y el acceso anterior siguen disponibles; estas pistas son narrativas, no autenticación.
+
+</details>
+
+Verificación del interior con Playwright y Chromium disponibles:
+
+```sh
+npm run test:browser
+```
+
+El comando levanta un servidor local temporal, comprueba las mutaciones, posiciones de navegación, apariciones y cancelación, ambas soluciones del sello, sonido optativo, persistencia, reset y vistas móviles; al acabar cierra servidor y navegador. `CHROMIUM_PATH` permite seleccionar el ejecutable. Las capturas de comprobación se guardan en la carpeta temporal `estacion09-check`.
+
 ## Recorrido
 
 - **Umbral:** entrada, cámara animada, registro y primeros documentos.
