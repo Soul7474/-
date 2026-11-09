@@ -176,7 +176,28 @@
   }
   $('.signal-reveal').addEventListener('click', tune);
   window.addEventListener('station:transmission', tune);
+  // Parallax: the presences shift a little with the pointer, or with the phone's tilt where the
+  // browser reports it without asking; the sentinel and the moon figure turn slightly to follow.
+  // Only CSS variables change; the doors are not part of it. Off with calma or reduced motion.
+  let tiltFrame = 0;
+  let tilt = { x: 0, y: 0 };
+  function setTilt(x, y) {
+    tilt = { x: Math.max(-1, Math.min(1, x)), y: Math.max(-1, Math.min(1, y)) };
+    if (tiltFrame) return;
+    tiltFrame = requestAnimationFrame(() => {
+      tiltFrame = 0; const on = allowed();
+      chamber.style.setProperty('--px', on ? tilt.x.toFixed(3) : '0');
+      chamber.style.setProperty('--py', on ? tilt.y.toFixed(3) : '0');
+    });
+  }
+  window.addEventListener('pointermove', event => {
+    if (event.pointerType === 'mouse' && allowed()) setTilt(event.clientX / innerWidth * 2 - 1, event.clientY / innerHeight * 2 - 1);
+  }, { passive: true });
+  window.addEventListener('deviceorientation', event => {
+    if (allowed() && event.gamma !== null && event.beta !== null) setTilt(event.gamma / 25, (event.beta - 40) / 25);
+  }, { passive: true });
   function environmentChanged() {
+    setTilt(0, 0);
     clearPending(); stopSounds(); applyMemory();
     if (!active() || document.hidden) endSignal();
     planSound();

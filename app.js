@@ -315,6 +315,15 @@ document.addEventListener('click', event => {
 document.addEventListener('visibilitychange', refreshGIFs);
 motionQuery.addEventListener('change', refreshGIFs);
 registerGIFs();
+// Some images arrive late: they fade up the first time they scroll into view. Without
+// IntersectionObserver, or with reduced motion, they are simply there.
+if ('IntersectionObserver' in window && !motionQuery.matches) {
+  document.documentElement.classList.add('reveal-ready');
+  const revealer = new IntersectionObserver(entries => {
+    for (const entry of entries) if (entry.isIntersecting) { entry.target.classList.add('revealed'); revealer.unobserve(entry.target); }
+  }, { threshold: .15 });
+  document.querySelectorAll('[data-reveal]').forEach(item => revealer.observe(item));
+}
 
 updateOmenControl();
 

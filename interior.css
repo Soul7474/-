@@ -46,3 +46,19 @@
 #view-interior [data-haunting="3"] .sentinel-presence{transform:translate(18px,-10px) rotate(2deg)}
 #memory-content{padding:15px}.memory-image{min-height:190px}.signal-word{font-size:11px;letter-spacing:6px;line-height:2}.signal-reveal{right:5px;bottom:4px}.sealed-fragment{height:45svh;min-height:245px}}
 @media(prefers-reduced-motion:reduce){#view-interior .sentinel-presence,#view-interior .chamber-ghost{transition:none!important;animation:none!important}}
+/* Depth: the sentinel stands near; the other presences wait behind it at different distances
+   (smaller, fainter, softer the further away), fused into the dark by radial masks. Parallax and
+   "following" use the individual translate/rotate properties so the hauntings, which set
+   transform, left/top and opacity with higher specificity, keep working on top. Doors never move. */
+#view-interior .chamber-space{--px:0;--py:0}
+#view-interior .chamber-space::after{content:"";position:absolute;inset:-2%;z-index:2;pointer-events:none;background:radial-gradient(ellipse 62% 58% at 50% 48%,transparent 45%,#000000b3 82%,#000 100%)}
+#view-interior .chamber-haze{translate:calc(var(--px) * 6px) calc(var(--py) * 4px);transition:translate 1.2s ease-out}
+#view-interior .chamber-crowd{filter:blur(1.5px);translate:calc(var(--px) * 4px) calc(var(--py) * 3px);transition:translate 1.4s ease-out;-webkit-mask-image:radial-gradient(ellipse 55% 80% at 50% 100%,#000 30%,transparent 76%);mask-image:radial-gradient(ellipse 55% 80% at 50% 100%,#000 30%,transparent 76%);animation:presence-arrive 2.4s ease-out 2.6s backwards}
+#view-interior .ghost-moon{right:22%;top:13%;height:56%;filter:grayscale(1) invert(1) contrast(1.35) blur(.7px);translate:calc(var(--px) * 12px) calc(var(--py) * 8px);rotate:calc(var(--px) * -2deg);transition:translate .9s ease-out,rotate 1.4s ease-out;-webkit-mask-image:radial-gradient(ellipse 50% 52% at 50% 46%,#000 52%,transparent 82%);mask-image:radial-gradient(ellipse 50% 52% at 50% 46%,#000 52%,transparent 82%);animation:presence-arrive 2s ease-out 1.6s backwards}
+#view-interior .ghost-arms{left:21%;bottom:12%;height:48%;filter:grayscale(1) invert(1) contrast(1.35) blur(1.3px);translate:calc(var(--px) * 9px) calc(var(--py) * 6px);transition:translate 1s ease-out;-webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 48%,transparent 80%);mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 48%,transparent 80%);animation:presence-arrive 2s ease-out .8s backwards}
+#view-interior .sentinel-presence{translate:calc(var(--px) * 22px) calc(var(--py) * 12px);rotate:calc(var(--px) * 1.6deg);transition:translate .7s ease-out,rotate 1.1s ease-out}
+#view-interior .chamber-lines{translate:calc(var(--px) * -5px) calc(var(--py) * -3px);transition:translate 1.2s ease-out}
+@keyframes presence-arrive{from{opacity:0}}
+body.quiet #view-interior .chamber-ghost,body.quiet #view-interior .chamber-crowd{animation:none}
+@media(max-width:540px){#view-interior .ghost-moon{right:14%;top:16%;height:44%}#view-interior .ghost-arms{left:10%;bottom:22%;height:40%}}
+

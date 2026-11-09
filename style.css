@@ -213,3 +213,22 @@ body.quiet .presence-grain{animation:none}
 @keyframes eye-breathe{0%,100%{scale:1;translate:0 0}50%{scale:1.07;translate:2px -3px}}
 body.quiet #entry-portal .watcher.photographic-eye{animation:none}
 @media(max-width:540px){#entry-portal .watcher-2.photographic-eye{width:66px;right:2%;top:20%}#entry-portal .watcher-5.photographic-eye{width:64px}#entry-portal .watcher-7.photographic-eye{width:72px}.door-whisper .rune-key{font-size:12.5px}}
+/* Tapes across the site: uneven sizes, margins and tilts instead of one centred column, and the
+   camera's scanlines and grain over each of them. */
+.archive-transmission,.haunted-screen,.visitor-screen,.rune-tape,.tape-trigger,.tape-wall button{position:relative}
+.archive-transmission::after,.haunted-screen::after,.visitor-screen::after,.rune-tape::after,.tape-trigger::after,.tape-wall button::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(180deg,#0000 0 2px,#00000066 2px 3px),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 .2'/%3E%3C/filter%3E%3Crect width='80' height='80' filter='url(%23g)'/%3E%3C/svg%3E") 0 0/80px 80px;-webkit-mask-image:radial-gradient(ellipse 60% 60% at 50% 50%,#000 55%,transparent 100%);mask-image:radial-gradient(ellipse 60% 60% at 50% 50%,#000 55%,transparent 100%)}
+.archive-transmission{width:min(330px,62%);margin:0 0 30px 7%;rotate:-1.2deg}
+.haunted-screen{width:min(540px,100%);margin:18px 0 28px auto;rotate:.8deg}
+.visitor-screen{width:min(215px,58%);margin:0 0 26px 15%}
+.rune-tape{width:210px;margin:34px 0 26px 18%;rotate:3deg}
+.tape-trigger{width:54%;max-width:250px;margin:24px 8% 34px auto;rotate:-1.5deg}
+.tape-wall{align-items:flex-start}
+.tape-wall button:nth-child(3n+1){flex-basis:190px;translate:0 -8px}.tape-wall button:nth-child(3n+1) img{height:170px}
+.tape-wall button:nth-child(3n+2){flex-basis:118px;translate:0 26px;rotate:-2deg}.tape-wall button:nth-child(3n+2) img{height:105px}
+.tape-wall button:nth-child(3n){flex-basis:150px;translate:0 8px;rotate:2deg}
+.vestige-wall button:nth-child(4n+1){flex-basis:150px;translate:0 -10px}.vestige-wall button:nth-child(4n+2){flex-basis:105px;translate:0 20px;rotate:-2deg}.vestige-wall button:nth-child(4n+3){flex-basis:135px;rotate:1.5deg}
+/* Some arrive late: they fade up the first time they scroll into view (JS adds .reveal-ready). */
+.reveal-ready [data-reveal]{transition:opacity 1.1s ease-out .15s,translate 1.1s ease-out .15s}
+.reveal-ready [data-reveal]:not(.revealed){opacity:0;translate:0 16px}
+@media(max-width:540px){.tape-wall button,.vestige-wall button{translate:none!important}.archive-transmission{width:60%;margin-left:3%}.visitor-screen{width:62%;margin-left:10%}.rune-tape{width:170px;margin-left:12%}.tape-trigger{width:66%;margin-right:4%}.tape-wall button:nth-child(3n+1){flex-basis:150px}.tape-wall button:nth-child(3n+1) img{height:130px}.tape-wall button:nth-child(3n+2){flex-basis:100px}}
+
