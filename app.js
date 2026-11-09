@@ -99,11 +99,17 @@ function route() {
   if (name === 'subsuelo' && state.level < 2) {
     history.replaceState(null, '', '#inicio'); route(); openGate(2); return;
   }
+  document.body.dataset.page = name;
+  $('#entry-portal').hidden = name !== 'inicio';
   document.querySelectorAll('.view').forEach(view => view.hidden = view.id !== `view-${name}`);
   document.querySelectorAll('[data-view]').forEach(link => { link.classList.toggle('active', link.dataset.view === name); if (link.dataset.view === name) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
   $('.restricted').classList.toggle('active', name === 'subsuelo');
   document.title = `ESTACIÓN 09 — ${name === 'inicio' ? 'señal residual' : name}`;
-  if (currentView && currentView !== name) { $('#main').focus({ preventScroll: true }); window.scrollTo({ top: 0, behavior: 'instant' }); }
+  if (currentView && currentView !== name) {
+    const focusTarget = name === 'inicio' ? $('#portal-title') : $('#main');
+    focusTarget.setAttribute('tabindex', '-1'); focusTarget.focus({ preventScroll: true });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
   currentView = name;
 }
 window.addEventListener('hashchange', route);

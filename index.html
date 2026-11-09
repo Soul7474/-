@@ -11,8 +11,19 @@
   <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
-<body>
+<body data-page="inicio">
   <a class="skip" href="#main">Saltar al archivo</a>
+  <section class="entry-portal" id="entry-portal" aria-labelledby="portal-title">
+    <p class="portal-invocation">[ Entre la señal y el silencio ]</p>
+    <p class="portal-quote">“Hay puertas que solo existen mientras alguien las busca.”</p>
+    <h1 id="portal-title">| Bienvenido al otro extremo |</h1>
+    <p class="portal-subtitle">Un refugio para quienes todavía escuchan.</p>
+    <img class="threshold-seal" src="assets/threshold-seal.svg" width="320" height="350" alt="Sello original de círculos, triángulos y órbitas entrelazadas. Lo que escucha también recuerda.">
+    <p class="portal-signature">Estación 09 · señal residual desde 1998</p>
+    <nav class="portal-nav" aria-label="Entrada al portal">
+      <button data-gate="1">Entrar</button><span aria-hidden="true">|</span><a href="#archivo">Archivo</a><span aria-hidden="true">|</span><a href="#visitantes">Deja un rastro</a>
+    </nav>
+  </section>
   <div class="broadcast">estación 09 / personal mirror <span class="broadcast-right">última actualización: 17.11.1998</span></div>
   <div class="shell">
     <header class="masthead">
@@ -32,11 +43,12 @@
       <main id="main" tabindex="-1">
         <section id="view-inicio" class="view">
           <div class="breadcrumb"><span>root / public / umbral</span><span class="file-id">[ E09—000 ]</span></div>
-          <div class="hero">
+          <details class="memory-fragment"><summary>Fragmento visual recuperado / 009</summary><div class="hero">
             <div class="hero-copy"><p class="eyebrow">&gt; connection established</p><h1>¿Sigues ahí<span class="cursor">_</span>?</h1><p class="hero-description">La estación dejó de transmitir hace 27 años.<br>Alguien olvidó apagar algo.</p><p class="portal-links"><a href="#archivo">[ explorar el archivo ]</a> <a href="#transmisiones">[ escuchar ]</a></p></div>
             <figure class="wired-art"><img src="assets/wired-memory.svg" width="900" height="520" alt="Collage original: una figura anónima bajo cables telefónicos, edificios en penumbra y un ordenador que pregunta si alguien recibe la señal."><figcaption><span>fig.09 / el otro extremo</span><span>記憶の断片 — fragmento de memoria</span></figcaption></figure>
             <p class="art-annotation">entre una voz y otra,<br>todavía existe un lugar.</p>
           </div>
+          </details>
           <section class="gate-section" aria-label="Primera puerta">
             <div class="gate-copy"><p class="eyebrow">[ gate 01 / acceso restringido ]</p><p>Si recuerdas este lugar,<br>no es la primera vez que estás aquí.</p><button class="enter-button" data-gate="1">ENTRAR AL ARCHIVO <span>↗</span></button><span class="under-button">Se requiere una palabra de acceso. <a href="#archivo">Buscar una pista.</a></span><p class="handwritten">no respondas si escuchas tu nombre.</p></div>
             <figure class="corridor"><img src="assets/corridor.gif" alt="Un pasillo rojo, oscuro y deteriorado; al fondo hay una puerta cerrada." width="760" height="540"><div class="camera-top"><span>CAM_09 / PASILLO B</span><span>● REC</span></div><div class="camera-cross">+</div><figcaption><span>17 NOV 1998</span><span id="camera-clock">03:33:09</span></figcaption><span class="image-label">NO SE DETECTA MOVIMIENTO</span></figure>          </section>

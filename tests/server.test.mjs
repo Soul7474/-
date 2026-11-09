@@ -35,6 +35,9 @@ test('serves real GIF images, a reduced-motion image and a favicon', async () =>
   assert.equal(artwork.status, 200);
   assert.match(artwork.headers.get('content-type'), /image\/svg\+xml/);
   assert.match(await artwork.text(), /<svg/);
+  const seal = await fetch(base + '/assets/threshold-seal.svg');
+  assert.equal(seal.status, 200);
+  assert.match(await seal.text(), /<svg/);
 });
 test('returns a real 404 for missing files and blocks source/configuration exposure', async () => {
   for (const path of ['/no-existe', '/package.json', '/server.mjs', '/.git/config', '/%2e%2e%2fREADME.md', '/%ZZ']) {

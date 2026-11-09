@@ -17,7 +17,7 @@ Para futuras tareas en la nube, usa este checkout existente. Cada tarea ya está
 
 ## Identidad visual
 
-Portal old-web con columna de 980 px, tipografía monoespaciada del sistema, fondo negro, títulos verde fósforo y enlaces rosa. Navegación textual, controles rectangulares y ventanas con bordes de software antiguo. Las texturas están limitadas a las imágenes, para mantener legible el texto.
+Portal esotérico monocromo sobre negro, con marco luminoso tenue, texto monoespaciado espaciado y composición centrada. La entrada usa un sello geométrico original (`assets/threshold-seal.svg`), brillo blanco CRT moderado y scanlines discretas. Los enlaces del pie abren la primera puerta, el archivo público y el libro de visitas. Las secciones interiores conservan todas sus funciones y utilizan la misma paleta de grises. Se respeta movimiento reducido y no hay destellos.
 
 El collage `assets/wired-memory.svg` es una ilustración original: figura anónima, ciudad, tendido telefónico y terminal. Su generador reproducible, sin dependencias, está en `scripts/generate_art.py`:
 
@@ -25,7 +25,7 @@ El collage `assets/wired-memory.svg` es una ilustración original: figura anóni
 python3 scripts/generate_art.py
 ```
 
-No utiliza personajes, ilustraciones ni portadas de las referencias. Se conservan los GIFs del pasillo y el ojo. No se cargan fuentes ni recursos de terceros. El contenido público y la navegación se pueden consultar sin resolver acertijos; las puertas forman parte del recorrido opcional.
+No utiliza personajes, ilustraciones ni portadas de las referencias. El collage se conserva dentro de un fragmento desplegable; tanto este como los GIFs del pasillo y el ojo se presentan en escala de grises. No se cargan fuentes ni recursos de terceros. El contenido público y la navegación se pueden consultar sin resolver acertijos; las puertas forman parte del recorrido opcional.
 
 ## Recorrido
 
