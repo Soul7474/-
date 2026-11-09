@@ -530,7 +530,7 @@ async function openingScene() {
   doorMode = 'open'; renderDoor();
   if (!mount) { location.hash = 'interior'; return; }
   const { copy, rig, bounds, id } = mount;
-  const leaf = copy.querySelector('.door-leaf'); const face = copy.querySelector('.peeker'); const frameHand = copy.querySelector('.frame-hand');
+  const leaf = copy.querySelector('.door-leaf'); const face = copy.querySelector('.presence'); const head = copy.querySelector('.presence-head'); const frameHand = copy.querySelector('.frame-hand');
   const depth = leaf.offsetWidth * 3.2;
   const near = Math.max(innerHeight * 1.5 / bounds.height, innerWidth * .62 / bounds.width);
   const view = focusOn(bounds, .6, .45, near);
@@ -559,12 +559,35 @@ async function openingScene() {
   ], { delay: 1900, duration: 900, easing: 'cubic-bezier(.2,.6,.3,1)' });
   if (!await settled(id, approach, opening, grip)) return;
 
-  // b) A face comes out of the gap, closer and closer.
+  // b) A face comes out of the gap, closer and closer. It is alive: the head tilts slowly and
+  // sways; once, at about half way, it stops dead for a moment and then moves again.
   const emerge = play(face, [
-    { opacity: 0, transform: 'scale(.45)', filter: 'grayscale(1) contrast(1.15) brightness(.3) blur(3px)' },
-    { offset: .4, opacity: .8, transform: 'scale(.7)', filter: 'grayscale(1) contrast(1.15) brightness(.8) blur(1px)' },
-    { opacity: 1, transform: 'scale(1.2)', filter: 'grayscale(1) contrast(1.15) brightness(1.2) blur(0px)' }
-  ], { duration: 3000, easing: 'cubic-bezier(.4,0,.6,1)' });
+    { offset: 0, opacity: 0, transform: 'scale(.45)', filter: 'brightness(.3) blur(3px)', easing: 'cubic-bezier(.4,0,.6,1)' },
+    { offset: .5, opacity: .85, transform: 'scale(.82)', filter: 'brightness(.85) blur(1px)' },
+    { offset: .62, opacity: .85, transform: 'scale(.82)', filter: 'brightness(.85) blur(1px)', easing: 'cubic-bezier(.5,0,.5,1)' },
+    { offset: 1, opacity: 1, transform: 'scale(1.2)', filter: 'brightness(1.12) blur(0px)' }
+  ], { duration: 3000 });
+  play(head, [
+    { offset: 0, transform: 'translate(0%, 0%) rotate(0deg)' },
+    { offset: .22, transform: 'translate(-1.6%, .5%) rotate(-1.2deg)' },
+    { offset: .5, transform: 'translate(1%, 1%) rotate(-2.6deg)' },
+    { offset: .62, transform: 'translate(1%, 1%) rotate(-2.6deg)' },
+    { offset: .66, transform: 'translate(1.8%, .3%) rotate(-1.9deg)' },
+    { offset: .84, transform: 'translate(-.9%, 0%) rotate(.6deg)' },
+    { offset: 1, transform: 'translate(.6%, .7%) rotate(-1.5deg)' }
+  ], { duration: 3000, easing: 'ease-in-out' });
+  // Meanwhile the fingers on the frame tap, then dig in while the face holds still.
+  const tap = (at, lift) => [{ offset: at, transform: 'rotate(0deg) scaleX(1)' }, { offset: at + .03, transform: `rotate(${lift}deg) scaleX(1)` }, { offset: at + .06, transform: 'rotate(0deg) scaleX(1)' }];
+  play(frameHand, [
+    { offset: 0, transform: 'rotate(0deg) scaleX(1)', filter: 'grayscale(1) brightness(.7) contrast(1.1)' },
+    ...tap(.08, -5), ...tap(.2, -4), ...tap(.32, -6),
+    { offset: .5, transform: 'rotate(0deg) scaleX(1)', filter: 'grayscale(1) brightness(.7) contrast(1.1)' },
+    { offset: .54, transform: 'rotate(1.5deg) scaleX(.93)', filter: 'grayscale(1) brightness(.62) contrast(1.2)' },
+    { offset: .64, transform: 'rotate(1.5deg) scaleX(.93)', filter: 'grayscale(1) brightness(.62) contrast(1.2)' },
+    { offset: .7, transform: 'rotate(0deg) scaleX(1)', filter: 'grayscale(1) brightness(.7) contrast(1.1)' },
+    ...tap(.8, -5),
+    { offset: 1, transform: 'rotate(0deg) scaleX(1)', filter: 'grayscale(1) brightness(.7) contrast(1.1)' }
+  ], { duration: 3000 });
   const lean = play(copy, [
     { transform: view, filter: 'grayscale(1) brightness(.9)' },
     { transform: closer, filter: 'grayscale(1) brightness(.9)' }

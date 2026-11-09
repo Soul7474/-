@@ -142,11 +142,21 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 /* Closed threshold: the doorway is shut until the visitor completes the ritual. */
 .door-stage{position:relative;display:block;line-height:0}
 .door-stage .door-gap{position:absolute;left:54.2%;top:11.4%;width:19.4%;height:88.6%;overflow:hidden;pointer-events:none}
-.door-stage[data-door="closed"] .door-gap,.door-stage[data-door="peeked"] .door-gap{background:radial-gradient(ellipse at 60% 40%,#0c0c0c,#010101 70%)}
-.door-stage .peeker{position:absolute;left:10%;top:20%;width:80%;height:auto;max-width:none;opacity:0;transform:scale(.45);transform-origin:50% 45%;filter:grayscale(1) contrast(1.15) brightness(1.2)}
-.door-stage .frame-hand{position:absolute;left:49.6%;top:46%;width:10.6%;height:auto;max-width:none;opacity:0;pointer-events:none;filter:grayscale(1) brightness(.7) contrast(1.1);-webkit-mask-image:linear-gradient(to left,transparent 4%,#000 42%);mask-image:linear-gradient(to left,transparent 4%,#000 42%)}
-.door-stage[data-door="open"] .peeker,.door-stage[data-door="open"] .frame-hand{display:none}
-.door-stage[data-door="peeked"] .peeker{opacity:1;transform:scale(1)}
+.door-stage[data-door="closed"] .door-gap,.door-stage[data-door="peeked"] .door-gap{background:radial-gradient(ellipse 42% 20% at 44% 28%,#0f0f0f,transparent 70%),linear-gradient(180deg,#020202 0%,#050505 40%,#080808 68%,#010101 100%)}
+/* A room behind the door: a far figure, barely there, and the camera grain over it all. */
+.door-stage[data-door="closed"] .door-gap::before,.door-stage[data-door="peeked"] .door-gap::before{content:"";position:absolute;left:24%;top:22%;width:15%;height:33%;background:radial-gradient(ellipse 30% 13% at 50% 9%,#131313 55%,transparent 100%),radial-gradient(ellipse 48% 44% at 50% 54%,#101010 45%,transparent 100%);filter:blur(1.5px)}
+.door-stage[data-door="closed"] .door-gap::after,.door-stage[data-door="peeked"] .door-gap::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23g)'/%3E%3C/svg%3E") 0 0/60px 60px;opacity:.07;mix-blend-mode:screen;pointer-events:none}
+.door-stage .presence{position:absolute;left:10%;top:20%;width:80%;aspect-ratio:400/450;opacity:0;transform:scale(.45);transform-origin:50% 45%;pointer-events:none}
+.door-stage .presence-head{position:absolute;inset:0;transform-origin:50% 85%}
+.door-stage .peeker{position:absolute;inset:0;width:100%;height:100%;max-width:none;filter:grayscale(1) contrast(1.32) brightness(1.08);-webkit-mask-image:radial-gradient(ellipse 47% 49% at 50% 47%,#000 38%,transparent 80%);mask-image:radial-gradient(ellipse 47% 49% at 50% 47%,#000 38%,transparent 80%)}
+.door-stage .presence-hair{position:absolute;left:-18%;top:-17%;width:136%;height:120%;border-radius:50%;background:radial-gradient(ellipse 50% 50% at 50% 48%,#131313 46%,#0b0b0b 62%,transparent 72%);filter:blur(4px)}
+.door-stage .presence-body{position:absolute;left:-55%;top:74%;width:210%;height:150%;background:radial-gradient(ellipse 13% 15% at 50% 8%,#131313 55%,transparent 100%),radial-gradient(ellipse 50% 34% at 50% 42%,#101010 45%,transparent 72%);filter:blur(5px)}
+.door-stage .presence-grain{position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23g)'/%3E%3C/svg%3E") 0 0/90px 90px;mix-blend-mode:overlay;opacity:.55;-webkit-mask-image:radial-gradient(ellipse 46% 48% at 50% 47%,#000 40%,transparent 75%);mask-image:radial-gradient(ellipse 46% 48% at 50% 47%,#000 40%,transparent 75%);animation:grain-jitter .48s steps(3) infinite}
+.door-stage .presence-shade{position:absolute;inset:-14%;background:radial-gradient(ellipse 50% 52% at 50% 52%,transparent 35%,#000000b8 54%,#000000a8 64%,#0000 82%)}
+@keyframes grain-jitter{0%{background-position:0 0}33%{background-position:-31px 17px}66%{background-position:23px -29px}100%{background-position:0 0}}
+.door-stage .frame-hand{position:absolute;transform-origin:88% 55%;left:49.6%;top:46%;width:10.6%;height:auto;max-width:none;opacity:0;pointer-events:none;filter:grayscale(1) brightness(.7) contrast(1.1);-webkit-mask-image:linear-gradient(to left,transparent 4%,#000 42%);mask-image:linear-gradient(to left,transparent 4%,#000 42%)}
+.door-stage[data-door="open"] .presence,.door-stage[data-door="open"] .frame-hand{display:none}
+.door-stage[data-door="peeked"] .presence{opacity:1;transform:scale(1)}
 .door-stage[data-door="peeked"] .frame-hand{opacity:1}
 /* The passage: a rig that can shake, the hand that reaches for you, and the fall inside. */
 #door-passage .passage-rig{position:absolute;inset:0}
@@ -185,3 +195,4 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 .scene-skip{position:fixed;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:80;min-width:44px;min-height:44px;padding:10px 14px;border:0;background:#030303a6;color:#bdbdb2;font:11px/1.4 'Courier New',monospace;letter-spacing:2px;text-decoration:underline;text-underline-offset:4px;opacity:.42;animation:skip-in .6s ease-out 1}
 .scene-skip:hover,.scene-skip:focus-visible{opacity:.95;background:#030303d9;color:#eee}
 @keyframes skip-in{from{opacity:0}to{opacity:.42}}
+body.quiet .presence-grain{animation:none}
