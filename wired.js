@@ -122,7 +122,7 @@
   }
   function render() {
     cleanTimers(); main.replaceChildren(); $('#activity').replaceChildren(); lines = [];
-    const match = location.pathname.match(/^\/gate\/([0-7]{2})\.html$/);
+    const match = location.pathname.match(/^\/gate\/(0[0-7])\.html$/);
     current = match ? Number(match[1]) : -1;
     if (location.pathname === '/rastro.html') {
       if (!store.state.opened) { go('/', true); return; }
@@ -132,7 +132,7 @@
     if (current >= 0 && (!store.state.opened || current > store.state.gate)) { go(store.state.opened ? route(store.state.gate) : '/', true); return; }
     nav(); footer();
     document.title = current >= 0 ? `gate ${String(current).padStart(2, '0')} · occult` : 'occult';
-    if (current < 0) { $('#navigation').hidden = true; entry(); return; }
+    if (current < 0) { sound.stop(); $('#navigation').hidden = true; entry(); return; }
     addLog('sesión iniciada'); addLog('lectura registrada');
     if (store.state.answers.g02) addLog('otro: ' + store.state.answers.g02);
     else addLog('acceso registrado');
@@ -141,7 +141,7 @@
       timers.push(setTimeout(() => { main.replaceChildren(); gate(5); }, 3000 + Math.random() * 3000));
     } else gate(current);
   }
-  // The next commits supply these independent modules.
+  // Independent enhancements share the same static shell.
   function armIdle() {
     clearTimeout(idleTimer);
     if (reduce.matches || current < 0 || document.hidden) return;
@@ -205,12 +205,53 @@
     form.append(label, input, button); main.append(form);
     form.addEventListener('submit', event => { event.preventDefault(); if (!input.value.trim()) return; store.addTrace(input.value.trim()); go('/rastro.html', true); });
   }
-  const sound = { stop() {}, start() {}, controls() {} };
+  const sound = (() => {
+    let ctx, oscillator, gain, timer, resumeTimer;
+    let active = false;
+    function update() {
+      const status = $('#sound-status'); if (status) status.textContent = active ? 'SONIDO: ACTIVADO' : 'SONIDO: DESACTIVADO';
+      const button = $('#sound-button'); if (button) button.setAttribute('aria-pressed', String(active));
+    }
+    function stop() {
+      clearTimeout(timer); clearTimeout(resumeTimer);
+      oscillator?.stop(); oscillator = null; gain?.disconnect(); gain = null;
+      if (ctx) { ctx.close().catch(() => {}); ctx = null; }
+      active = false; update();
+    }
+    function gap() {
+      clearTimeout(timer); if (!active) return;
+      timer = setTimeout(() => {
+        if (!active || document.hidden) return;
+        gain.gain.value = 0;
+        resumeTimer = setTimeout(() => { if (active && !document.hidden) gain.gain.value = .02; gap(); }, 1000 + Math.random() * 2000);
+      }, 40000 + Math.random() * 50000);
+    }
+    async function start() {
+      if (!store.state.opened || active) return;
+      try {
+        const Context = window.AudioContext || window.webkitAudioContext;
+        if (!Context) throw new Error('audio');
+        const next = new Context(); ctx = next; await next.resume();
+        if (ctx !== next || !store.state.opened) { await next.close(); return; }
+        oscillator = next.createOscillator(); gain = next.createGain();
+        oscillator.type = 'sine'; oscillator.frequency.value = 52; gain.gain.value = .02;
+        oscillator.connect(gain); gain.connect(next.destination); oscillator.start(); active = true; update(); gap();
+      } catch { stop(); const status = $('#sound-status'); if (status) status.textContent = 'SONIDO: NO DISPONIBLE'; }
+    }
+    function controls(footer) {
+      const row = el('div', undefined, 'sound-controls'); const status = el('span', active ? 'SONIDO: ACTIVADO' : 'SONIDO: DESACTIVADO'); status.id = 'sound-status'; status.setAttribute('role', 'status');
+      const button = el('button', '[ sonido ]'); button.type = 'button'; button.id = 'sound-button'; button.setAttribute('aria-pressed', String(active)); button.addEventListener('click', () => active ? stop() : start());
+      row.append(status, button); footer.append(row);
+    }
+    function visibility() { if (gain) gain.gain.value = document.hidden ? 0 : .02; if (document.hidden) { clearTimeout(timer); clearTimeout(resumeTimer); } else gap(); }
+    window.addEventListener('pagehide', stop);
+    return { start, stop, controls, visibility };
+  })();
   document.addEventListener('click', event => {
     const link = event.target.closest('a');
     if (!link || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || link.target) return;
     const url = new URL(link.href, location.href);
-    if (url.origin === location.origin && (/^\/gate\/[0-7]{2}\.html$/.test(url.pathname) || url.pathname === '/rastro.html' || url.pathname === '/')) { event.preventDefault(); go(url.pathname); }
+    if (url.origin === location.origin && (/^\/gate\/0[0-7]\.html$/.test(url.pathname) || url.pathname === '/rastro.html' || url.pathname === '/')) { event.preventDefault(); go(url.pathname); }
   });
   window.addEventListener('popstate', render);
   render();
