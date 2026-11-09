@@ -17,6 +17,9 @@ test('serves the Spanish station and its working client scripts', async () => {
   assert.match(html, /id="gate-form"/);
   assert.match(html, /data-door="closed"/);
   assert.match(html, /id="door-whisper"/);
+  assert.match(html, /id="scene-skip"/);
+  assert.match(html, /id="scene-veil"/);
+  assert.match(html, /class="presence"/);
   for (const rune of ['e', 'c', 'o']) assert.match(html, new RegExp(`data-rune="${rune}"`));
   for (const path of ['/app.js', '/style.css', '/interior.js', '/interior.css']) {
     const response = await fetch(base + path);

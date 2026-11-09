@@ -25,19 +25,20 @@ La puerta de la entrada empieza **cerrada**: una hoja original (`assets/door-shu
 
 ### Animación al entrar
 
-Al completar el ritual, la vista se acerca a la puerta y la hoja cruje y se abre hacia la oscuridad (unos 3 s). Después, en este orden (unos 12–13 s en total):
+Al completar el ritual, la puerta tiembla, las runas y los ojos se funden en negro (300 ms), la vista se acerca y la hoja cruje y se abre hacia una habitación oscura: degradado tenue, una luz lejana, grano y una figura al fondo apenas visible. Unos 10 s en total, en este orden:
 
-1. **La mano.** Unos dedos salen de la oscuridad y se agarran al marco izquierdo de la puerta (`assets/cutouts/presence-hand.png`).
-2. **La cara.** Una cara sale del hueco, pequeña y desenfocada, y se va acercando y aclarando poco a poco durante 3,3 s, mientras la cámara se inclina hacia ella (`assets/cutouts/presence-face.png`).
-3. **El agarre.**
-   - La mano suelta el marco y se lanza hacia la cámara (420 ms) hasta cruzar la parte baja de la pantalla, a la altura del cuello.
-   - Aprieta, con una sacudida leve (320 ms).
-   - Te arrastra hacia dentro (800 ms): zoom rápido hacia el hueco, temblor leve del encuadre y fundido a negro.
-4. **Dentro (2,9 s).** La cámara cae: franjas que suben acelerando, el encuadre gira y se detiene con un golpe seco. Hay estática de bajo contraste (un `<canvas>` pequeño con grano, sin destellos) y el rótulo `● REC CAM_09 / SEÑAL PERDIDA`. Aparece el texto «Te estábamos esperando.» y todo se apaga antes de abrir `#interior`.
+1. **La mano (0–2,6 s).** Mientras la puerta aún se abre, unos dedos salen de la oscuridad y se agarran al marco izquierdo (`assets/cutouts/presence-hand.png`).
+2. **La cara (2,6–5,6 s).** Sale del hueco pequeña y desenfocada y se acerca poco a poco. Es una presencia por capas: cuello y hombros apenas visibles, una masa de pelo, la cara (`assets/cutouts/presence-face.png`) con más contraste y una máscara radial ancha, grano propio y una sombra que se come el borde del recorte. La cabeza se ladea despacio (hasta unos 2,6°) y se balancea; a mitad se detiene en seco 360 ms y vuelve a moverse. Mientras, los dedos tamborilean en el marco y se tensan cuando la cara se para.
+3. **El agarre (≈1,6 s).**
+   - La mano suelta el marco y entra desde abajo a la derecha, oscura y con desenfoque de movimiento (440 ms), dimensionada por la altura de la pantalla para que también envuelva la parte baja de un móvil en vertical.
+   - Se cierra: está hecha de tres capas de la misma imagen (palma, dedos y pulgar); los dedos se curvan y el pulgar baja (280 ms).
+   - Aprieta (800 ms): una viñeta negra se cierra desde los bordes en dos latidos y el encuadre tiembla. Con el sonido ambiente activado suenan dos golpes graves.
+   - Te arrastra (700 ms): la mano se queda fija en el encuadre y todo lo demás se estira hacia el hueco (zoom acelerado, desplazamiento, rayas radiales y desenfoque). Funde a negro antes de que la cara se amplíe lo bastante para pixelarse.
+4. **Dentro (2,3 s).** La cámara cae entre paredes: franjas gruesas y difusas a dos velocidades y dos luces tenues que pasan. Golpe seco al llegar (rebote de 34 px y un oscurecimiento breve, nunca un destello). Estática de bajo contraste, el rótulo `● REC CAM_09 / SEÑAL PERDIDA` y «Te estábamos esperando.», que escala con la pantalla y se escribe letra a letra. El interior aparece con un fundido desde negro.
 
-Todo está hecho con CSS y la Web Animations API, sin librerías ni recursos externos. Ningún efecto brusco dura más de 850 ms, y no hay destellos ni parpadeos. Si el sonido ambiente está activado, la caída añade un siseo de estática sintetizado.
+Todo está hecho con CSS y la Web Animations API, sin librerías ni recursos externos (el grano es un SVG de ruido incrustado). Ningún efecto brusco dura más de 850 ms y no hay destellos ni parpadeos fuertes. Si el sonido ambiente está activado, la caída añade un siseo de estática sintetizado.
 
-Escape cancela la escena en cualquier fase y deja la puerta abierta en el umbral. Con «calma» o con movimiento reducido no hay animación: la puerta queda abierta con la mano en el marco y la cara en el hueco, quietas. Funciona en escritorio y en móvil, porque los encuadres se calculan a partir del tamaño de la ventana.
+**Saltar.** A los 2 s aparece un botón discreto «saltar ›» abajo a la izquierda, y un doble toque en cualquier punto también salta: los dos llevan directamente al interior. Escape, en cambio, cancela la escena y te deja en el umbral con la puerta abierta. Con «calma» o con movimiento reducido no hay animación: la puerta queda abierta con la mano en el marco y la cara en el hueco, quietas. Los encuadres se calculan a partir del tamaño de la ventana, en escritorio y en móvil.
 
 Con el sello ya abierto, la fotografía de la puerta es interactiva. Al tocarla, un acercamiento de 1,6 segundos enfoca el hueco de la puerta y termina en negro. Después abre `#interior`: una cámara con una forma orgánica abstracta original y cuatro accesos simbólicos, con nombres breves, a los restos, voces, huellas y subsuelo. Escape cancela el acercamiento; se omite con movimiento reducido o «calma».
 
@@ -72,7 +73,7 @@ Se prepararon tres versiones con fondo transparente y tinta clara mediante edici
 - `revelation.png`: manos abriendo un ojo (original `8ea51e04…`).
 - `sewn-eye.png`: ojo cosido (original `495cd049…`).
 - `presence-face.png`: la cara que se asoma, recortada, en escala de grises, aclarada y con bordes fundidos a transparente (original `08fe20c9…`).
-- `presence-hand.png`: la mano sin el papel blanco (borde erosionado 2 px para que no quede halo al ampliarla), en escala de grises y reflejada para que la muñeca quede en la oscuridad del hueco (original `5b1e40ef…`).
+- `presence-hand.png`: la mano sin el papel blanco, en escala de grises y reflejada para que la muñeca quede en la oscuridad. El fondo se elimina por relleno desde los bordes (más el papel casi blanco encerrado entre los dedos), así el dorso claro es completamente opaco al ampliarla; el borde se erosiona 2 px para que no quede halo (original `5b1e40ef…`).
 
 El resto se integra con inversión monocroma y mezcla `screen` en CSS: el papel claro desaparece visualmente sobre negro, sin modificar los archivos. Las apariciones alternan tres imágenes aportadas; siguen respetando «calma», movimiento reducido y el intervalo entre sustos. La animación de entrada por la puerta se conserva.
 
@@ -90,11 +91,13 @@ Los siete archivos de `gifs/` se conservan sin modificaciones:
 | `giphy (5).gif` | Fragmentos |
 | `giphy (6).gif` | Huellas |
 
-También pueden abrirse en **Fragmentos → cintas**. Los fotogramas de `assets/gif-stills/` son capturas del navegador de los GIFs originales. Se muestran de entrada; `IntersectionObserver` carga la animación cuando entra en pantalla. Se vuelve al fotograma cuando sale de pantalla, se oculta la pestaña, se activa «calma» o el navegador pide movimiento reducido. La cinta con cortes más marcados no se reproduce automáticamente: requiere pulsarla o abrirla desde «cintas». Los GIFs no añaden audio.
+Por la web, las cintas tienen tamaños, márgenes e inclinaciones distintos (no una columna centrada), llevan scanlines y grano encima y aparecen con un fundido la primera vez que entran en pantalla; en móvil se quitan los desplazamientos para que nada se solape. Los tres ojos abiertos de la entrada encuadran el ojo de su cinta, más grande y claro, y respiran despacio. También pueden abrirse en **Fragmentos → cintas**. Los fotogramas de `assets/gif-stills/` son capturas del navegador de los GIFs originales. Se muestran de entrada; `IntersectionObserver` carga la animación cuando entra en pantalla. Se vuelve al fotograma cuando sale de pantalla, se oculta la pestaña, se activa «calma» o el navegador pide movimiento reducido. La cinta con cortes más marcados no se reproduce automáticamente: requiere pulsarla o abrirla desde «cintas». Los GIFs no añaden audio.
 
 ## Interior cambiante (fases 2–5)
 
 La extensión está separada en `interior.js` y `interior.css`. La entrada y `crossDoor()` siguen en `app.js`; el contrato `window.EstacionInterior` expone únicamente consulta del estado, contexto de audio ya activado, apariciones y apertura del subsuelo. Los eventos `station:sound` y `station:transmission` comunican acciones confirmadas. No modificar la puerta para añadir comportamientos al interior.
+
+La sala está compuesta en profundidad: la figura del ojo, cerca y grande; las figuras de la luna y de los brazos justo detrás, más pequeñas, tenues y desenfocadas cuanto más lejos; la multitud y la neblina al fondo. Máscaras radiales y una viñeta de sala las funden con la oscuridad. Se desplazan un poco con el ratón (o con la inclinación del móvil, donde el navegador la da sin pedir permiso) y la figura del ojo y la de la luna giran levemente para seguirte; se hace con las propiedades `translate` y `rotate`, aparte de `transform`, para que los cambios de posición de las presencias sigan funcionando. Las figuras llegan una tras otra cada vez que se entra. Los cuatro accesos nunca se mueven. «Calma» y movimiento reducido lo desactivan todo.
 
 Cerrar un documento, vestigio o marca cambia las posiciones de las presencias. Los cuatro accesos permanecen fijos. La memoria se guarda en `sessionStorage` durante la sesión; «Olvidar esta visita» también la borra. «Calma» y movimiento reducido fijan la escena y cancelan los sucesos pendientes.
 
