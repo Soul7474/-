@@ -176,7 +176,35 @@
     tabWasHidden = false; armIdle(); planLog();
   });
   reduce.addEventListener('change', () => { cleanTimers(); render(); });
-  function renderRastro() {}
+  function renderRastro() {
+    document.title = 'deja un rastro · occult';
+    main.append(el('h1', 'deja un rastro'));
+    const previous = [
+      ['1998-01-17', 'sur', 'llegué por la puerta equivocada'],
+      ['1998-03-02', 'nadir', 'la segunda pregunta no tiene respuesta'],
+      ['1998-05-11', 'cal', 'la fecha era otra'],
+      ['1998-07-23', 'piedra', 'dejé una palabra'],
+      ['1998-09-01', 'limo', 'no había índice'],
+      ['1998-11-17', 'hilo', 'el orden permanece'],
+      ['1999-01-04', 'cero', 'volví por el mismo enlace'],
+      ['1999-02-28', 'sal', 'nadie había firmado'],
+      ['1999-06-12', 'este', 'la cuenta no coincide'],
+      ['1999-10-09', 'umbral', 'queda una pregunta']
+    ];
+    if (store.state.answers.g03) previous.push(['1999-11-17', 'otro', store.state.answers.g03]);
+    for (const trace of store.traces) previous.push([new Date(trace.date).toLocaleDateString('es-ES'), 'visitante', trace.message]);
+    const table = el('table'); const caption = el('caption', 'rastros'); caption.className = 'sr-only'; table.append(caption);
+    const tbody = el('tbody');
+    for (const [date, alias, message] of previous) {
+      const row = el('tr'); row.append(el('td', date + '\n' + alias), el('td', message)); tbody.append(row);
+    }
+    table.append(tbody); main.append(table);
+    const form = el('form'); const label = el('label', '[ deja tu rastro ]'); label.htmlFor = 'trace';
+    const input = el('input'); input.id = 'trace'; input.maxLength = 200; input.required = true;
+    const button = el('button', '[ dejar ]'); button.type = 'submit';
+    form.append(label, input, button); main.append(form);
+    form.addEventListener('submit', event => { event.preventDefault(); if (!input.value.trim()) return; store.addTrace(input.value.trim()); go('/rastro.html', true); });
+  }
   const sound = { stop() {}, start() {}, controls() {} };
   document.addEventListener('click', event => {
     const link = event.target.closest('a');
