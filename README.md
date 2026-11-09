@@ -167,3 +167,7 @@ npm run test:door
 Los tests de Node verifican el HTML y los recursos (incluidas las runas, la puerta cerrada y los recortes con transparencia), los GIFs, respuestas HEAD, errores 404 y el bloqueo de archivos de configuración. Durante el desarrollo también se recorrieron las puertas, la navegación, los documentos, el libro de visitas, la persistencia, el audio, el reinicio y movimiento reducido mediante Chromium/Playwright, en escritorio y móvil.
 
 Publicación: GitHub Pages desde la rama `main`, carpeta raíz (`/`). El archivo `CNAME` conserva `occult.saulmartin.com` y `.nojekyll` permite servir los archivos estáticos sin Jekyll. Cada cambio subido a `main` activa la publicación de Pages; no sincroniza automáticamente los cambios sin guardar o sin subir de este entorno. El certificado y la opción Enforce HTTPS se gestionan en Settings → Pages. No incluye configuración de un servicio oculto.
+
+## Navegación sin regreso a la entrada
+
+Dentro de la web, el título y los controles de regreso llevan al interior. Recargar vuelve al umbral sin borrar los datos. «Borrar mi rastro» limpia los datos locales y mantiene al visitante dentro. Revisión y alcance compartido: [docs/revision-navegacion.md](docs/revision-navegacion.md). Comprobación adicional: `npm run test:navigation`.

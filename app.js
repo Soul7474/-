@@ -15,7 +15,7 @@ const documents = [
   { id: 'foto', name: 'pasillo_b.gif', description: 'La última imagen recibida.', size: 'GIF', level: 0, image: true, content: 'CÁMARA 09 / PASILLO B\n\nLa grabación dura tres segundos.\nLa puerta del fondo no figura en los planos.' },
   { id: 'noabrir', name: 'no_abrir.txt', description: 'Lo encontramos escrito desde dentro.', size: '0.9 KB', level: 1, content: 'NO LO LLAMES OTRA VEZ.\n\nAl principio solo repetía lo que decíamos.\nLuego empezó a contestar antes de que habláramos.\n\nEn la segunda puerta pide el año en que todo se detuvo. Cuatro cifras. Está escrito en todas partes.\n\nSi bajas, deja una señal.\nY cuando vuelvas, no mires si la señal sigue ahí.' },
   { id: 'operador', name: 'operador_09.log', description: 'Turno de noche. Registro incompleto.', size: '2.4 KB', level: 1, content: '03:10 — Todos se han ido.\n03:18 — La cámara del pasillo B sigue en línea.\n03:21 — Estoy mirando mi silla desde el pasillo.\n03:24 — Estoy sentado en mi silla.\n03:29 — Las dos cosas son ciertas.\n03:33 — [ENTRADA BORRADA]\n\nEl libro de visitas es lo único que no ha cambiado.' },
-  { id: 'frecuencia', name: 'frecuencia_098.txt', description: 'Instrucciones para un receptor que ya no existe.', size: '0.4 KB', level: 0, content: 'FRECUENCIA: 09.8\nORIGEN: LOCAL\nDESTINO: DESCONOCIDO\n\nNo es una voz. Es el espacio entre dos voces.\n\nVe a Transmisiones. Si decides escuchar, no subas el volumen. No hace falta.' },
+  { id: 'frecuencia', name: 'frecuencia_098.txt', description: 'Instrucciones para un receptor que ya no existe.', size: '0.4 KB', level: 0, content: 'FRECUENCIA: 09.8\nORIGEN: LOCAL\nDESTINO: DESCONOCIDO\n\nNo es una voz. Es el espacio entre dos voces.\n\nVe a Voces. Si decides escuchar, no subas el volumen. No hace falta.' },
   { id: 'lista', name: 'presencias.dat', description: 'Hay un nombre más del que debería.', size: '0.2 KB', level: 2, content: 'PRESENCIAS REGISTRADAS\n\nOPERADOR 01 — AUSENTE\nOPERADOR 02 — AUSENTE\nOPERADOR 09 — AUSENTE\nVISITANTE — PRESENTE\nVISITANTE — PRESENTE\n\nNo entraste dos veces.' },
   { id: 'salida', name: 'salida.txt', description: 'Una instrucción que todavía funciona.', size: '0.1 KB', level: 2, content: 'Puedes cerrar la conexión.\n\nEn el subsuelo hay un interruptor.\nBorrará tus accesos y los mensajes que hayas dejado en este navegador.\n\nNo va a impedir que vuelvas.\nPero esta vez la estación no te recordará.' }
 ];
@@ -33,7 +33,12 @@ function renderArchive() {
   });
   $('#unlock-status').textContent = state.level ? 'un sello ha cedido' : 'sellado';
   $('.bottom-note>span:last-child').textContent = state.level ? 'la puerta recuerda' : 'la puerta escucha';
-  const homeLocked = $('.locked-file[data-gate]');
+  const homeLocked = $('.fragments [data-document="noabrir"]') || $('.fragments .locked-file[data-gate]');
+  if (homeLocked && state.level < 1) {
+    delete homeLocked.dataset.document; homeLocked.dataset.gate = '1'; homeLocked.classList.add('locked-file');
+    homeLocked.querySelector('small').textContent = 'Sellado.';
+    homeLocked.querySelector('.file-meta').textContent = 'CIFRADO ⌑';
+  }
   if (homeLocked && state.level >= 1) { delete homeLocked.dataset.gate; homeLocked.dataset.document = 'noabrir'; homeLocked.classList.remove('locked-file'); homeLocked.querySelector('small').textContent = 'El sello ha cedido.'; homeLocked.querySelector('.file-meta').textContent = 'ABIERTO ↗'; }
 }
 function renderGuests() {
@@ -128,7 +133,7 @@ function route() {
   if (target === 'main') { $('#main').focus({ preventScroll: true }); return; }
   const name = viewNames.includes(target) ? target : 'inicio';
   if (name === 'subsuelo' && state.level < 2) {
-    history.replaceState(null, '', '#inicio'); route(); openGate(2); return;
+    history.replaceState(null, '', '#interior'); route(); openGate(2); return;
   }
   cancelDoorPassage();
   dismissOmen();
@@ -158,7 +163,11 @@ for (const id of ['forget-button', 'reset-session']) $('#' + id).addEventListene
 $('#confirm-reset').addEventListener('click', () => {
   state = { level: 0, guests: [] }; save();
   try { localStorage.removeItem(doorSceneKey); } catch {}
-  doorSceneSeen = false; stopAmbient(); closeDialog($('#reset-dialog')); location.hash = 'inicio'; location.reload();
+  doorSceneSeen = false; stopAmbient(); closeDialog($('#reset-dialog'));
+  renderArchive(); renderGuests(); renderDoor();
+  const destination = document.body.dataset.page === 'inicio' ? 'inicio' : 'interior';
+  location.hash = destination; route();
+  window.dispatchEvent(new CustomEvent('station:reset'));
 });
 let audio;
 let ambient;
@@ -625,6 +634,9 @@ document.addEventListener('keydown', event => {
 window.addEventListener('resize', () => { if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; } });
 motionQuery.addEventListener('change', () => { if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; } });
 
+if (performance.getEntriesByType('navigation')[0]?.type === 'reload') {
+  history.replaceState(null, '', location.pathname + location.search + '#inicio');
+}
 renderArchive(); renderGuests(); renderDoor(); route(); applyMotionPreference();
 
 // Interior extension contract. Keep entrance and passage implementation independent.

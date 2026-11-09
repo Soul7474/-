@@ -198,7 +198,12 @@
     if (event.key !== 'Escape') return;
     hushUntil = performance.now() + 20000; clearPending(); stopSounds(); endSignal();
   });
-  $('#confirm-reset').addEventListener('click', () => { try { sessionStorage.removeItem(key); } catch {} });
+  window.addEventListener('station:reset', () => {
+    inspected = false; if (dialog.open) dialog.close();
+    memory = { visits: 0, unlocked: false }; trail = { archive: false, signal: false };
+    try { sessionStorage.removeItem(key); } catch {}
+    endSignal(); clearPending(); stopSounds(); applyMemory();
+  });
   // Soul's route thread. Additive: keep the companion's depth/parallax code independent.
   const routeThreads = new Map();
   const makeLink = (target, label, name) => {
@@ -221,8 +226,9 @@
     else { sealOnReturn = true; location.hash = 'interior'; }
   });
   signalThread.append(towardSeal);
-  const traceThread = thread('visitantes', 'Volver desde las huellas');
-  traceThread.append(makeLink('#interior', '↶', 'Volver al interior'));
+  for (const view of ['visitantes', 'fragmentos', 'subsuelo']) {
+    thread(view, 'Volver al interior').append(makeLink('#interior', '↶', 'Volver al interior'));
+  }
   let sealOnReturn = false;
   function updateTrail() {
     if (!routeThreads.size) return;

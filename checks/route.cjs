@@ -32,7 +32,7 @@ const { existsSync } = require('node:fs');
     await page.locator('[data-memory-close]').click();
     assert.equal(await page.locator('.below-door').evaluate(el => el.classList.contains('path-invitation')), true);
     assert.deepEqual(await positions(), before, 'guidance must not move the access points');
-    await page.reload();
+    await page.reload(); await page.goto(base + '/#interior');
     assert.equal(await page.locator('.chamber-space').getAttribute('data-thread'), 'open');
     for (let i = 0; i < 6; i++) { await page.locator('[data-memory="touch"]').click(); await page.locator('[data-memory-close]').click(); }
     await page.waitForFunction(() => document.querySelector('.chamber-space').dataset.haunting === '3');
@@ -48,7 +48,7 @@ const { existsSync } = require('node:fs');
       }
     }
     await page.locator('#forget-button').click(); await page.locator('#confirm-reset').click();
-    await page.waitForURL('**/#inicio'); await page.waitForLoadState();
+    await page.waitForURL('**/#interior'); await page.waitForLoadState();
     assert.equal(await page.evaluate(() => sessionStorage.getItem('estacion09-interior')), null);
     assert.deepEqual(errors, []);
     console.log('PASS: discovery, reading-to-signal link, return-to-seal, unlock, fixed access points, persisted thread, finite presences, calm, mobile, reset.');

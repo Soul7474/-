@@ -10,9 +10,9 @@
   <title>ESTACIÓN 09 — señal residual</title>
   <link rel="icon" href="assets/sigil.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css?v=door-scene-replay-1">
-  <script src="app.js?v=door-scene-replay-1" defer></script>
-  <link rel="stylesheet" href="interior.css?v=door-scene-replay-1">
-  <script src="interior.js?v=door-scene-replay-1" defer></script>
+  <script src="app.js?v=feature-soul-navigation-1" defer></script>
+  <link rel="stylesheet" href="interior.css?v=feature-soul-navigation-1">
+  <script src="interior.js?v=feature-soul-navigation-1" defer></script>
 </head>
 <body data-page="inicio">
   <a class="skip" href="#archivo">Saltar al archivo</a>
@@ -43,18 +43,17 @@
     </div>
     <header class="masthead">
       <p class="system-id">⌈ archivo residual · nodo 009 · ver. 0.98 ⌋</p>
-      <a href="#inicio" class="identity" aria-label="Estación 09, inicio">estación<span>_09</span></a>
+      <a href="#interior" class="identity" aria-label="Estación 09, interior">estación<span>_09</span></a>
       <p class="header-message">Este lugar ya no existe. <span>Pero tú sigues aquí.</span></p>
       <div class="connection"><span class="live-dot"></span> connected to the other end<span class="cursor">_</span><small id="session-clock">00:00:00 / SESIÓN LOCAL</small></div>
     </header>
     <div class="layout">
         <nav class="main-nav" aria-label="Navegación del archivo">
-          <a href="#inicio" class="nav-link active" data-view="inicio"><span>00</span> Umbral <b>↗</b></a>
           <a href="#interior" class="nav-link" data-view="interior"><span aria-hidden="true">⊙</span> Interior</a>
-          <a href="#archivo" class="nav-link" data-view="archivo"><span>01</span> Archivo <b>07</b></a>
+          <a href="#archivo" class="nav-link" data-view="archivo"><span>01</span> Restos <b>07</b></a>
           <a href="#fragmentos" class="nav-link" data-view="fragmentos"><span>·</span> Fragmentos</a>
-          <a href="#transmisiones" class="nav-link" data-view="transmisiones"><span>02</span> Transmisiones <b class="nav-dot">●</b></a>
-          <a href="#visitantes" class="nav-link" data-view="visitantes"><span>03</span> Los que llegaron <b>↗</b></a>
+          <a href="#transmisiones" class="nav-link" data-view="transmisiones"><span>02</span> Voces <b class="nav-dot">●</b></a>
+          <a href="#visitantes" class="nav-link" data-view="visitantes"><span>03</span> Huellas <b>↗</b></a>
           <button class="nav-link restricted" data-gate="2"><span>04</span> Subsuelo <b>⌑</b></button>
         </nav>
       <main id="main" tabindex="-1">
@@ -77,7 +76,6 @@
             </div>
             <svg class="chamber-lines" viewBox="0 0 900 600" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width=".8"><ellipse cx="450" cy="300" rx="300" ry="210" transform="rotate(-18 450 300)" stroke-dasharray="1 9"/><path d="M120 290l510 200-206-440-304 240M90 300h70m-30-20v40M608 500l44-15m-27-9 8 29M418 29l14 44m-30-20 44-6"/></g></svg>
           </div>
-          <a class="return-threshold" href="#inicio">↶ umbral</a>
         </section>
         <section id="view-fragmentos" class="view">
           <div class="breadcrumb"><span>root / public / umbral</span><span class="file-id">[ E09—000 ]</span></div>
@@ -131,7 +129,7 @@
       </aside>
 
     </div>
-    <footer><span>© 1998 ESTACIÓN 09 <i> / </i> TODOS LOS DERECHOS PERDIDOS.</span><span><span class="live-dot"></span> <span id="footer-status">1 PRESENCIA EN ESTE NODO</span></span><button id="forget-button">OLVIDAR ESTA VISITA ↗</button></footer>
+    <footer><span>© 1998 ESTACIÓN 09 <i> / </i> TODOS LOS DERECHOS PERDIDOS.</span><span><span class="live-dot"></span> <span id="footer-status">1 PRESENCIA EN ESTE NODO</span></span><button id="forget-button">BORRAR MI RASTRO</button></footer>
   </div>
   <div id="door-passage" hidden aria-hidden="true"></div>
   <div class="vhs-tracking" aria-hidden="true"></div>
@@ -143,6 +141,6 @@
   </dialog>
   <dialog id="gate-dialog" aria-label="Puerta cerrada"><form id="gate-form"><div class="dialog-top"><span><span class="gate-runes" aria-hidden="true">ᚦ ᛇ ᛉ</span><span id="gate-level" hidden>01</span></span><button type="button" class="close-dialog" aria-label="Cerrar">×</button></div><div class="dialog-body"><span class="gate-symbol">⌑</span><h2>La puerta recuerda.</h2><p id="gate-description">Introduce la palabra de acceso para continuar.</p><label for="password">La palabra</label><input type="password" aria-describedby="gate-error" id="password" autocomplete="off" required spellcheck="false"><p id="gate-error" class="red" role="status"></p><button type="submit" class="enter-button">abrir <span>↗</span></button><details><summary>Encontré una nota junto a la puerta.</summary><p id="gate-hint"></p></details></div></form></dialog>
   <dialog id="document-dialog"><div class="dialog-top"><span id="document-title"></span><button type="button" class="close-dialog" aria-label="Cerrar">×</button></div><div id="document-body" class="document-body"></div></dialog>
-  <dialog id="reset-dialog"><div class="dialog-top"><span>CERRAR CONEXIÓN</span><button type="button" class="close-dialog" aria-label="Cerrar">×</button></div><div class="dialog-body"><h2>¿Borrar tu rastro?</h2><p>Se eliminarán tus accesos y tus mensajes locales. Volverás al umbral.</p><button id="confirm-reset" class="enter-button">OLVIDAR ESTA VISITA <span>×</span></button></div></dialog>
+  <dialog id="reset-dialog"><div class="dialog-top"><span>CERRAR CONEXIÓN</span><button type="button" class="close-dialog" aria-label="Cerrar">×</button></div><div class="dialog-body"><h2>¿Borrar tu rastro?</h2><p>Se eliminarán tus accesos y tus mensajes locales. Seguirás dentro.</p><button id="confirm-reset" class="enter-button">BORRAR MI RASTRO <span>×</span></button></div></dialog>
 </body>
 </html>
