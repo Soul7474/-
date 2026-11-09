@@ -150,7 +150,12 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 .door-stage[data-door="peeked"] .frame-hand{opacity:1}
 /* The passage: a rig that can shake, the hand that reaches for you, and the fall inside. */
 #door-passage .passage-rig{position:absolute;inset:0}
-#door-passage .grab-hand{position:fixed;max-width:none;pointer-events:none;transform-origin:50% 50%;filter:grayscale(1) brightness(.75) contrast(1.15);-webkit-mask-image:linear-gradient(to left,transparent 2%,#000 38%);mask-image:linear-gradient(to left,transparent 2%,#000 38%);will-change:transform}
+#door-passage .grab{position:fixed;pointer-events:none;transform-origin:50% 62%;will-change:transform,filter;-webkit-mask-image:linear-gradient(to left,transparent 0,#000 7%);mask-image:linear-gradient(to left,transparent 0,#000 7%)}
+#door-passage .grab img{position:absolute;inset:0;width:100%;height:100%;max-width:none}
+#door-passage .grab-palm{clip-path:polygon(40% 30%,96% 33%,100% 33%,100% 100%,40% 100%);-webkit-mask-image:linear-gradient(to right,transparent 50%,#000 64%);mask-image:linear-gradient(to right,transparent 50%,#000 64%)}
+#door-passage .grab-fingers{clip-path:polygon(0 16%,72% 21%,72% 100%,0 100%);-webkit-mask-image:linear-gradient(to right,#000 56%,transparent 70%);mask-image:linear-gradient(to right,#000 56%,transparent 70%);transform-origin:66% 58%}
+#door-passage .grab-thumb{clip-path:polygon(56% 0,100% 0,100% 34%,56% 31%);transform-origin:86% 30%}
+#door-passage .choke{position:absolute;inset:-35%;pointer-events:none;opacity:0;background:radial-gradient(ellipse 46% 42% at 50% 46%,transparent 26%,#000 80%);will-change:transform,opacity}
 #door-passage .fall-scene{position:absolute;inset:0;background:#000;overflow:hidden;opacity:0;display:grid;place-items:center}
 #door-passage .fall-shaft{position:absolute;inset:-40%;background:repeating-linear-gradient(180deg,transparent 0 44px,#1d1d1c 44px 47px,transparent 47px 101px,#121212 101px 109px,transparent 109px 160px);filter:blur(1.2px);will-change:transform,background-position}
 #door-passage .fall-noise{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;opacity:.2;mix-blend-mode:screen}

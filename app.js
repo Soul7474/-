@@ -496,6 +496,31 @@ function hiss(seconds) {
   noise.onended = () => { noise.disconnect(); filter.disconnect(); };
 }
 
+function heartbeat() {
+  if (!ambient || audio?.state !== 'running') return;
+  for (const at of [0, .36]) {
+    const tone = audio.createOscillator(); const volume = audio.createGain(); const start = audio.currentTime + at;
+    tone.frequency.setValueAtTime(70, start); tone.frequency.exponentialRampToValueAtTime(38, start + .14);
+    volume.gain.setValueAtTime(.0001, start); volume.gain.exponentialRampToValueAtTime(.09, start + .02);
+    volume.gain.exponentialRampToValueAtTime(.0001, start + .2);
+    tone.connect(volume); volume.connect(audio.destination); tone.start(start); tone.stop(start + .22);
+    tone.onended = () => { tone.disconnect(); volume.disconnect(); };
+  }
+}
+// The hand that takes you, in three layers cut from the same picture (palm, fingers, thumb)
+// so the fingers can curl and the thumb close. Sized by the screen's height so it still
+// wraps the bottom of a tall phone screen; its wrist runs off the edge of the frame.
+function grabbingHand(src) {
+  const root = element('div', undefined, 'grab');
+  const layer = name => { const image = element('img', undefined, 'grab-' + name); image.src = src; image.alt = ''; root.append(image); return image; };
+  const palm = layer('palm'); const fingers = layer('fingers'); const thumb = layer('thumb');
+  const portrait = innerHeight > innerWidth;
+  const width = Math.max(Math.min(innerWidth * .8, innerHeight * 1.6), innerHeight * 1.12);
+  const height = width * 400 / 480;
+  const centreX = innerWidth * (portrait ? .64 : .62); const centreY = innerHeight * (portrait ? .8 : .9);
+  Object.assign(root.style, { left: centreX - width / 2 + 'px', top: centreY - height / 2 + 'px', width: width + 'px', height: height + 'px' });
+  return { root, palm, fingers, thumb };
+}
 // After the ritual: the door opens; a hand grips the frame; a face comes closer out of the dark;
 // the hand takes you by the throat and drags you in; you fall, and something is waiting.
 async function openingScene() {
@@ -546,29 +571,62 @@ async function openingScene() {
   ], { duration: 3000, easing: 'ease-in-out' });
   if (!await settled(id, emerge, lean)) return;
 
-  // c) The hand lets go of the frame and comes for your throat.
-  const from = frameHand.getBoundingClientRect();
-  const hand = element('img', undefined, 'grab-hand'); hand.src = frameHand.src; hand.alt = '';
-  Object.assign(hand.style, { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' });
-  rig.append(hand); frameHand.style.visibility = 'hidden';
-  // Fingers end up across the bottom of the screen, where your throat would be.
-  const reach = Math.max(innerWidth * .78, innerHeight * .95) / from.width;
-  const dx = innerWidth * .55 - (from.left + from.width / 2);
-  const dy = innerHeight * 1.04 - (from.top + from.height / 2);
-  const lunge = play(hand, [
-    { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
-    { transform: `translate(${dx}px, ${dy}px) scale(${reach}) rotate(-7deg)` }
-  ], { duration: 420, easing: 'cubic-bezier(.6,0,.9,.5)' });
+  // c) The hand lets go of the frame, comes round from below and closes on your throat.
+  play(frameHand, [{ opacity: 1, transform: 'translateX(0%) scale(1)' }, { opacity: 0, transform: 'translateX(34%) scale(.9)' }], { duration: 260, easing: 'ease-in' });
+  const grab = grabbingHand(frameHand.src);
+  const vignette = element('div', undefined, 'choke');
+  rig.append(vignette, grab.root);
+  const held = 'translate(0px, 0px) rotate(-6deg) scale(1)';
+  const dark = 'grayscale(1) brightness(.38) contrast(1.15)';
+  const lunge = play(grab.root, [
+    { transform: `translate(${innerWidth * .42}px, ${innerHeight * .75}px) rotate(-30deg) scale(.82)`, filter: 'grayscale(1) brightness(.14) contrast(1.15) blur(16px)', opacity: 0 },
+    { offset: .2, opacity: 1 },
+    { offset: .75, filter: 'grayscale(1) brightness(.3) contrast(1.15) blur(6px)' },
+    { transform: held, filter: dark + ' blur(0px)', opacity: 1 }
+  ], { delay: 140, duration: 440, easing: 'cubic-bezier(.3,.55,.35,1)' });
   if (!await settled(id, lunge)) return;
-  const squeeze = play(hand, [
-    { transform: `translate(${dx}px, ${dy}px) scale(${reach}) rotate(-7deg)` },
-    { offset: .4, transform: `translate(${dx}px, ${dy + 10}px) scale(${reach * .97}) rotate(-8deg)` },
-    { transform: `translate(${dx}px, ${dy + 4}px) scale(${reach * .98}) rotate(-7deg)` }
-  ], { duration: 320, easing: 'ease-out' });
-  const jolt = play(rig, [
-    { transform: 'translate(0px, 0px)' }, { transform: 'translate(-6px, 4px)' }, { transform: 'translate(5px, -3px)' }, { transform: 'translate(-2px, 2px)' }, { transform: 'translate(0px, 0px)' }
-  ], { duration: 320 });
-  if (!await settled(id, squeeze, jolt)) return;
+  // The fist closes: fingers curl in towards you, the thumb comes down over them.
+  const curl = play(grab.fingers, [
+    { transform: 'scaleX(1) skewY(0deg) rotate(0deg)', filter: 'brightness(1)' },
+    { transform: 'scaleX(.7) skewY(5deg) rotate(-4deg)', filter: 'brightness(.68)' }
+  ], { duration: 280, easing: 'cubic-bezier(.55,0,.2,1)' });
+  const thumbDown = play(grab.thumb, [
+    { transform: 'rotate(0deg) translateY(0%)' },
+    { transform: 'rotate(27deg) translateY(5%)' }
+  ], { duration: 280, easing: 'cubic-bezier(.55,0,.2,1)' });
+  if (!await settled(id, curl, thumbDown)) return;
+  // Squeeze: no air. The dark closes in from the edges over two heartbeats, the view shakes.
+  heartbeat();
+  const choke = play(vignette, [
+    { opacity: 0, transform: 'scale(1.7)' },
+    { offset: .16, opacity: 1, transform: 'scale(1.12)' },
+    { offset: .34, transform: 'scale(1.3)' },
+    { offset: .54, transform: 'scale(.98)' },
+    { offset: .72, transform: 'scale(1.06)' },
+    { opacity: 1, transform: 'scale(.84)' }
+  ], { duration: 800, easing: 'ease-out' });
+  const squeeze = play(grab.root, [
+    { transform: held, filter: dark },
+    { offset: .14, transform: 'translate(0px, 10px) rotate(-7deg) scale(.965)' },
+    { offset: .34, transform: held },
+    { offset: .54, transform: 'translate(0px, 12px) rotate(-7.5deg) scale(.955)' },
+    { offset: .74, transform: 'translate(0px, 4px) rotate(-6.5deg) scale(.985)' },
+    { transform: 'translate(0px, 6px) rotate(-6.5deg) scale(.975)', filter: 'grayscale(1) brightness(.32) contrast(1.15)' }
+  ], { duration: 800 });
+  const throb = play(rig, [
+    { transform: 'translate(0px, 0px) rotate(0deg) scale(1)' },
+    { offset: .12, transform: 'translate(-10px, 6px) rotate(-.9deg) scale(1.03)' },
+    { offset: .22, transform: 'translate(9px, -5px) rotate(.8deg) scale(1.012)' },
+    { offset: .34, transform: 'translate(-6px, 4px) rotate(-.5deg) scale(1)' },
+    { offset: .5, transform: 'translate(8px, 5px) rotate(.7deg) scale(1.035)' },
+    { offset: .6, transform: 'translate(-9px, -6px) rotate(-.8deg) scale(1.012)' },
+    { offset: .72, transform: 'translate(6px, 3px) rotate(.5deg) scale(1)' },
+    { offset: .86, transform: 'translate(-3px, -2px) rotate(-.3deg) scale(1)' },
+    { transform: 'translate(0px, 0px) rotate(0deg) scale(1)' }
+  ], { duration: 800 });
+  if (!await settled(id, choke, squeeze, throb)) return;
+  const hand = grab.root;
+  const dx = 0, dy = 6, reach = 1;
   // ...and drags you through the doorway: fast zoom, slight shake, the frame sliding to the door.
   const drag = play(copy, [
     { transform: closer, filter: 'grayscale(1) brightness(.9)' },
