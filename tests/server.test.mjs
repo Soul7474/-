@@ -103,3 +103,16 @@ test('serves the seven uploaded tapes unchanged with their still alternatives', 
     assert.equal(Buffer.from(await response.arrayBuffer()).subarray(1, 4).toString(), 'PNG');
   }
 });
+
+test('serves the hidden mirror with a policy that disallows network connections', async () => {
+  const response = await fetch(base + '/mirror.html');
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type'), /text\/html/);
+  const html = await response.text();
+  assert.match(html, /connect-src 'none'/);
+  assert.match(html, /id="enable-camera"/);
+  assert.match(html, /id="stop-camera"/);
+  for (const path of ['/mirror.js', '/mirror.css']) {
+    assert.equal((await fetch(base + path)).status, 200);
+  }
+});

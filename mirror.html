@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#030303">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self' blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>el reverso — estación 09</title>
+  <link rel="stylesheet" href="mirror.css?v=1">
+  <script src="mirror.js?v=1" defer></script>
+</head>
+<body data-mode="idle">
+  <main>
+    <h1 class="sr-only">El reverso del espejo</h1>
+    <div class="mirror-mark" aria-hidden="true">⌾</div>
+    <section class="receiver" aria-label="Espejo local y emisión de ficción" aria-describedby="privacy-note">
+      <video id="reflection" autoplay muted playsinline hidden aria-label="Tu cámara, mostrada solo en este dispositivo"></video>
+      <img id="dead-signal" src="images/0cef067d6389316753e85350caa85388.jpg" width="735" height="490" alt="Una multitud dibujada observa desde la oscuridad. Emisión ficticia." hidden>
+      <img class="interference-eye" src="images/71f43ece8f68bf946b666118ed26dbb5.jpg" width="480" height="480" alt="" aria-hidden="true">
+      <div class="scanlines" aria-hidden="true"></div>
+      <span class="receiver-code" aria-hidden="true">⌈ ᛇ · ᚦ · ᛉ ⌋</span>
+      <p id="receiver-state">espejo cerrado</p>
+      <p id="presence-line" aria-hidden="true"></p>
+    </section>
+    <p id="privacy-note">Ficción interactiva. Cámara opcional y solo local.<br>Sin micrófono, grabación ni envío de imagen.</p>
+    <div class="controls" aria-label="Controles de la cámara">
+      <button id="enable-camera" type="button">abrir el espejo</button>
+      <button id="without-camera" type="button">sin cámara</button>
+      <button id="stop-camera" type="button" hidden>apagar cámara</button>
+      <button id="cancel-camera" type="button" hidden>cancelar solicitud</button>
+    </div>
+    <p id="camera-status" role="status" aria-live="polite">La cámara está apagada.</p>
+    <footer><a href="index.html#interior" id="leave-mirror">↶ interior</a><button id="quiet-mirror" type="button" aria-pressed="false">calma</button></footer>
+  </main>
+</body>
+</html>

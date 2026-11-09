@@ -29,6 +29,7 @@ const { existsSync } = require('node:fs');
     await page.locator('#seal-word').fill('umbra');
     await page.locator('.seal-form').evaluate(form => form.requestSubmit());
     await page.locator('.sealed-fragment').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('.fragment-mirror').getAttribute('href'), 'mirror.html');
     await page.locator('[data-memory-close]').click();
     assert.equal(await page.locator('.below-door').evaluate(el => el.classList.contains('path-invitation')), true);
     assert.deepEqual(await positions(), before, 'guidance must not move the access points');

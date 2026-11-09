@@ -127,6 +127,8 @@
     body.append(field);
     const below = node('button', '☾', 'fragment-below'); below.type = 'button'; below.setAttribute('aria-label', 'Acercarse a la puerta del subsuelo');
     below.addEventListener('click', () => { dialog.close(); station.subsoil(); }); body.append(below);
+    const reverse = node('a', '⌾', 'fragment-mirror'); reverse.href = 'mirror.html';
+    reverse.setAttribute('aria-label', 'Examinar el reverso del sello'); body.append(reverse);
   }
   function openSeal() {
     clearBody(); sequence = [];
