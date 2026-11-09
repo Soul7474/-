@@ -625,21 +625,34 @@ async function openingScene() {
     { transform: 'translate(0px, 0px) rotate(0deg) scale(1)' }
   ], { duration: 800 });
   if (!await settled(id, choke, squeeze, throb)) return;
-  const hand = grab.root;
-  const dx = 0, dy = 6, reach = 1;
-  // ...and drags you through the doorway: fast zoom, slight shake, the frame sliding to the door.
+  // ...and drags you in. The hand stays where it is, holding you; everything else rushes past it
+  // into the doorway: zoom, a slide towards the gap, a stretch and radial streaks. It is dark and
+  // blurred before the face is enlarged enough to break into pixels (at most ~1.9× its size here).
+  const gapBox = copy.querySelector('.door-gap').getBoundingClientRect();
+  const streaks = element('div', undefined, 'pull-streaks');
+  const reachOut = Math.hypot(innerWidth, innerHeight) * 2;
+  Object.assign(streaks.style, { left: gapBox.left + gapBox.width / 2 - reachOut / 2 + 'px', top: gapBox.top + gapBox.height * .58 - reachOut / 2 + 'px', width: reachOut + 'px', height: reachOut + 'px' });
+  rig.insertBefore(streaks, vignette);
+  const stretched = (fx, fy, scale, sx, sy) => focusOn(bounds, fx, fy, scale).replace(/scale\(([^)]+)\)$/, `scale(${scale * sx}, ${scale * sy})`);
   const drag = play(copy, [
-    { transform: closer, filter: 'grayscale(1) brightness(.9)' },
-    { offset: .6, transform: focusOn(bounds, .64, .5, near * 2.4), filter: 'grayscale(1) brightness(.5)' },
-    { transform: focusOn(bounds, .64, .55, near * 5), filter: 'grayscale(1) brightness(0)' }
-  ], { duration: 800, easing: 'cubic-bezier(.7,0,.85,.4)' });
-  const pulled = play(hand, [
-    { transform: `translate(${dx}px, ${dy + 4}px) scale(${reach * .98}) rotate(-7deg)` },
-    { transform: `translate(${dx}px, ${dy - innerHeight * .08}px) scale(${reach * 1.08}) rotate(-4deg)`, opacity: 1, offset: .7 },
-    { transform: `translate(${dx}px, ${dy - innerHeight * .1}px) scale(${reach * 1.1}) rotate(-4deg)`, opacity: 0 }
-  ], { duration: 800, easing: 'ease-in' });
-  const shake = play(rig, Array.from({ length: 11 }, (_, i) => ({ transform: i === 0 || i === 10 ? 'translate(0px, 0px) rotate(0deg)' : `translate(${(i % 2 ? 5 : -5) * (1 - i / 12)}px, ${(i % 3 - 1) * 4}px) rotate(${i % 2 ? .5 : -.5}deg)` })), { duration: 800 });
-  if (!await settled(id, drag, pulled, shake)) return;
+    { transform: stretched(.62, .43, near * 1.18, 1, 1), filter: 'grayscale(1) brightness(.9) blur(0px)' },
+    { offset: .5, transform: stretched(.63, .55, near * 1.55, .97, 1.07), filter: 'grayscale(1) brightness(.5) blur(3px)' },
+    { transform: stretched(.63, .64, near * 2.2, .92, 1.16), filter: 'grayscale(1) brightness(0) blur(8px)' }
+  ], { duration: 700, easing: 'cubic-bezier(.6,0,.9,.45)' });
+  const rush = play(streaks, [
+    { opacity: 0, transform: 'scale(.45) rotate(0deg)' },
+    { offset: .3, opacity: .85 },
+    { opacity: 0, transform: 'scale(1.9) rotate(5deg)' }
+  ], { duration: 700, easing: 'ease-in' });
+  const hold = play(grab.root, [
+    { transform: 'translate(0px, 6px) rotate(-6.5deg) scale(.975)', filter: 'grayscale(1) brightness(.32) contrast(1.15)' },
+    { offset: .5, transform: 'translate(-5px, 2px) rotate(-6deg) scale(.99)' },
+    { offset: .75, filter: 'grayscale(1) brightness(.24) contrast(1.15)' },
+    { transform: 'translate(0px, -4px) rotate(-6deg) scale(1)', filter: 'grayscale(1) brightness(0) contrast(1.15)' }
+  ], { duration: 700, easing: 'ease-in' });
+  // The vignette box is 170% of the screen; 0.62 is the smallest scale that still covers it all.
+  const blackout = play(vignette, [{ opacity: 1, transform: 'scale(.84)' }, { opacity: 1, transform: 'scale(.62)' }], { duration: 700, easing: 'ease-in' });
+  if (!await settled(id, drag, rush, hold, blackout)) return;
 
   // d) Inside: the camera falls, static, and a voice in text. Then the interior.
   const scene = element('div', undefined, 'fall-scene');

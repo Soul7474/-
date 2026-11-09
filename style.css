@@ -156,6 +156,7 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 #door-passage .grab-fingers{clip-path:polygon(0 16%,72% 21%,72% 100%,0 100%);-webkit-mask-image:linear-gradient(to right,#000 56%,transparent 70%);mask-image:linear-gradient(to right,#000 56%,transparent 70%);transform-origin:66% 58%}
 #door-passage .grab-thumb{clip-path:polygon(56% 0,100% 0,100% 34%,56% 31%);transform-origin:86% 30%}
 #door-passage .choke{position:absolute;inset:-35%;pointer-events:none;opacity:0;background:radial-gradient(ellipse 46% 42% at 50% 46%,transparent 26%,#000 80%);will-change:transform,opacity}
+#door-passage .pull-streaks{position:fixed;pointer-events:none;opacity:0;border-radius:50%;background:repeating-conic-gradient(#0000 0deg 2.6deg,#d8d8d022 2.9deg,#0000 3.3deg 6.2deg);-webkit-mask-image:radial-gradient(closest-side,transparent 8%,#000 40%,transparent 100%);mask-image:radial-gradient(closest-side,transparent 8%,#000 40%,transparent 100%);will-change:transform,opacity}
 #door-passage .fall-scene{position:absolute;inset:0;background:#000;overflow:hidden;opacity:0;display:grid;place-items:center}
 #door-passage .fall-shaft{position:absolute;inset:-40%;background:repeating-linear-gradient(180deg,transparent 0 44px,#1d1d1c 44px 47px,transparent 47px 101px,#121212 101px 109px,transparent 109px 160px);filter:blur(1.2px);will-change:transform,background-position}
 #door-passage .fall-noise{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;opacity:.2;mix-blend-mode:screen}
