@@ -20,11 +20,11 @@
     </radialGradient>
     <filter id="streaks" x="0" y="0" width="100%" height="100%">
       <feTurbulence type="fractalNoise" baseFrequency=".9 .018" numOctaves="3" seed="4"/>
-      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.5 0 0 0 -.62"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.1 0 0 0 -.56"/>
     </filter>
     <filter id="grain" x="0" y="0" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="1.3 .55" numOctaves="2" seed="11"/>
-      <feColorMatrix type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 .24"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".75 .7" numOctaves="2" seed="11"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 .34"/>
     </filter>
     <filter id="soft"><feGaussianBlur stdDeviation="1.4"/></filter>
     <filter id="haze" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="9"/></filter>
@@ -51,7 +51,7 @@
     <path d="M237 848v14" stroke="#000" stroke-width="4"/>
   </g>
   <rect width="280" height="960" fill="url(#fall)"/>
-  <rect width="280" height="960" filter="url(#grain)" opacity=".7"/>
+  <rect width="280" height="960" filter="url(#grain)"/>
   <!-- the seam between leaf and frame -->
   <rect x="2" y="2" width="276" height="958" fill="none" stroke="#050505" stroke-width="5"/>
 </svg>

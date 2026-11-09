@@ -134,7 +134,7 @@ El sistema respeta movimiento reducido con una imagen estática en vez del GIF p
 
 Puerta de la entrada (ritual, en orden):
 
-1. Despertar los tres ojos fotográficos (los pequeños, sin hilo); tocar un ojo cosido vuelve a cerrarlos.
+1. Despertar los tres ojos de cinta (los GIF que se abren en la oscuridad, sin hilo); tocar un ojo cosido vuelve a cerrarlos.
 2. Escribir `eco` con las runas de la pared: ᛖ (izquierda) → ᚲ → ᛟ (derecha). Una runa equivocada borra la secuencia. Al llegar a este paso, la pista muestra la tabla de runas.
 3. Llamar a la puerta tres veces seguidas, con menos de 2,4 s entre golpes.
 

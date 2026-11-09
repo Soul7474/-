@@ -176,7 +176,7 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 #door-passage .fall-text{position:relative;z-index:1;margin:0 16px;font:clamp(18px,2.6vw,42px)/1.4 'Courier New',monospace;letter-spacing:.14em;color:#dcdcd2;text-align:center;text-shadow:0 0 8px #ffffff2e}
 #door-passage .fall-text span{opacity:0}
 @media(max-width:540px){#door-passage .fall-text{letter-spacing:.06em}}
-.door-stage .door-leaf{position:absolute;left:53.8%;top:10.9%;width:20.2%;height:89.1%;max-width:none;opacity:.96;transform-origin:0 50%;filter:grayscale(1)}
+.door-stage .door-leaf{position:absolute;left:53.8%;top:10.9%;width:20.2%;height:89.1%;max-width:none;opacity:.96;transform-origin:0 50%;filter:grayscale(1) blur(.45px) contrast(.95) brightness(.74)}
 .door-stage:not([data-door="closed"]) .door-leaf{display:none}
 .door-recording.rattle{animation:door-rattle .34s linear 1}
 .door-recording.knock{animation:door-knock .2s ease-out 1}
@@ -190,7 +190,7 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 #entry-portal .watcher.eye-open{opacity:1}
 #entry-portal .watcher.eye-open img{filter:grayscale(1) brightness(1.5) contrast(1.25)}
 .door-whisper{position:relative;z-index:2;max-width:min(340px,86vw);min-height:4.4em;margin:10px 0 0;font:11px/1.7 'Courier New',monospace;color:#8d8d86;text-align:center;letter-spacing:.3px}
-.door-whisper .rune-key{display:block;margin-top:7px;font-size:10px;color:#6e6e68;letter-spacing:1px}
+.door-whisper .rune-key{display:block;margin-top:8px;font-size:13.5px;line-height:1.6;color:#b4b4aa;letter-spacing:1px}
 .door-whisper.stir{animation:whisper-stir 1s ease-out 1}
 @keyframes whisper-stir{0%{opacity:0;filter:blur(2px)}60%{opacity:.85}100%{opacity:1;filter:none}}
 @media(max-width:540px){.rune-scratches .rune{line-height:2.3;padding:0 6px}.door-whisper{font-size:10px;max-width:84vw}}
@@ -201,3 +201,15 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 body.quiet .presence-grain{animation:none}
 /* The interior fades up from black after the scene. */
 #scene-veil{position:fixed;inset:0;z-index:69;background:#000;pointer-events:none}
+/* The three open eyes: larger, lighter, softly masked and slowly breathing, so they can be found. */
+#entry-portal .watcher.photographic-eye{opacity:.92;animation:eye-breathe 5.5s ease-in-out infinite}
+#entry-portal .watcher-2.photographic-eye{width:96px}
+#entry-portal .watcher-5.photographic-eye{width:90px;animation-delay:-1.8s}
+#entry-portal .watcher-7.photographic-eye{width:100px;animation-delay:-3.6s}
+/* The tape is mostly black with a small eye in the middle third: frame the eye, soften the edge on the button. */
+#entry-portal .watcher.photographic-eye{overflow:hidden;-webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 46%,transparent 74%);mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 46%,transparent 74%)}
+#entry-portal .watcher.photographic-eye img[data-gif]{scale:2.3;filter:grayscale(1) brightness(1.3) contrast(1.15)}
+#entry-portal .watcher.eye-open.photographic-eye img[data-gif]{filter:grayscale(1) brightness(1.9) contrast(1.25) drop-shadow(0 0 6px #ffffff40)}
+@keyframes eye-breathe{0%,100%{scale:1;translate:0 0}50%{scale:1.07;translate:2px -3px}}
+body.quiet #entry-portal .watcher.photographic-eye{animation:none}
+@media(max-width:540px){#entry-portal .watcher-2.photographic-eye{width:66px;right:2%;top:20%}#entry-portal .watcher-5.photographic-eye{width:64px}#entry-portal .watcher-7.photographic-eye{width:72px}.door-whisper .rune-key{font-size:12.5px}}

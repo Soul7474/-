@@ -322,7 +322,7 @@ updateOmenControl();
 // wake the three open eyes, name the echo with the wall runes, knock three times.
 const ritualWord = ['e', 'c', 'o'];
 const ritualClues = [
-  ['Los ojos cosidos no pueden verte. Despierta a los tres que siguen abiertos.', 'Los que siguen abiertos no tienen hilo. Son pequeños y parecen de verdad.', 'Busca los ojos que parecen fotografías, no dibujos.'],
+  ['Los ojos cosidos no pueden verte. Despierta a los tres que siguen abiertos.', 'Los que siguen abiertos no tienen hilo. Son de cinta, no de tinta.', 'Busca los tres ojos grabados en cinta que se abren en la oscuridad, no los dibujados.'],
   ['Ahora nómbralo con los arañazos de la pared: lo que te devuelve la voz en una habitación vacía.', 'Tres letras. Lo que vuelve cuando llamas.', 'Se llama eco. Escríbelo con las runas, en orden.'],
   ['Ya sabe que estás aquí. Llama a la puerta. Tres veces.', 'Tres golpes sobre la puerta, seguidos, antes de que se apague el anterior.']
 ];
@@ -348,6 +348,7 @@ function renderDoor() {
 function ritualMiss(message) { ritual.misses++; whisperClue(message); showOmen(); }
 function advanceRitual() {
   ritual.step++; ritual.misses = 0;
+  pulse($('.door-recording'), 'rattle'); // the door shivers on its own as each step is done
   if (ritual.step === ritualClues.length) finishRitual(); else whisperClue();
 }
 // Returns true when the touch belongs to the ritual and must not summon an apparition.
@@ -432,6 +433,8 @@ function mountPassage(mode) {
   Object.assign(copy.style, { left: bounds.left + 'px', top: bounds.top + 'px', width: bounds.width + 'px', height: bounds.height + 'px' });
   const rig = element('div', undefined, 'passage-rig'); rig.append(copy);
   const passage = $('#door-passage'); passage.replaceChildren(rig); passage.hidden = false;
+  // The runes and eyes around the door sink into the dark over 300 ms instead of vanishing.
+  play(passage, [{ backgroundColor: 'rgba(3, 3, 3, 0)' }, { backgroundColor: 'rgb(3, 3, 3)' }], { duration: 300, easing: 'ease-out' });
   passageActive = true; passageId++;
   $('#entry-portal').setAttribute('aria-busy', 'true');
   document.querySelectorAll('[data-cross-door]').forEach(button => button.disabled = true);
@@ -545,11 +548,11 @@ async function openingScene() {
     { transform: view, filter: 'grayscale(1) brightness(.9)' }
   ], { duration: 1200, easing: 'cubic-bezier(.55,.05,.35,1)' });
   const opening = play(leaf, [
-    { transform: `perspective(${depth}px) rotateY(0deg)`, filter: 'grayscale(1) brightness(1)', opacity: .96 },
+    { transform: `perspective(${depth}px) rotateY(0deg)`, filter: 'grayscale(1) blur(.45px) contrast(.95) brightness(.74)', opacity: .96 },
     { offset: .14, transform: `perspective(${depth}px) rotateY(5deg)` },
     { offset: .3, transform: `perspective(${depth}px) rotateY(4deg)` },
-    { offset: .9, transform: `perspective(${depth}px) rotateY(72deg)`, filter: 'grayscale(1) brightness(.25)', opacity: .96 },
-    { transform: `perspective(${depth}px) rotateY(80deg)`, filter: 'grayscale(1) brightness(.1)', opacity: 0 }
+    { offset: .9, transform: `perspective(${depth}px) rotateY(72deg)`, filter: 'grayscale(1) blur(.45px) contrast(.95) brightness(.2)', opacity: .96 },
+    { transform: `perspective(${depth}px) rotateY(80deg)`, filter: 'grayscale(1) blur(.45px) contrast(.95) brightness(.08)', opacity: 0 }
   ], { delay: 900, duration: 1500, easing: 'ease-in' });
   // a) Fingers curl out of the dark and grip the door frame.
   const grip = play(frameHand, [
