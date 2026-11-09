@@ -61,8 +61,9 @@ function openGate(level, destination = level === 2 ? 'subsuelo' : 'archivo') {
   if (state.level >= level) { location.hash = destination; return; }
   gateLevel = level; gateDestination = destination;
   $('#gate-level').textContent = String(level).padStart(2, '0');
-  $('#gate-description').textContent = level === 1 ? 'Hay una palabra que este lugar todavía reconoce.' : 'El subsuelo se cerró el año en que la estación dejó de transmitir.';
+  $('#gate-description').textContent = level === 1 ? '¿Qué te devuelve la voz en una habitación vacía?' : 'El subsuelo se cerró el año en que la estación dejó de transmitir.';
   $('#gate-hint').textContent = level === 1 ? '«Me llamas en el vacío. Te devuelvo tu voz. No soy nadie. Tres letras.» Busca también en leeme_antes.txt.' : '«Cuatro cifras. El mismo año que aparece bajo el nombre de la estación.»';
+  $('#gate-dialog').dataset.level = String(level);
   $('#password').value = ''; $('#gate-error').textContent = ''; $('#password').removeAttribute('aria-invalid');
   openDialog($('#gate-dialog'));
   $('#password').focus();
@@ -90,7 +91,7 @@ document.addEventListener('click', event => {
   const gate = event.target.closest('[data-gate]'); if (gate) openGate(Number(gate.dataset.gate));
   const doc = event.target.closest('[data-document]'); if (doc) showDocument(doc.dataset.document);
 });
-const viewNames = ['inicio', 'archivo', 'transmisiones', 'visitantes', 'subsuelo'];
+const viewNames = ['inicio', 'archivo', 'fragmentos', 'transmisiones', 'visitantes', 'subsuelo'];
 let currentView = '';
 function route() {
   const target = location.hash.slice(1) || 'inicio';

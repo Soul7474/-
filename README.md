@@ -17,7 +17,9 @@ Para futuras tareas en la nube, usa este checkout existente. Cada tarea ya está
 
 ## Identidad visual
 
-Portal esotérico monocromo sobre negro, con marco luminoso tenue, texto monoespaciado espaciado y composición centrada. La entrada usa un sello geométrico original (`assets/threshold-seal.svg`), brillo blanco CRT moderado y scanlines discretas. Los enlaces del pie abren la primera puerta, el archivo público y el libro de visitas. Las secciones interiores conservan todas sus funciones y utilizan la misma paleta de grises. Se respeta movimiento reducido y no hay destellos.
+La entrada es una única pantalla negra: una imagen pequeña, «no estaba ahí antes» y un enlace para entrar. No muestra el archivo al hacer scroll ni reproduce audio. La imagen `assets/door-009.png` es una escena ficticia original generada para el proyecto; no es una cámara real ni una fotografía de un visitante.
+
+La primera puerta conserva su contraseña y una pista accesible. Tras entrar se muestran la navegación y los archivos existentes. El archivo público sigue disponible directamente en `#archivo`, sin acertijos obligatorios. La vista `#fragmentos` conserva el material de la antigua portada. Las secciones interiores mantienen la estética monocroma, los formularios, el audio optativo y el respeto a movimiento reducido.
 
 El collage `assets/wired-memory.svg` es una ilustración original: figura anónima, ciudad, tendido telefónico y terminal. Su generador reproducible, sin dependencias, está en `scripts/generate_art.py`:
 
@@ -25,7 +27,7 @@ El collage `assets/wired-memory.svg` es una ilustración original: figura anóni
 python3 scripts/generate_art.py
 ```
 
-No utiliza personajes, ilustraciones ni portadas de las referencias. El collage se conserva dentro de un fragmento desplegable; tanto este como los GIFs del pasillo y el ojo se presentan en escala de grises. No se cargan fuentes ni recursos de terceros. El contenido público y la navegación se pueden consultar sin resolver acertijos; las puertas forman parte del recorrido opcional.
+No utiliza personajes, ilustraciones ni portadas de las referencias. El collage se conserva dentro de un fragmento desplegable; tanto este como los GIFs del pasillo y el ojo se presentan en escala de grises. No se cargan fuentes ni recursos de terceros. El contenido público se puede consultar directamente desde `#archivo`; las puertas forman parte del recorrido narrativo.
 
 ## Recorrido
 

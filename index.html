@@ -12,17 +12,11 @@
   <script src="app.js" defer></script>
 </head>
 <body data-page="inicio">
-  <a class="skip" href="#main">Saltar al archivo</a>
+  <a class="skip" href="#archivo">Saltar al archivo</a>
   <section class="entry-portal" id="entry-portal" aria-labelledby="portal-title">
-    <p class="portal-invocation">[ Entre la señal y el silencio ]</p>
-    <p class="portal-quote">“Hay puertas que solo existen mientras alguien las busca.”</p>
-    <h1 id="portal-title">| Bienvenido al otro extremo |</h1>
-    <p class="portal-subtitle">Un refugio para quienes todavía escuchan.</p>
-    <img class="threshold-seal" src="assets/threshold-seal.svg" width="320" height="350" alt="Sello original de círculos, triángulos y órbitas entrelazadas. Lo que escucha también recuerda.">
-    <p class="portal-signature">Estación 09 · señal residual desde 1998</p>
-    <nav class="portal-nav" aria-label="Entrada al portal">
-      <button data-gate="1">Entrar</button><span aria-hidden="true">|</span><a href="#archivo">Archivo</a><span aria-hidden="true">|</span><a href="#visitantes">Deja un rastro</a>
-    </nav>
+    <figure class="door-recording"><img src="assets/door-009.png" width="1448" height="1086" alt="Fotograma ficticio y granulado de una puerta entreabierta. Al fondo apenas se distingue un rostro."><figcaption>009.jpg</figcaption></figure>
+    <h1 id="portal-title">no estaba ahí antes.</h1>
+    <button class="threshold-enter" data-gate="1">[ entrar ]</button>
   </section>
   <div class="broadcast">estación 09 / personal mirror <span class="broadcast-right">última actualización: 17.11.1998</span></div>
   <div class="shell">
@@ -36,12 +30,13 @@
         <nav class="main-nav" aria-label="Navegación del archivo">
           <a href="#inicio" class="nav-link active" data-view="inicio"><span>00</span> Umbral <b>↗</b></a>
           <a href="#archivo" class="nav-link" data-view="archivo"><span>01</span> Archivo <b>07</b></a>
+          <a href="#fragmentos" class="nav-link" data-view="fragmentos"><span>·</span> Fragmentos</a>
           <a href="#transmisiones" class="nav-link" data-view="transmisiones"><span>02</span> Transmisiones <b class="nav-dot">●</b></a>
           <a href="#visitantes" class="nav-link" data-view="visitantes"><span>03</span> Los que llegaron <b>↗</b></a>
           <button class="nav-link restricted" data-gate="2"><span>04</span> Subsuelo <b>⌑</b></button>
         </nav>
       <main id="main" tabindex="-1">
-        <section id="view-inicio" class="view">
+        <section id="view-fragmentos" class="view">
           <div class="breadcrumb"><span>root / public / umbral</span><span class="file-id">[ E09—000 ]</span></div>
           <details class="memory-fragment"><summary>Fragmento visual recuperado / 009</summary><div class="hero">
             <div class="hero-copy"><p class="eyebrow">&gt; connection established</p><h1>¿Sigues ahí<span class="cursor">_</span>?</h1><p class="hero-description">La estación dejó de transmitir hace 27 años.<br>Alguien olvidó apagar algo.</p><p class="portal-links"><a href="#archivo">[ explorar el archivo ]</a> <a href="#transmisiones">[ escuchar ]</a></p></div>
