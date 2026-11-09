@@ -77,7 +77,9 @@ $('#gate-form').addEventListener('submit', event => {
     $('#password').setAttribute('aria-invalid', 'true'); $('#password').select(); return;
   }
   state.level = Math.max(state.level, gateLevel); save(); renderArchive();
-  $('#password').removeAttribute('aria-invalid'); closeDialog($('#gate-dialog')); location.hash = gateDestination;
+  $('#password').removeAttribute('aria-invalid'); closeDialog($('#gate-dialog'));
+  if (gateDestination === 'interior' && document.body.dataset.page === 'inicio') crossDoor();
+  else location.hash = gateDestination;
   $('#log-whisper').textContent = 'la puerta se ha abierto_';
 });
 function showDocument(id) {
@@ -89,10 +91,12 @@ function showDocument(id) {
   body.append(element('p', doc.content)); openDialog($('#document-dialog'));
 }
 document.addEventListener('click', event => {
+  const entrance = event.target.closest('[data-cross-door]');
+  if (entrance) { if (state.level >= 1) crossDoor(); else openGate(1, 'interior'); return; }
   const gate = event.target.closest('[data-gate]'); if (gate) openGate(Number(gate.dataset.gate));
   const doc = event.target.closest('[data-document]'); if (doc) showDocument(doc.dataset.document);
 });
-const viewNames = ['inicio', 'archivo', 'fragmentos', 'transmisiones', 'visitantes', 'subsuelo'];
+const viewNames = ['inicio', 'interior', 'archivo', 'fragmentos', 'transmisiones', 'visitantes', 'subsuelo'];
 let currentView = '';
 function route() {
   const target = location.hash.slice(1) || 'inicio';
@@ -101,12 +105,14 @@ function route() {
   if (name === 'subsuelo' && state.level < 2) {
     history.replaceState(null, '', '#inicio'); route(); openGate(2); return;
   }
+  cancelDoorPassage();
   dismissOmen();
   document.body.dataset.page = name;
   $('#entry-portal').hidden = name !== 'inicio';
   document.querySelectorAll('.view').forEach(view => view.hidden = view.id !== `view-${name}`);
   document.querySelectorAll('[data-view]').forEach(link => { link.classList.toggle('active', link.dataset.view === name); if (link.dataset.view === name) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
   $('.restricted').classList.toggle('active', name === 'subsuelo');
+  $('.masthead').hidden = name === 'interior';
   document.title = `ESTACIÓN 09 — ${name === 'inicio' ? 'señal residual' : name}`;
   if (currentView && currentView !== name) {
     const focusTarget = name === 'inicio' ? $('#portal-title') : $('#main');
@@ -192,6 +198,7 @@ function dismissOmen() {
 }
 function updateOmenControl() {
   const enabled = omensEnabled && !motionQuery.matches;
+  document.body.classList.toggle('quiet', !enabled);
   $('#omens-toggle').textContent = enabled ? 'calma' : 'invocar';
   $('#omens-toggle').setAttribute('aria-pressed', String(enabled));
   $('#omens-toggle').setAttribute('aria-label', enabled ? 'Desactivar sobresaltos visuales' : 'Activar sobresaltos visuales');
@@ -199,7 +206,7 @@ function updateOmenControl() {
   if (motionQuery.matches) $('#omens-toggle').textContent = 'en calma';
 }
 function showOmen() {
-  if (!omensEnabled || motionQuery.matches || document.hidden || performance.now() - lastOmen < 18000) return;
+  if (passageActive || !omensEnabled || motionQuery.matches || document.hidden || performance.now() - lastOmen < 18000) return;
   lastOmen = performance.now();
   const apparition = $('#apparition');
   apparition.hidden = false;
@@ -229,10 +236,51 @@ $('#omens-toggle').addEventListener('click', () => {
   omensEnabled = !omensEnabled;
   try { localStorage.setItem('estacion09-omens', omensEnabled ? 'active' : 'quiet'); } catch {}
   dismissOmen(); updateOmenControl();
+  if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; }
 });
 motionQuery.addEventListener('change', () => { dismissOmen(); updateOmenControl(); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape') dismissOmen(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) dismissOmen(); });
 updateOmenControl();
+
+// Zoom around the actual dark opening of the existing photograph.
+let passageAnimation = null;
+let passageActive = false;
+function cancelDoorPassage() {
+  passageActive = false;
+  passageAnimation?.cancel(); passageAnimation = null;
+  $('#door-passage').hidden = true;
+  $('#entry-portal').removeAttribute('aria-busy');
+  document.querySelectorAll('[data-cross-door]').forEach(button => button.disabled = false);
+}
+async function crossDoor() {
+  if (passageActive) return;
+  if (motionQuery.matches || !omensEnabled) { location.hash = 'interior'; return; }
+  dismissOmen();
+  const original = $('.door-recording img');
+  const bounds = original.getBoundingClientRect();
+  if (!bounds.width || !bounds.height || typeof original.animate !== 'function') { location.hash = 'interior'; return; }
+  const passage = $('#door-passage'); const image = passage.querySelector('img');
+  passageActive = true; passage.hidden = false;
+  $('#entry-portal').setAttribute('aria-busy', 'true');
+  document.querySelectorAll('[data-cross-door]').forEach(button => button.disabled = true);
+  Object.assign(image.style, { left: bounds.left + 'px', top: bounds.top + 'px', width: bounds.width + 'px', height: bounds.height + 'px', transformOrigin: '65% 48%' });
+  const dx = innerWidth / 2 - (bounds.left + bounds.width * .65);
+  const dy = innerHeight / 2 - (bounds.top + bounds.height * .48);
+  const scale = Math.max(innerWidth / (bounds.width * .18), innerHeight / (bounds.height * .7));
+  passageAnimation = image.animate([
+    { transform: 'translate(0px, 0px) scale(1)', filter: 'grayscale(1) brightness(1)' },
+    { offset: .78, transform: `translate(${dx}px, ${dy}px) scale(${scale * .8})`, filter: 'grayscale(1) brightness(.45)' },
+    { transform: `translate(${dx}px, ${dy}px) scale(${scale})`, filter: 'grayscale(1) brightness(0)' }
+  ], { duration: 1600, easing: 'cubic-bezier(.62,.06,.52,1)', fill: 'forwards' });
+  try { await passageAnimation.finished; } catch { return; }
+  if (!passageActive) return;
+  cancelDoorPassage(); location.hash = 'interior';
+}
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && passageActive) { cancelDoorPassage(); $('.threshold-enter').focus(); }
+});
+window.addEventListener('resize', () => { if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; } });
+motionQuery.addEventListener('change', () => { if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; } });
 
 renderArchive(); renderGuests(); route(); applyMotionPreference();

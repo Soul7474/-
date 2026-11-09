@@ -46,6 +46,9 @@ test('serves real GIF images, a reduced-motion image and a favicon', async () =>
   const presence = await fetch(base + '/assets/presence.png');
   assert.equal(presence.status, 200);
   assert.equal(presence.headers.get('content-type'), 'image/png');
+  for (const path of ['/assets/inner-relic.png', '/assets/echo-form.svg', '/assets/trace-form.svg']) {
+    assert.equal((await fetch(base + path)).status, 200, path);
+  }
 });
 test('returns a real 404 for missing files and blocks source/configuration exposure', async () => {
   for (const path of ['/no-existe', '/package.json', '/server.mjs', '/.git/config', '/%2e%2e%2fREADME.md', '/%ZZ']) {

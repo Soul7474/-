@@ -21,6 +21,10 @@ La entrada es una única pantalla negra: una imagen pequeña rodeada de runas, t
 
 Tocar un ojo o fallar una palabra puede invocar una aparición visual de 850 ms, sin destellos, con un intervalo mínimo de 18 segundos. Escape la oculta, cambiar de página o pestaña también. El control «calma» desactiva las apariciones y guarda la preferencia; con movimiento reducido se desactivan. El sonido sigue siendo optativo, activado por el control existente. `assets/presence.png` es un fragmento fotográfico original generado para esta web.
 
+La fotografía de la puerta es interactiva. Al introducir la palabra correcta (o al volver con el sello abierto), un acercamiento de 1,6 segundos enfoca el hueco de la puerta y termina en negro. Después abre `#interior`: una cámara con una forma orgánica abstracta original y cuatro accesos simbólicos, con nombres breves, a los restos, voces, huellas y subsuelo. Escape cancela el acercamiento; se omite con movimiento reducido o «calma».
+
+El interior usa grano fijo, scanlines y una banda de tracking ocasional. «Calma» también detiene el tracking. Los párrafos largos y las transcripciones están plegados y se conservan íntegros. Los diagramas de transmisión y subsuelo se regeneran con `python3 scripts/generate_forms.py` (sin dependencias). `assets/inner-relic.png` es una imagen abstracta original generada para el proyecto.
+
 La primera puerta conserva su contraseña y una pista accesible. Tras entrar se muestran la navegación y los archivos existentes. El archivo público sigue disponible directamente en `#archivo`, sin acertijos obligatorios. La vista `#fragmentos` conserva el material de la antigua portada. Las secciones interiores mantienen la estética monocroma, los formularios, el audio optativo y el respeto a movimiento reducido.
 
 El collage `assets/wired-memory.svg` es una ilustración original: figura anónima, ciudad, tendido telefónico y terminal. Su generador reproducible, sin dependencias, está en `scripts/generate_art.py`:
