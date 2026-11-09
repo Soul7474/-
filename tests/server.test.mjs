@@ -47,7 +47,7 @@ test('serves real GIF images, a reduced-motion image and a favicon', async () =>
   const presence = await fetch(base + '/assets/presence.png');
   assert.equal(presence.status, 200);
   assert.equal(presence.headers.get('content-type'), 'image/png');
-  for (const path of ['/assets/room.png', '/assets/inner-relic.png', '/assets/echo-form.svg', '/assets/trace-form.svg']) {
+  for (const path of ['/assets/inner-relic.png', '/assets/echo-form.svg', '/assets/trace-form.svg']) {
     assert.equal((await fetch(base + path)).status, 200, path);
   }
 });

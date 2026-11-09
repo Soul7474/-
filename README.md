@@ -55,23 +55,21 @@ Los siete archivos de `gifs/` se conservan sin modificaciones:
 | --- | --- |
 | `giphy.gif` | Ojos de la entrada |
 | `giphy (1).gif` | Archivo |
-| `giphy (2).gif` | Archivo de cintas |
+| `giphy (2).gif` | Fondo del interior |
 | `giphy (3).gif` | Subsuelo, reproducción explícita |
 | `giphy (4).gif` | Voces |
 | `giphy (5).gif` | Fragmentos |
-| `giphy (6).gif` | Televisor del interior y Huellas |
+| `giphy (6).gif` | Huellas |
 
 También pueden abrirse en **Fragmentos → cintas**. Los fotogramas de `assets/gif-stills/` son capturas del navegador de los GIFs originales. Se muestran de entrada; `IntersectionObserver` carga la animación cuando entra en pantalla. Se vuelve al fotograma cuando sale de pantalla, se oculta la pestaña, se activa «calma» o el navegador pide movimiento reducido. La cinta con cortes más marcados no se reproduce automáticamente: requiere pulsarla o abrirla desde «cintas». Los GIFs no añaden audio.
 
 ## Interior cambiante (fases 2–5)
 
-La revisión de composición y ritmo está documentada en [docs/revision-visual.md](docs/revision-visual.md).
-
 La extensión está separada en `interior.js` y `interior.css`. La entrada y `crossDoor()` siguen en `app.js`; el contrato `window.EstacionInterior` expone únicamente consulta del estado, contexto de audio ya activado, apariciones y apertura del subsuelo. Los eventos `station:sound` y `station:transmission` comunican acciones confirmadas. No modificar la puerta para añadir comportamientos al interior.
 
-El interior se compone como una habitación con profundidad: puerta al fondo, silla y un CRT. Las marcas están en los objetos; los cuatro accesos y el sello permanecen en una franja inferior fija. La presencia avanza tras 1, 3 y 6 consultas y permanece en el último estado, sin ciclos repetidos. La memoria se guarda en `sessionStorage` durante la sesión; «Olvidar esta visita» también la borra. «Calma» y movimiento reducido fijan la escena y cancelan los sucesos pendientes.
+Cerrar un documento, vestigio o marca cambia las posiciones de las presencias. Los cuatro accesos permanecen fijos. La memoria se guarda en `sessionStorage` durante la sesión; «Olvidar esta visita» también la borra. «Calma» y movimiento reducido fijan la escena y cancelan los sucesos pendientes.
 
-Las anomalías de la habitación requieren una interacción: primero falla el tracking del CRT y después aparece un ojo dentro de su pantalla durante 1,1 segundos. Hay al menos 48 segundos entre invocaciones; en otras secciones se conserva la aparición anterior. No se lanzan en segundo plano, al mirar un diálogo ni al entrar por primera vez. Escape cancela los sonidos añadidos y las invocaciones pendientes, con una pausa de 20 segundos. El sonido ambiental solo se amplía después de activar el control existente: cinta a la derecha y golpes lejanos a la izquierda. El inicio es más silencioso; los nodos se liberan al terminar y al desactivar el sonido, cambiar de vista o esconder la pestaña.
+Las apariciones interiores requieren una interacción, tienen un retardo breve y al menos 48 segundos entre invocaciones. No se lanzan en segundo plano, al mirar un diálogo ni al entrar por primera vez. Escape cancela los sonidos añadidos y las invocaciones pendientes, con una pausa de 20 segundos. El sonido ambiental solo se amplía después de activar el control existente: roce de cinta, filtrado grave y golpes lejanos; los nodos se liberan al terminar y al desactivar el sonido, cambiar de vista o esconder la pestaña.
 
 <details><summary>Pistas y soluciones del sello (spoilers)</summary>
 

@@ -1,52 +1,19 @@
-/* Interior: one room, one focal point, stable exits. Threshold styling is separate. */
-body[data-page="interior"] .inner-watchers,body[data-page="interior"] .web-badges{display:none}
-body[data-page="interior"] .shell{max-width:1160px;padding-top:22px}
-body[data-page="interior"] .sidebar{margin-top:0;padding-top:0}
-#view-interior .immersion-room{position:relative;isolation:isolate;display:block;height:auto;aspect-ratio:3/2;min-height:0;width:100%;max-height:none;overflow:hidden;background:#030303}
-#view-interior .room-world{position:absolute;inset:0 0 auto;width:100%;aspect-ratio:3/2;isolation:isolate}
-.room-surface{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:fill;filter:grayscale(1) brightness(.8);mask-image:radial-gradient(ellipse at 52% 53%,black 40%,transparent 76%);pointer-events:none}
-#view-interior .immersion-room .sentinel-presence{position:absolute;left:25%;top:29%;width:12%;height:32%;max-height:none;padding:0;opacity:.025;transform:rotate(-2deg);mix-blend-mode:screen;z-index:2}
-#view-interior .immersion-room .sentinel-presence .inner-relic{width:100%;height:100%;max-width:100%;max-height:100%;filter:grayscale(1) brightness(.7) blur(.6px)}
-#view-interior .immersion-room .sentinel-presence:hover{opacity:.15}
-#view-interior .immersion-room .ghost-moon,#view-interior .immersion-room .ghost-arms{opacity:0;pointer-events:none}
-#view-interior .immersion-room .chamber-crowd{position:absolute;inset:14% auto auto 25%;width:12%;height:45%;opacity:0;object-fit:cover;mix-blend-mode:screen;mask-image:linear-gradient(transparent,#000 40%,transparent)}
-#view-interior .memory-marks{position:absolute;inset:0;z-index:4;pointer-events:none}
-#view-interior .memory-mark{pointer-events:auto;display:grid;place-items:center;min-width:44px;min-height:44px;padding:0;border:0;background:none;color:#b0b09f;font:20px/1 Georgia,serif;opacity:.65}
-#view-interior .memory-mark:hover,#view-interior .memory-mark:focus-visible{opacity:1;color:#e5e5d7}
-#view-interior .immersion-room .mark-witness{position:absolute;left:75.2%;top:43.6%;width:10.6%;height:16%;padding:0;opacity:1;overflow:hidden;clip-path:polygon(3% 0,100% 10%,97% 100%,0 86%)}
-.room-screen>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) brightness(.38) contrast(1.1);pointer-events:none}
-.room-screen:hover>img{filter:grayscale(1) brightness(.6) contrast(1.1)}
-.room-screen>img.room-intruder{opacity:0;object-fit:cover;filter:grayscale(1) brightness(.8);mix-blend-mode:screen}
-#view-interior .immersion-room .mark-touch{position:absolute;left:43%;top:70%;font-size:18px;opacity:.43}
-#view-interior .immersion-room .mark-absence{position:absolute;left:33%;top:52%;font-size:19px;opacity:.4}
-#view-interior .room-navigation{position:absolute;inset:auto 10% 0;display:flex;align-items:center;justify-content:center;gap:5px;min-height:54px;z-index:6;background:linear-gradient(transparent,#030303 65%)}
-#view-interior .room-navigation .chamber-door{position:static;width:auto;min-width:60px;min-height:44px;padding:9px 12px;background:none;gap:0}
-#view-interior .room-navigation .chamber-door:hover{background:#090909}
-#view-interior .room-navigation .door-emblem{display:none}
-#view-interior .room-navigation small{font:10px/1.8 'Courier New',monospace;letter-spacing:2px;color:#aaa99d}
-#view-interior .room-navigation .mark-seal{position:static;width:44px;height:44px;font-size:25px!important}
-.mark-seal[data-open=true]{color:#d9d9c6!important}
-#view-interior .immersion-room[data-haunting="1"] .sentinel-presence{left:27%;top:33%;height:37%;width:15%;opacity:.1;transform:rotate(1deg)}
-#view-interior .immersion-room[data-haunting="2"] .sentinel-presence{left:43%;top:32%;height:49%;width:21%;opacity:.18;transform:rotate(-3deg)}
-#view-interior .immersion-room[data-haunting="3"] .sentinel-presence{left:36%;top:14%;height:77%;width:31%;opacity:.29;transform:rotate(-1deg)}
-#view-interior .immersion-room[data-haunting="2"] .chamber-crowd{opacity:.07}
-#view-interior .immersion-room[data-haunting="3"] .chamber-crowd{opacity:.13}
-.immersion-room[data-interference="tracking"] .room-screen>img{filter:grayscale(1) brightness(.18);transform:translateY(4%)}
-.immersion-room[data-interference="tracking"] .room-screen:after{content:'';position:absolute;left:0;right:0;top:36%;height:10%;background:#7776;pointer-events:none}
-.immersion-room[data-interference="peek"] .room-screen>img.room-intruder{opacity:1}
-.immersion-room[data-interference="peek"] .room-screen>img[data-gif]{opacity:.1}
-.return-threshold{margin-top:12px}
-@media(max-width:600px){
-body[data-page="interior"] .shell{padding:0 12px}
-#view-interior .immersion-room{aspect-ratio:auto;height:72svh;min-height:450px}
-#view-interior .immersion-room .room-world{width:165%;inset:44% auto auto 47%;transform:translate(-50%,-50%)}
-#view-interior .room-navigation{left:0;right:0;gap:0;min-height:56px;background:linear-gradient(transparent,#030303 35%)}
-#view-interior .room-navigation .chamber-door{padding:10px 8px;min-width:53px}
-#view-interior .room-navigation small{font-size:9px;letter-spacing:1px}
-#view-interior .immersion-room .mark-touch{font-size:16px}
-#view-interior .immersion-room .mark-absence{font-size:17px}
-}
-
+/* Interior-only extension. Do not style the threshold or the photographed door here. */
+#view-interior .memory-marks{position:absolute;inset:0;z-index:5;pointer-events:none}
+#view-interior .memory-mark{position:absolute;pointer-events:auto;display:grid;place-items:center;width:44px;height:44px;padding:0;color:#9d9d8f;background:transparent;border:0;font:24px/1 Georgia,serif;opacity:.65}
+#view-interior .memory-mark:hover,#view-interior .memory-mark:focus-visible{color:#e3e3d2;opacity:1;background:#05050588}
+.mark-witness{left:48%;top:19%}.mark-touch{left:23%;top:54%}.mark-absence{right:19%;top:17%}.mark-seal{left:47%;bottom:13%;font-size:30px!important}.mark-seal[data-open=true]{color:#d4d4bd!important}
+/* Only presences change. Navigation positions and hit areas stay fixed. */
+#view-interior [data-haunting="1"] .sentinel-presence{transform:translate(-42px,8px) rotate(-2deg)}
+#view-interior [data-haunting="1"] .ghost-moon{right:6%;top:25%;opacity:.24}
+#view-interior [data-haunting="1"] .ghost-arms{transform:translate(24px,-15px) rotate(4deg)}
+#view-interior [data-haunting="2"] .ghost-moon{opacity:0}
+#view-interior [data-haunting="2"] .ghost-arms{transform:translate(32px,-30px) scale(.93);opacity:.33}
+#view-interior [data-haunting="2"] .chamber-crowd{opacity:.23}
+#view-interior [data-haunting="3"] .sentinel-presence{transform:translate(35px,-12px) rotate(2deg)}
+#view-interior [data-haunting="3"] .ghost-moon{left:9%;right:auto;top:15%;transform:scaleX(-1) rotate(-5deg);opacity:.3}
+#view-interior [data-haunting="3"] .ghost-arms{opacity:.08}
+#view-interior [data-haunting="3"] .chamber-crowd{opacity:.3}
 #memory-dialog{width:530px;max-width:calc(100% - 28px);background:#030303;border:1px solid #41413b;padding:0;max-height:88svh}
 #memory-dialog::backdrop{background:#000e}
 .memory-top{display:flex;align-items:center;justify-content:space-between;padding:6px 13px;border-bottom:1px solid #20201d}
@@ -74,7 +41,8 @@ body[data-page="interior"] .shell{padding:0 12px}
 .haunted-screen{position:relative}.signal-reveal{position:absolute;right:11px;bottom:10px;z-index:2;min-width:44px;min-height:44px;border:0;background:#050505b0;color:#b8b8a5;font-size:23px;padding:4px}
 .signal-word{position:absolute;left:5%;top:39%;width:90%;text-align:center;white-space:pre-line;color:#d2d2bd;background:#030303c9;letter-spacing:9px;font:14px/2.4 'Courier New',monospace;pointer-events:none;z-index:1}
 .haunted-screen.tuned img{filter:grayscale(1) brightness(.4)}
-@media(max-width:540px){#memory-content{padding:15px}.memory-image{min-height:190px}.signal-word{font-size:11px;letter-spacing:6px;line-height:2}.signal-reveal{right:5px;bottom:4px}.sealed-fragment{height:45svh;min-height:245px}}
+@media(max-width:540px){.mark-witness{left:46%;top:21%}.mark-touch{left:14%;top:48%}.mark-absence{right:14%;top:19%}.mark-seal{left:44%;bottom:16%}#view-interior .memory-mark{font-size:21px}
+#view-interior [data-haunting="1"] .sentinel-presence{transform:translate(-20px,8px) rotate(-2deg)}
+#view-interior [data-haunting="3"] .sentinel-presence{transform:translate(18px,-10px) rotate(2deg)}
+#memory-content{padding:15px}.memory-image{min-height:190px}.signal-word{font-size:11px;letter-spacing:6px;line-height:2}.signal-reveal{right:5px;bottom:4px}.sealed-fragment{height:45svh;min-height:245px}}
 @media(prefers-reduced-motion:reduce){#view-interior .sentinel-presence,#view-interior .chamber-ghost{transition:none!important;animation:none!important}}
-.room-screen:focus-visible{outline:none}
-.room-screen:focus-visible:before{content:'';position:absolute;inset:3px;border:1px solid #bcbcad;z-index:5;pointer-events:none}
