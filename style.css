@@ -175,3 +175,5 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 .door-whisper.stir{animation:whisper-stir 1s ease-out 1}
 @keyframes whisper-stir{0%{opacity:0;filter:blur(2px)}60%{opacity:.85}100%{opacity:1;filter:none}}
 @media(max-width:540px){.rune-scratches .rune{line-height:2.3;padding:0 6px}.door-whisper{font-size:10px;max-width:84vw}}
+
+.door-replay{position:relative;z-index:2;display:block;margin:5px auto 0;padding:6px 10px;border:0;background:none;color:#8d8d84;font:10px/1.6 'Courier New',monospace;text-decoration:underline;text-underline-offset:3px;min-height:32px}.door-replay:hover{color:#d5d5c9}

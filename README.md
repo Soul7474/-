@@ -154,7 +154,15 @@ Las contraseñas son una mecánica narrativa en JavaScript, **no autenticación 
 npm test
 ```
 
-Para volver a ver la puerta cerrada y la escena de entrada, usa «Olvidar esta visita» o borra el `localStorage` del sitio y recarga. Comprueba que «calma» no esté activado, porque esa preferencia se guarda aparte.
+Los accesos de visitas anteriores ya no implican haber visto la nueva escena de la puerta. El indicador `estacion09-door-scene-v1` solo se guarda al completarla. Si el visitante ya tenía acceso antes de esta actualización, su siguiente entrada con efectos activos muestra la escena completa sin borrar accesos ni mensajes. Si se cancela antes de terminar, puede intentarse de nuevo.
+
+El botón `[ repetir ]` permite volver a ver la escena una vez abierta la puerta. Respeta «calma» y movimiento reducido; si están activos, explica por qué se omite. «Olvidar esta visita» borra también el indicador de escena vista. La preferencia «calma» se conserva por separado.
+
+Verificación de visitantes antiguos, repetición y preferencias (requiere Playwright y Chromium):
+
+```sh
+npm run test:door
+```
 
 Los tests de Node verifican el HTML y los recursos (incluidas las runas, la puerta cerrada y los recortes con transparencia), los GIFs, respuestas HEAD, errores 404 y el bloqueo de archivos de configuración. Durante el desarrollo también se recorrieron las puertas, la navegación, los documentos, el libro de visitas, la persistencia, el audio, el reinicio y movimiento reducido mediante Chromium/Playwright, en escritorio y móvil.
 
