@@ -142,7 +142,40 @@
     } else gate(current);
   }
   // The next commits supply these independent modules.
-  function startReactivity() {}
+  function armIdle() {
+    clearTimeout(idleTimer);
+    if (reduce.matches || current < 0 || document.hidden) return;
+    idleTimer = setTimeout(() => { const mark = $('#gate-symbol'); if (mark) mark.style.translate = '2px 0'; }, 45000);
+  }
+  function planLog() {
+    clearTimeout(logTimer);
+    if (reduce.matches || current < 0 || document.hidden) return;
+    logTimer = setTimeout(() => {
+      const entries = ['sesión mantenida', 'lectura registrada', 'acceso sin autorizar: tolerado'];
+      addLog(entries[Math.floor(Math.random() * entries.length)]); planLog();
+    }, 20000 + Math.random() * 20000);
+  }
+  function startReactivity(number) {
+    if (reduce.matches) return;
+    armIdle(); planLog();
+    if (number >= 6) timers.push(setTimeout(() => {
+      const text = $('#gate-text'); if (!text || document.hidden) return;
+      const before = text.textContent; text.textContent = before.replace(/\S+$/, '_');
+      timers.push(setTimeout(() => { if (text.isConnected) text.textContent = before.replace(/\S+$/, number === 6 ? 'pendiente.' : 'cerrada.'); }, 500));
+    }, 10000 + Math.random() * 10000));
+  }
+  for (const event of ['pointermove', 'pointerdown', 'touchstart', 'keydown']) document.addEventListener(event, armIdle, { passive: true });
+  document.addEventListener('visibilitychange', () => {
+    sound.visibility();
+    if (document.hidden) { tabWasHidden = true; cleanTimers(); return; }
+    if (tabWasHidden && !reduce.matches && current >= 0) {
+      const detail = lastReturnDetail === 0 ? 1 : 0; lastReturnDetail = detail;
+      if (detail === 0) addLog('lectura reanudada');
+      else { const text = $('#gate-text'); if (text) text.textContent = text.textContent.replace('permanece', 'continúa'); addLog('sesión mantenida'); }
+    }
+    tabWasHidden = false; armIdle(); planLog();
+  });
+  reduce.addEventListener('change', () => { cleanTimers(); render(); });
   function renderRastro() {}
   const sound = { stop() {}, start() {}, controls() {} };
   document.addEventListener('click', event => {
