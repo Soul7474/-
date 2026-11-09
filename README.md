@@ -17,15 +17,33 @@ Para futuras tareas en la nube, usa este checkout existente. Cada tarea ya está
 
 ## Identidad visual
 
-La entrada es una única pantalla negra: una imagen pequeña rodeada de runas, trazos rituales y siete ojos interactivos, con un solo enlace para entrar. No muestra nombres de archivo, frases de bienvenida ni el archivo al hacer scroll. Dentro quedan otros dos ojos y una marca rúnica. No hay marcadores de nivel ni puntuaciones. La imagen `assets/door-009.png` es una escena ficticia original generada para el proyecto; no es una cámara real ni una fotografía de un visitante.
+La entrada es una única pantalla negra: una imagen pequeña rodeada de runas, trazos rituales y siete ojos interactivos, con un solo enlace para entrar y una línea de pistas susurradas bajo él. No muestra nombres de archivo, frases de bienvenida ni el archivo al hacer scroll. Las runas también son botones (se añadió ᛖ a la columna izquierda). Dentro quedan otros dos ojos y una marca rúnica. No hay marcadores de nivel ni puntuaciones. La imagen `assets/door-009.png` es una escena ficticia original generada para el proyecto; no es una cámara real ni una fotografía de un visitante.
 
-Tocar un ojo o fallar una palabra puede invocar una aparición visual de 850 ms, sin destellos, con un intervalo mínimo de 18 segundos. Escape la oculta, cambiar de página o pestaña también. El control «calma» desactiva las apariciones y guarda la preferencia; con movimiento reducido se desactivan. El sonido sigue siendo optativo, activado por el control existente. `assets/presence.png` es un fragmento fotográfico original generado para esta web.
+Tocar un ojo cosido, fallar un paso del ritual o fallar una palabra puede invocar una aparición visual de 850 ms (los aciertos del ritual no la invocan), sin destellos, con un intervalo mínimo de 18 segundos. Escape la oculta, cambiar de página o pestaña también. El control «calma» desactiva las apariciones y guarda la preferencia; con movimiento reducido se desactivan. El sonido sigue siendo optativo, activado por el control existente. `assets/presence.png` es un fragmento fotográfico original generado para esta web.
 
-La fotografía de la puerta es interactiva. Al introducir la palabra correcta (o al volver con el sello abierto), un acercamiento de 1,6 segundos enfoca el hueco de la puerta y termina en negro. Después abre `#interior`: una cámara con una forma orgánica abstracta original y cuatro accesos simbólicos, con nombres breves, a los restos, voces, huellas y subsuelo. Escape cancela el acercamiento; se omite con movimiento reducido o «calma».
+La puerta de la entrada empieza **cerrada**: una hoja original (`assets/door-shut.svg`) tapa el hueco de la fotografía. Bajo `[ entrar ]` hay una línea de susurros que da la pista del paso actual y se vuelve más explícita con cada error. Para abrirla hay que completar un ritual de tres pasos tocando elementos de la propia pantalla (la solución está más abajo, en el bloque de spoilers). Tocar la puerta cerrada solo la hace temblar y repite la pista. El progreso del ritual no se guarda: al recargar vuelve a empezar, pero la puerta abierta sí se recuerda.
+
+### Animación al entrar
+
+Al completar el ritual, la vista se acerca a la puerta y la hoja cruje y se abre hacia la oscuridad (unos 3 s). Después, en este orden (unos 12–13 s en total):
+
+1. **La mano.** Unos dedos salen de la oscuridad y se agarran al marco izquierdo de la puerta (`assets/cutouts/presence-hand.png`).
+2. **La cara.** Una cara sale del hueco, pequeña y desenfocada, y se va acercando y aclarando poco a poco durante 3,3 s, mientras la cámara se inclina hacia ella (`assets/cutouts/presence-face.png`).
+3. **El agarre.**
+   - La mano suelta el marco y se lanza hacia la cámara (420 ms) hasta cruzar la parte baja de la pantalla, a la altura del cuello.
+   - Aprieta, con una sacudida leve (320 ms).
+   - Te arrastra hacia dentro (800 ms): zoom rápido hacia el hueco, temblor leve del encuadre y fundido a negro.
+4. **Dentro (2,9 s).** La cámara cae: franjas que suben acelerando, el encuadre gira y se detiene con un golpe seco. Hay estática de bajo contraste (un `<canvas>` pequeño con grano, sin destellos) y el rótulo `● REC CAM_09 / SEÑAL PERDIDA`. Aparece el texto «Te estábamos esperando.» y todo se apaga antes de abrir `#interior`.
+
+Todo está hecho con CSS y la Web Animations API, sin librerías ni recursos externos. Ningún efecto brusco dura más de 850 ms, y no hay destellos ni parpadeos. Si el sonido ambiente está activado, la caída añade un siseo de estática sintetizado.
+
+Escape cancela la escena en cualquier fase y deja la puerta abierta en el umbral. Con «calma» o con movimiento reducido no hay animación: la puerta queda abierta con la mano en el marco y la cara en el hueco, quietas. Funciona en escritorio y en móvil, porque los encuadres se calculan a partir del tamaño de la ventana.
+
+Con el sello ya abierto, la fotografía de la puerta es interactiva. Al tocarla, un acercamiento de 1,6 segundos enfoca el hueco de la puerta y termina en negro. Después abre `#interior`: una cámara con una forma orgánica abstracta original y cuatro accesos simbólicos, con nombres breves, a los restos, voces, huellas y subsuelo. Escape cancela el acercamiento; se omite con movimiento reducido o «calma».
 
 El interior usa grano fijo, scanlines y una banda de tracking ocasional. «Calma» también detiene el tracking. Los párrafos largos y las transcripciones están plegados y se conservan íntegros. Los diagramas de transmisión y subsuelo se regeneran con `python3 scripts/generate_forms.py` (sin dependencias). `assets/inner-relic.png` es una imagen abstracta original generada para el proyecto.
 
-La primera puerta conserva su contraseña y una pista accesible. Tras entrar se muestran la navegación y los archivos existentes. El archivo público sigue disponible directamente en `#archivo`, sin acertijos obligatorios. La vista `#fragmentos` conserva el material de la antigua portada. Las secciones interiores mantienen la estética monocroma, los formularios, el audio optativo y el respeto a movimiento reducido.
+En el archivo, el primer sello conserva su contraseña y una pista accesible; si se abre ahí, la puerta de la entrada también queda abierta. Tras entrar se muestran la navegación y los archivos existentes. El archivo público sigue disponible directamente en `#archivo`, sin acertijos obligatorios. La vista `#fragmentos` conserva el material de la antigua portada. Las secciones interiores mantienen la estética monocroma, los formularios, el audio optativo y el respeto a movimiento reducido.
 
 El collage `assets/wired-memory.svg` es una ilustración original: figura anónima, ciudad, tendido telefónico y terminal. Su generador reproducible, sin dependencias, está en `scripts/generate_art.py`:
 
@@ -37,13 +55,24 @@ No utiliza personajes, ilustraciones ni portadas de las referencias. El collage 
 
 ## Imágenes aportadas
 
-Los 13 originales de `images/` se conservan intactos. La dirección actual utiliza sus ojos, figuras alargadas, manos y multitudes. Se pueden abrir todos desde **Fragmentos → vestigios**, sin mostrar sus nombres en la interfaz.
+Los 17 originales de `images/` se conservan intactos. La dirección actual utiliza sus ojos, figuras alargadas, manos y multitudes. Los 13 primeros se pueden abrir desde **Fragmentos → vestigios**, sin mostrar sus nombres en la interfaz.
+
+Los cuatro últimos se aportaron para el ser de la puerta:
+
+- `08fe20c9…`: cara en la oscuridad. Es la cara que sale del hueco.
+- `5b1e40ef…`: mano. Se agarra al marco y luego te agarra a ti.
+- `2483130d…`: figura en un pasillo. Ahora no se usa.
+- `c2f15d46…`: rostro con ojos anulares y dientes. Ahora no se usa.
+
+Los dos últimos se usaron en una versión anterior de la escena y se conservan por si vuelven.
 
 Se prepararon tres versiones con fondo transparente y tinta clara mediante edición de imagen, en `assets/cutouts/`:
 
 - `sentinel.png`: figura con cabeza de ojo (original `3e0d7102…`).
 - `revelation.png`: manos abriendo un ojo (original `8ea51e04…`).
 - `sewn-eye.png`: ojo cosido (original `495cd049…`).
+- `presence-face.png`: la cara que se asoma, recortada, en escala de grises, aclarada y con bordes fundidos a transparente (original `08fe20c9…`).
+- `presence-hand.png`: la mano sin el papel blanco (borde erosionado 2 px para que no quede halo al ampliarla), en escala de grises y reflejada para que la muñeca quede en la oscuridad del hueco (original `5b1e40ef…`).
 
 El resto se integra con inversión monocroma y mezcla `screen` en CSS: el papel claro desaparece visualmente sobre negro, sin modificar los archivos. Las apariciones alternan tres imágenes aportadas; siguen respetando «calma», movimiento reducido y el intervalo entre sustos. La animación de entrada por la puerta se conserva.
 
@@ -103,7 +132,13 @@ El sistema respeta movimiento reducido con una imagen estática en vez del GIF p
 <details>
 <summary>Solución del recorrido (spoilers)</summary>
 
-Primera puerta: `eco`. La pista está en `leeme_antes.txt` y en el libro de visitas.
+Puerta de la entrada (ritual, en orden):
+
+1. Despertar los tres ojos fotográficos (los pequeños, sin hilo); tocar un ojo cosido vuelve a cerrarlos.
+2. Escribir `eco` con las runas de la pared: ᛖ (izquierda) → ᚲ → ᛟ (derecha). Una runa equivocada borra la secuencia. Al llegar a este paso, la pista muestra la tabla de runas.
+3. Llamar a la puerta tres veces seguidas, con menos de 2,4 s entre golpes.
+
+Primer sello del archivo: `eco`. La pista está en `leeme_antes.txt` y en el libro de visitas.
 
 Segunda puerta: `1998`. La pista está en `no_abrir.txt` y en las fechas de la estación.
 
@@ -119,6 +154,8 @@ Las contraseñas son una mecánica narrativa en JavaScript, **no autenticación 
 npm test
 ```
 
-Los tests de Node verifican el HTML y los recursos, los GIFs, respuestas HEAD, errores 404 y el bloqueo de archivos de configuración. Durante el desarrollo también se recorrieron las puertas, la navegación, los documentos, el libro de visitas, la persistencia, el audio, el reinicio y movimiento reducido mediante Chromium/Playwright, en escritorio y móvil.
+Para volver a ver la puerta cerrada y la escena de entrada, usa «Olvidar esta visita» o borra el `localStorage` del sitio y recarga. Comprueba que «calma» no esté activado, porque esa preferencia se guarda aparte.
+
+Los tests de Node verifican el HTML y los recursos (incluidas las runas, la puerta cerrada y los recortes con transparencia), los GIFs, respuestas HEAD, errores 404 y el bloqueo de archivos de configuración. Durante el desarrollo también se recorrieron las puertas, la navegación, los documentos, el libro de visitas, la persistencia, el audio, el reinicio y movimiento reducido mediante Chromium/Playwright, en escritorio y móvil.
 
 Publicación: GitHub Pages desde la rama `main`, carpeta raíz (`/`). El archivo `CNAME` conserva `occult.saulmartin.com` y `.nojekyll` permite servir los archivos estáticos sin Jekyll. Cada cambio subido a `main` activa la publicación de Pages; no sincroniza automáticamente los cambios sin guardar o sin subir de este entorno. El certificado y la opción Enforce HTTPS se gestionan en Settings → Pages. No incluye configuración de un servicio oculto.
