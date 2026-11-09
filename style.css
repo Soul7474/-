@@ -94,3 +94,35 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 @media(prefers-reduced-motion:reduce){.vhs-tracking{animation:none;display:none}#door-passage{display:none!important}}
 .abstract-form{display:block;width:min(100%,650px);height:auto;margin:0 auto 12px;opacity:.8}.transmission{padding:16px 20px;border:0;background:none}.transmission>p{display:none}.subsoil .abstract-form{max-height:350px;object-fit:contain}.subsoil{padding-top:0}.transmission small{font-size:9px}.transcript{font-size:10px}.lore-fold .warning-strip{font-size:10px}
 @media(max-width:540px){.abstract-form{margin:0 auto 5px}.transmission{padding:12px 0}.abstract-form+.transmission{margin-top:0}}
+
+/* Uploaded ink: original files retained; white paper disappears on the dark canvas. */
+.ink-source{filter:grayscale(1) invert(1) contrast(1.35);mix-blend-mode:screen}
+.dark-source{filter:grayscale(1);mix-blend-mode:screen}
+.watcher img{display:block;width:100%;height:auto;pointer-events:none;filter:grayscale(1) brightness(.8)}
+.watcher.photographic-eye img{aspect-ratio:2;object-fit:cover;object-position:center;filter:grayscale(1) contrast(1.15);mix-blend-mode:screen}
+.watcher:hover img,.watcher.eye-awake img{filter:grayscale(1) brightness(1.1)}
+.inner-relic{width:auto;height:88%;max-width:43%;max-height:580px;object-fit:contain;mask-image:none;filter:grayscale(1) brightness(.68);opacity:.9;position:relative;z-index:1}
+.chamber-ghost{position:absolute;width:auto;height:65%;max-width:28%;object-fit:contain;pointer-events:none;z-index:0}
+.ghost-moon{right:11%;top:9%;transform:rotate(8deg);opacity:.32}.ghost-arms{left:13%;bottom:8%;height:56%;transform:rotate(-7deg);opacity:.24}
+.chamber-crowd{position:absolute;width:85%;height:40%;left:8%;bottom:4%;object-fit:cover;object-position:bottom;opacity:.16;mix-blend-mode:screen;mask-image:linear-gradient(transparent,#000)}
+.chamber-script{opacity:.65}.chamber-lines{opacity:.24}
+.chamber-door .door-emblem{display:block;width:85px;height:90px;object-fit:contain;filter:grayscale(1) brightness(.72);margin-bottom:7px}
+.chamber-door .door-emblem.ink-source{filter:grayscale(1) invert(1) contrast(1.35);opacity:.75}
+.chamber-door:hover .door-emblem{opacity:1}.relic-door{left:2%;top:28%}.voice-door{right:2%;top:25%}.trace-door{left:23%;bottom:0}.below-door{right:19%;bottom:0}
+.voice-door .door-emblem{width:56px;height:100px}.below-door .door-emblem{width:65px;height:90px}.trace-door .door-emblem{width:77px;height:77px}
+#view-transmisiones .abstract-form{max-height:355px;width:auto;max-width:75%;object-fit:contain;filter:grayscale(1) brightness(.65);margin-bottom:8px}
+.archive-talisman{display:block;float:right;width:170px;max-width:28%;height:auto;opacity:.5;margin:10px 12px 20px 28px;pointer-events:none}
+.visitor-talisman{display:block;width:125px;margin:0 auto 22px;opacity:.5}
+#view-archivo #archive-list{max-width:720px}.vestiges{margin:24px 0}.vestiges summary{font-size:10px;color:#999;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+.vestige-wall{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:30px 40px;padding:35px 0}
+.vestige-wall button{padding:0;border:0;background:none;flex:0 1 125px;min-width:70px;line-height:0;opacity:.65}.vestige-wall button:hover{opacity:1}
+.vestige-wall img{width:100%;height:160px;object-fit:contain}.document-body img.ink-source{filter:grayscale(1) invert(1) contrast(1.35)}
+.apparition img.ink-source{filter:grayscale(1) invert(1) contrast(1.35);mix-blend-mode:screen}.apparition img{width:min(1000px,110vw);height:auto;object-fit:contain}
+.subsoil .abstract-form.ink-source{filter:grayscale(1) invert(1) contrast(1.35)}
+@media(max-width:540px){.inner-relic{height:78%;max-width:44%;max-height:430px}.chamber-ghost{max-width:25%}.ghost-moon{right:12%;top:14%;height:50%;opacity:.23}.ghost-arms{left:10%;bottom:21%;height:45%;opacity:.21}.chamber-crowd{width:100%;left:0;bottom:10%;height:28%}.chamber-door .door-emblem{width:56px;height:66px}.voice-door .door-emblem{width:39px;height:72px}.trace-door .door-emblem{width:57px;height:56px}.below-door .door-emblem{width:43px;height:72px}.relic-door{left:0;top:30%}.voice-door{right:0;top:26%}.trace-door{left:13%;bottom:5%}.below-door{right:12%;bottom:3%}.archive-talisman{width:95px;margin-left:15px}.vestige-wall{gap:25px;justify-content:space-around}.vestige-wall button{flex-basis:100px}.vestige-wall img{height:130px}#view-transmisiones .abstract-form{max-height:290px}}
+.sentinel-presence{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:43%;height:88%;max-height:580px;background:none;border:0;padding:0;line-height:0}
+.sentinel-presence .inner-relic{height:100%;width:auto;max-width:100%;max-height:100%;pointer-events:none}
+.sentinel-presence:hover .inner-relic{filter:grayscale(1) brightness(.83)}
+@media(max-width:540px){.sentinel-presence{height:78%;max-height:430px;width:44%}.sentinel-presence .inner-relic{max-width:100%;height:100%}}
+#main:focus{outline:none}
+@media(max-width:540px){.sentinel-presence{width:64%;height:88%;max-height:470px}}

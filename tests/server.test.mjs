@@ -1,5 +1,6 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { readdir, readFile } from 'node:fs/promises';
 import { server } from '../server.mjs';
 let base;
 before(async () => {
@@ -61,4 +62,23 @@ test('HEAD returns resource headers without a body', async () => {
   assert.equal(response.status, 200);
   assert.match(response.headers.get('content-type'), /text\/html/);
   assert.equal(await response.text(), '');
+});
+
+test('serves supplied originals unchanged and transparent cutout PNGs', async () => {
+  const originals = await readdir(new URL('../images/', import.meta.url));
+  assert.equal(originals.length, 13);
+  for (const name of originals) {
+    const response = await fetch(base + '/images/' + name);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('content-type'), 'image/jpeg');
+    assert.deepEqual(Buffer.from(await response.arrayBuffer()), await readFile(new URL('../images/' + name, import.meta.url)));
+  }
+  for (const name of ['sentinel', 'revelation', 'sewn-eye']) {
+    const response = await fetch(base + '/assets/cutouts/' + name + '.png');
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('content-type'), 'image/png');
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assert.equal(bytes.subarray(1, 4).toString(), 'PNG');
+    assert.equal(bytes[25], 6, 'PNG has RGBA channels');
+  }
 });

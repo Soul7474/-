@@ -35,6 +35,18 @@ python3 scripts/generate_art.py
 
 No utiliza personajes, ilustraciones ni portadas de las referencias. El collage se conserva dentro de un fragmento desplegable; tanto este como los GIFs del pasillo y el ojo se presentan en escala de grises. No se cargan fuentes ni recursos de terceros. El contenido público se puede consultar directamente desde `#archivo`; las puertas forman parte del recorrido narrativo.
 
+## Imágenes aportadas
+
+Los 13 originales de `images/` se conservan intactos. La dirección actual utiliza sus ojos, figuras alargadas, manos y multitudes. Se pueden abrir todos desde **Fragmentos → vestigios**, sin mostrar sus nombres en la interfaz.
+
+Se prepararon tres versiones con fondo transparente y tinta clara mediante edición de imagen, en `assets/cutouts/`:
+
+- `sentinel.png`: figura con cabeza de ojo (original `3e0d7102…`).
+- `revelation.png`: manos abriendo un ojo (original `8ea51e04…`).
+- `sewn-eye.png`: ojo cosido (original `495cd049…`).
+
+El resto se integra con inversión monocroma y mezcla `screen` en CSS: el papel claro desaparece visualmente sobre negro, sin modificar los archivos. Las apariciones alternan tres imágenes aportadas; siguen respetando «calma», movimiento reducido y el intervalo entre sustos. La animación de entrada por la puerta se conserva.
+
 ## Recorrido
 
 - **Umbral:** entrada, cámara animada, registro y primeros documentos.

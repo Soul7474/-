@@ -94,8 +94,19 @@ document.addEventListener('click', event => {
   const entrance = event.target.closest('[data-cross-door]');
   if (entrance) { if (state.level >= 1) crossDoor(); else openGate(1, 'interior'); return; }
   const gate = event.target.closest('[data-gate]'); if (gate) openGate(Number(gate.dataset.gate));
+  const vision = event.target.closest('[data-vision]');
+  if (vision) { showVision(vision.dataset.vision); return; }
   const doc = event.target.closest('[data-document]'); if (doc) showDocument(doc.dataset.document);
 });
+const visionFiles = new Set(Array.from(document.querySelectorAll('[data-vision]'), button => button.dataset.vision));
+function showVision(name) {
+  if (!visionFiles.has(name)) return;
+  const original = document.querySelector(`[data-vision="${name}"] img`);
+  const image = element('img'); image.src = original.getAttribute('src');
+  image.className = original.className; image.alt = 'Vestigio del archivo visual.';
+  $('#document-title').textContent = '∴';
+  $('#document-body').replaceChildren(image); openDialog($('#document-dialog'));
+}
 const viewNames = ['inicio', 'interior', 'archivo', 'fragmentos', 'transmisiones', 'visitantes', 'subsuelo'];
 let currentView = '';
 function route() {
@@ -189,6 +200,15 @@ let omensEnabled = true;
 try { omensEnabled = localStorage.getItem('estacion09-omens') !== 'quiet'; } catch {}
 let omenTimer;
 let lastOmen = -Infinity;
+let omenIndex = 0;
+const omenImages = [
+  { src: 'images/0cef067d6389316753e85350caa85388.jpg', ink: false },
+  { src: 'images/91bcc74e941fa720f84af443207553f6.jpg', ink: true },
+  { src: 'images/71f43ece8f68bf946b666118ed26dbb5.jpg', ink: false }
+];
+// Warm the three small originals so the first apparition is not an empty frame.
+for (const source of omenImages) { const image = new Image(); image.src = source.src; }
+
 function dismissOmen() {
   clearTimeout(omenTimer);
   const apparition = $('#apparition');
@@ -209,6 +229,9 @@ function showOmen() {
   if (passageActive || !omensEnabled || motionQuery.matches || document.hidden || performance.now() - lastOmen < 18000) return;
   lastOmen = performance.now();
   const apparition = $('#apparition');
+  const source = omenImages[omenIndex++ % omenImages.length];
+  const image = apparition.querySelector('img');
+  image.src = source.src; image.classList.toggle('ink-source', source.ink);
   apparition.hidden = false;
   if (typeof apparition.showPopover === 'function') apparition.showPopover();
   else apparition.removeAttribute('popover');
