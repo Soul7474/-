@@ -28,6 +28,7 @@
   let sequence = [];
   let pending = null;
   let lastApparition = -Infinity;
+  let intrusionTimer;
   let touches = 0;
   let hushUntil = 0;
   let soundTimer;
@@ -35,11 +36,15 @@
   let signalHideTimer;
   const sounds = new Set();
   function applyMemory() {
-    chamber.dataset.haunting = allowed() ? String(memory.visits % 4) : '0';
+    const phase = memory.visits >= 6 ? 3 : memory.visits >= 3 ? 2 : memory.visits >= 1 ? 1 : 0;
+    chamber.dataset.haunting = allowed() ? String(phase) : '0';
     $('.mark-seal').dataset.open = String(memory.unlocked);
     $('.mark-seal').setAttribute('aria-label', memory.unlocked ? 'Abrir el fragmento del sello' : 'Examinar el sello cerrado');
   }
-  function clearPending() { clearTimeout(pending); pending = null; }
+  function clearPending() {
+    clearTimeout(pending); clearTimeout(intrusionTimer); pending = null;
+    delete chamber.dataset.interference;
+  }
   function stopSounds() {
     clearTimeout(soundTimer);
     for (const sound of sounds) sound.stop();
@@ -56,13 +61,13 @@
       data[i] = (Math.random() * 2 - 1) * (kind === 'knock' ? Math.exp(-t * 19) + .45 * Math.exp(-Math.abs(t - .27) * 55) : .4 + .3 * Math.sin(t * 8));
     }
     const source = ctx.createBufferSource(); source.buffer = buffer;
-    const filter = ctx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = kind === 'knock' ? 170 : 720;
+    const filter = ctx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = kind === 'knock' ? 310 : 720;
     const gain = ctx.createGain(); const now = ctx.currentTime;
     gain.gain.setValueAtTime(.001, now); gain.gain.linearRampToValueAtTime(kind === 'knock' ? .045 : .018, now + .025);
     gain.gain.exponentialRampToValueAtTime(.001, now + duration);
     source.connect(filter); filter.connect(gain);
     const pan = ctx.createStereoPanner?.();
-    if (pan) { pan.pan.value = Math.random() < .5 ? -.7 : .7; gain.connect(pan); pan.connect(ctx.destination); }
+    if (pan) { pan.pan.value = kind === 'knock' ? -.7 : .65; gain.connect(pan); pan.connect(ctx.destination); }
     else gain.connect(ctx.destination);
     source.start(); source.stop(now + duration);
     const record = { stop() { try { source.stop(); } catch {} } }; sounds.add(record);
@@ -74,24 +79,29 @@
     soundTimer = setTimeout(() => {
       if (allowed() && !visibleDialog()) noise(Math.random() < .5 ? 'knock' : 'tape');
       planSound();
-    }, 16000 + Math.random() * 15000);
+    }, (memory.visits < 3 ? 26000 : 18000) + Math.random() * 14000);
   }
   function request(cause) {
     if (!allowed() || visibleDialog() || pending || performance.now() < hushUntil || performance.now() - lastApparition < 48000) return;
     if (cause === 'touch' && ++touches % 2 !== 0) { noise('tape'); return; }
     pending = setTimeout(() => {
-      pending = null;
-      if (!allowed() || visibleDialog() || performance.now() < hushUntil) return;
+      if (!allowed() || visibleDialog() || performance.now() < hushUntil) { clearPending(); return; }
       lastApparition = performance.now();
-      station.apparition(); noise('knock');
-    }, 1300 + Math.random() * 1700);
+      if (station.view() !== 'interior') { station.apparition(); noise('knock'); pending = null; return; }
+      chamber.dataset.interference = 'tracking'; noise('tape');
+      intrusionTimer = setTimeout(() => {
+        if (!allowed() || visibleDialog()) { clearPending(); return; }
+        chamber.dataset.interference = 'peek'; noise('knock');
+        intrusionTimer = setTimeout(clearPending, 1100);
+      }, 700);
+    }, 1500 + Math.random() * 1600);
   }
   window.EstacionRitual = Object.freeze({ request });
   function afterInspection() {
     if (!active()) return;
     memory.visits++; save(); applyMemory();
-    if (allowed()) noise(memory.visits % 2 ? 'tape' : 'knock');
-    if (memory.visits % 3 === 0) request('return');
+    if (allowed() && [1, 3, 6].includes(memory.visits)) noise(memory.visits === 1 ? 'tape' : 'knock');
+    if ([3, 6].includes(memory.visits)) request('return');
   }
   $('#document-dialog').addEventListener('close', afterInspection);
   function clearBody() { body.replaceChildren(); }

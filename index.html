@@ -10,8 +10,8 @@
   <link rel="icon" href="assets/sigil.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css?v=tapes-1">
   <script src="app.js?v=interior-2" defer></script>
-  <link rel="stylesheet" href="interior.css?v=2">
-  <script src="interior.js?v=2" defer></script>
+  <link rel="stylesheet" href="interior.css?v=3">
+  <script src="interior.js?v=3" defer></script>
 </head>
 <body data-page="inicio">
   <a class="skip" href="#archivo">Saltar al archivo</a>
@@ -57,22 +57,26 @@
       <main id="main" tabindex="-1">
         <section id="view-interior" class="view inner-chamber" hidden aria-labelledby="chamber-title">
           <h1 id="chamber-title" class="visually-hidden">Al otro lado</h1>
-          <div class="chamber-space"><img class="chamber-haze" src="assets/gif-stills/2.png" data-gif="gifs/giphy%20(2).gif" data-still="assets/gif-stills/2.png" width="640" height="640" alt="Una forma oscura que se transforma lentamente." decoding="async">
-            <img class="chamber-ghost ghost-moon ink-source" src="images/4580f857040ef0339156318493389d7c.jpg" width="736" height="1308" alt="" aria-hidden="true"><img class="chamber-ghost ghost-arms ink-source" src="images/6ae30bc87f2537c40cdb09d3b63bc07f.jpg" width="454" height="651" alt="" aria-hidden="true"><img class="chamber-crowd" src="images/0cef067d6389316753e85350caa85388.jpg" width="735" height="490" alt="" aria-hidden="true"><span class="chamber-script script-a" aria-hidden="true">ᛉ<br>ᚦ<br>ᛇ</span>
-            <span class="chamber-script script-b" aria-hidden="true">ᚾ ᛟ ᚲ</span>
-            <button class="sentinel-presence" data-omen aria-label="Acercarse a la figura del ojo"><img class="inner-relic" src="assets/cutouts/sentinel.png" width="1052" height="1495" alt="Figura alargada de tinta, con un único ojo en una cabeza de puntas."></button>
-            <a href="#archivo" class="chamber-door relic-door" aria-label="Restos: abrir el archivo"><img class="door-emblem" src="assets/cutouts/revelation.png" width="1054" height="1492" alt=""><small>restos</small></a>
-            <a href="#transmisiones" class="chamber-door voice-door" aria-label="Voces: escuchar transmisiones"><img class="door-emblem ink-source" src="images/ce8ad4bddf1ece13035ca941dcff674f.jpg" width="237" height="400" alt=""><small>voces</small></a>
-            <a href="#visitantes" class="chamber-door trace-door" aria-label="Huellas: libro de visitas"><img class="door-emblem ink-source" src="images/6365f1e87b51c001864bd43957d3e17e.jpg" width="550" height="550" alt=""><small>huellas</small></a>
-            <button data-gate="2" class="chamber-door below-door" aria-label="Abrir la puerta del subsuelo"><img class="door-emblem ink-source" src="images/2ce73613d01a7712d49bed29d90d0f45.jpg" width="720" height="1280" alt=""><small>debajo</small></button>
-            <button data-omen class="watcher chamber-eye" aria-label="Observar el ojo del interior"><img src="assets/cutouts/sewn-eye.png" width="1594" height="986" alt=""></button>
-            <div class="memory-marks" aria-label="Marcas del interior">
-              <button class="memory-mark mark-witness" data-memory="witness" aria-label="Examinar la marca del ojo">⊙</button>
-              <button class="memory-mark mark-touch" data-memory="touch" aria-label="Examinar la marca de la mano">⋔</button>
-              <button class="memory-mark mark-absence" data-memory="absence" aria-label="Examinar la marca de la luna">☾</button>
-              <button class="memory-mark mark-seal" data-memory="seal" aria-label="Examinar el sello cerrado">∵</button>
+          <div class="chamber-space immersion-room">
+            <div class="room-world">
+              <img class="room-surface" src="assets/room.png" width="1536" height="1024" alt="Una habitación abandonada: una puerta oscura, una silla vacía y un televisor antiguo.">
+<button class="sentinel-presence" data-omen aria-label="Acercarse a la figura del ojo"><img class="inner-relic" src="assets/cutouts/sentinel.png" width="1052" height="1495" alt="Figura alargada de tinta, con un único ojo en una cabeza de puntas."></button>
+<img class="chamber-ghost ghost-moon ink-source" src="images/4580f857040ef0339156318493389d7c.jpg" width="736" height="1308" alt="" aria-hidden="true">
+<img class="chamber-ghost ghost-arms ink-source" src="images/6ae30bc87f2537c40cdb09d3b63bc07f.jpg" width="454" height="651" alt="" aria-hidden="true">
+<img class="chamber-crowd" src="images/0cef067d6389316753e85350caa85388.jpg" width="735" height="490" alt="" aria-hidden="true">
+              <div class="memory-marks" aria-label="Marcas de la habitación">
+                <button class="memory-mark mark-witness room-screen" data-memory="witness" aria-label="Examinar la emisión del televisor">
+                  <img src="assets/gif-stills/6.png" data-gif="gifs/giphy%20(6).gif" data-still="assets/gif-stills/6.png" width="384" height="384" alt="Una emisión dañada en la pantalla del televisor.">
+                  <img class="room-intruder" src="images/71f43ece8f68bf946b666118ed26dbb5.jpg" width="480" height="480" alt="" aria-hidden="true">
+                </button>
+                <button class="memory-mark mark-touch" data-memory="touch" aria-label="Examinar la marca de la silla">⋔</button>
+                <button class="memory-mark mark-absence" data-memory="absence" aria-label="Examinar la marca junto a la puerta">☾</button>
+              </div>
             </div>
-            <svg class="chamber-lines" viewBox="0 0 900 600" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width=".8"><ellipse cx="450" cy="300" rx="300" ry="210" transform="rotate(-18 450 300)" stroke-dasharray="1 9"/><path d="M120 290l510 200-206-440-304 240M90 300h70m-30-20v40M608 500l44-15m-27-9 8 29M418 29l14 44m-30-20 44-6"/></g></svg>
+            <nav class="room-navigation" aria-label="Lugares del interior">
+<a href="#archivo" class="chamber-door relic-door" aria-label="Restos: abrir el archivo"><img class="door-emblem" src="assets/cutouts/revelation.png" width="1054" height="1492" alt=""><small>restos</small></a><a href="#transmisiones" class="chamber-door voice-door" aria-label="Voces: escuchar transmisiones"><img class="door-emblem ink-source" src="images/ce8ad4bddf1ece13035ca941dcff674f.jpg" width="237" height="400" alt=""><small>voces</small></a><a href="#visitantes" class="chamber-door trace-door" aria-label="Huellas: libro de visitas"><img class="door-emblem ink-source" src="images/6365f1e87b51c001864bd43957d3e17e.jpg" width="550" height="550" alt=""><small>huellas</small></a><button data-gate="2" class="chamber-door below-door" aria-label="Abrir la puerta del subsuelo"><img class="door-emblem ink-source" src="images/2ce73613d01a7712d49bed29d90d0f45.jpg" width="720" height="1280" alt=""><small>debajo</small></button>
+              <button class="memory-mark mark-seal" data-memory="seal" aria-label="Examinar el sello cerrado">∵</button>
+            </nav>
           </div>
           <a class="return-threshold" href="#inicio">↶ umbral</a>
         </section>

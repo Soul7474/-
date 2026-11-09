@@ -41,10 +41,11 @@ mkdirSync(captures, { recursive: true });
       await page.locator(`[data-memory="${mark}"]`).click();
       await page.locator('[data-memory-close]').click();
     }
-    await page.locator('#apparition').waitFor({ state: 'visible', timeout: 5000 });
+    await page.waitForFunction(() => document.querySelector('.chamber-space').dataset.interference === 'peek', null, { timeout: 5000 });
+    assert.equal(await page.locator('#apparition').isVisible(), false, 'the room intrusion stays inside the television');
     await page.screenshot({ path: join(captures, 'interior-apparition.png') });
     await page.keyboard.press('Escape');
-    await page.locator('#apparition').waitFor({ state: 'hidden' });
+    await page.waitForFunction(() => !document.querySelector('.chamber-space').dataset.interference);
     await page.locator('.sentinel-presence').click(); await page.locator('.sentinel-presence').click();
     await page.waitForTimeout(3200);
     assert.equal(await page.locator('#apparition').isVisible(), false, 'Escape must cancel pending apparitions');
@@ -80,15 +81,23 @@ mkdirSync(captures, { recursive: true });
     await page.locator('[data-memory-close]').click();
     // No audio context is created by inspecting images; sound only follows explicit enable.
     await page.reload();
+    await page.evaluate(() => sessionStorage.setItem('estacion09-interior', JSON.stringify({ visits: 0, unlocked: true })));
+    await page.reload();
     await page.locator('#sound-toggle').click();
     await page.waitForFunction(() => Boolean(EstacionInterior.sound()));
     const before = await page.evaluate(() => bufferStarts);
     await page.locator('[data-memory="touch"]').click(); await page.locator('[data-memory-close]').click();
-    await page.waitForFunction(count => bufferStarts > count, before);
+    await page.waitForFunction(count => bufferStarts > count, before, { timeout: 5000 });
     await page.locator('#sound-toggle').click();
     const muted = await page.evaluate(() => bufferStarts);
     await page.locator('[data-memory="touch"]').click(); await page.locator('[data-memory-close]').click();
     assert.equal(await page.evaluate(() => bufferStarts), muted);
+    for (let i = 0; i < 7; i++) {
+      await page.locator('[data-memory="touch"]').click(); await page.locator('[data-memory-close]').click();
+    }
+    await page.waitForFunction(() => document.querySelector('.chamber-space').dataset.haunting === '3');
+    assert.deepEqual(await navigation(), originalNavigation);
+    await page.screenshot({ path: join(captures, 'room-final-stage.png') });
     // Calm freezes actor mutations and all pending phenomena.
     await page.locator('#omens-toggle').click();
     await page.locator('[data-memory="witness"]').click(); await page.locator('[data-memory-close]').click();
@@ -113,7 +122,7 @@ mkdirSync(captures, { recursive: true });
     await page.waitForURL('**/#inicio'); await page.waitForLoadState();
     assert.equal(await page.evaluate(() => sessionStorage.getItem('estacion09-interior')), null);
     assert.deepEqual(errors, []); assert.deepEqual(missing, []);
-    console.log('PASS: mutations, fixed navigation, timed apparition, Escape, visual clue, both seal solutions, persistence, subsoil, opt-in sound, calm, reduced motion, mobile, reset.');
+    console.log('PASS: mutations, fixed navigation, contextual intrusion, finite escalation, Escape, visual clue, both seal solutions, persistence, subsoil, opt-in sound, calm, reduced motion, mobile, reset.');
   } finally {
     await browser?.close(); server.closeAllConnections();
     await new Promise(resolve => server.close(resolve));
