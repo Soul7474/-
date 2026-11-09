@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090909">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="description" content="Archivo residual de la Estación 09. La transmisión continúa.">
+  <title>ESTACIÓN 09 — señal residual</title>
+  <link rel="icon" href="assets/sigil.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Saltar al archivo</a>
+  <div class="broadcast">estación 09 / personal mirror <span class="broadcast-right">última actualización: 17.11.1998</span></div>
+  <div class="shell">
+    <header class="masthead">
+      <p class="system-id">⌈ archivo residual · nodo 009 · ver. 0.98 ⌋</p>
+      <a href="#inicio" class="identity" aria-label="Estación 09, inicio">estación<span>_09</span></a>
+      <p class="header-message">Este lugar ya no existe. <span>Pero tú sigues aquí.</span></p>
+      <div class="connection"><span class="live-dot"></span> connected to the other end<span class="cursor">_</span><small id="session-clock">00:00:00 / SESIÓN LOCAL</small></div>
+    </header>
+    <div class="layout">
+        <nav class="main-nav" aria-label="Navegación del archivo">
+          <a href="#inicio" class="nav-link active" data-view="inicio"><span>00</span> Umbral <b>↗</b></a>
+          <a href="#archivo" class="nav-link" data-view="archivo"><span>01</span> Archivo <b>07</b></a>
+          <a href="#transmisiones" class="nav-link" data-view="transmisiones"><span>02</span> Transmisiones <b class="nav-dot">●</b></a>
+          <a href="#visitantes" class="nav-link" data-view="visitantes"><span>03</span> Los que llegaron <b>↗</b></a>
+          <button class="nav-link restricted" data-gate="2"><span>04</span> Subsuelo <b>⌑</b></button>
+        </nav>
+      <main id="main" tabindex="-1">
+        <section id="view-inicio" class="view">
+          <div class="breadcrumb"><span>root / public / umbral</span><span class="file-id">[ E09—000 ]</span></div>
+          <div class="hero">
+            <div class="hero-copy"><p class="eyebrow">&gt; connection established</p><h1>¿Sigues ahí<span class="cursor">_</span>?</h1><p class="hero-description">La estación dejó de transmitir hace 27 años.<br>Alguien olvidó apagar algo.</p><p class="portal-links"><a href="#archivo">[ explorar el archivo ]</a> <a href="#transmisiones">[ escuchar ]</a></p></div>
+            <figure class="wired-art"><img src="assets/wired-memory.svg" width="900" height="520" alt="Collage original: una figura anónima bajo cables telefónicos, edificios en penumbra y un ordenador que pregunta si alguien recibe la señal."><figcaption><span>fig.09 / el otro extremo</span><span>記憶の断片 — fragmento de memoria</span></figcaption></figure>
+            <p class="art-annotation">entre una voz y otra,<br>todavía existe un lugar.</p>
+          </div>
+          <section class="gate-section" aria-label="Primera puerta">
+            <div class="gate-copy"><p class="eyebrow">[ gate 01 / acceso restringido ]</p><p>Si recuerdas este lugar,<br>no es la primera vez que estás aquí.</p><button class="enter-button" data-gate="1">ENTRAR AL ARCHIVO <span>↗</span></button><span class="under-button">Se requiere una palabra de acceso. <a href="#archivo">Buscar una pista.</a></span><p class="handwritten">no respondas si escuchas tu nombre.</p></div>
+            <figure class="corridor"><img src="assets/corridor.gif" alt="Un pasillo rojo, oscuro y deteriorado; al fondo hay una puerta cerrada." width="760" height="540"><div class="camera-top"><span>CAM_09 / PASILLO B</span><span>● REC</span></div><div class="camera-cross">+</div><figcaption><span>17 NOV 1998</span><span id="camera-clock">03:33:09</span></figcaption><span class="image-label">NO SE DETECTA MOVIMIENTO</span></figure>          </section>
+          <div class="warning-strip"><span>!</span><p>Este archivo no está abandonado.<br class="mobile-only"> <strong>Solo ha dejado de recibir visitas.</strong></p><span class="warning-code">AVISO 009</span></div>
+          <div class="home-bottom">
+            <section class="fragments"><div class="panel-heading"><h2>Fragmentos recuperados</h2><a href="#archivo">todo el archivo ↗</a></div><button class="file-row" data-document="bienvenida"><span class="file-icon">▤</span><span><b>leeme_antes.txt</b><small>Lo que quedó del mensaje de bienvenida.</small></span><span class="file-meta">1.2 KB <b>↗</b></span></button><button class="file-row" data-document="foto"><span class="file-icon">▧</span><span><b>pasillo_b.gif</b><small>La última imagen recibida.</small></span><span class="file-meta">GIF <b>↗</b></span></button><button class="file-row locked-file" data-gate="1"><span class="file-icon">⌑</span><span><b>no_abrir.txt</b><small>Acceso restringido. Nivel 01.</small></span><span class="file-meta red">CIFRADO <b>⌑</b></span></button></section>
+            <section class="log-panel"><div class="panel-heading"><h2>Registro de actividad</h2><span class="live-dot"></span></div><ol id="activity-log"><li><time>03:33:01</time><span>buscando señal...</span></li><li><time>03:33:04</time><span>conexión restablecida</span></li><li><time>03:33:07</time><span>el archivo recuerda tu visita</span></li><li class="red"><time>03:33:09</time><span id="log-whisper">hay alguien al otro lado_</span></li></ol><p class="log-footer">&gt; esperando respuesta<span class="cursor">_</span></p></section>
+          </div>
+          <div class="bottom-note"><span>“No todo lo que está en la red quiere ser encontrado.”</span><span>ESTÁS EN LA CAPA 00</span></div>
+        </section>
+        <section id="view-archivo" class="view" hidden><div class="breadcrumb"><span>root / public / archivo</span><span>[ E09—001 ]</span></div><div class="page-intro"><p class="eyebrow">ÍNDICE PARCIAL / 07 FRAGMENTOS</p><h1>Lo que <em>queda.</em></h1><p>Los archivos no están ordenados. Algunos no quieren estarlo.</p></div><div id="archive-list"></div><p class="archive-foot">FIN DEL ÍNDICE RECUPERABLE · <span id="unlock-status">NIVEL 00</span></p></section>
+        <section id="view-transmisiones" class="view" hidden><div class="breadcrumb"><span>root / public / transmisiones</span><span>[ E09—002 ]</span></div><div class="page-intro"><p class="eyebrow">FRECUENCIA 09.8 / SEÑAL RESIDUAL</p><h1>¿Hay <em>alguien?</em></h1><p>Reproducción de la última transmisión. El receptor sigue abierto.</p></div><div class="transmission"><div class="wave" aria-hidden="true"></div><p>17.11.1998 — 03:33:09</p><blockquote>«Si esto llega a alguien… no bajéis al subsuelo.<br>Lo que responde tiene nuestra voz.»</blockquote><button id="transmission-play" class="enter-button">ESCUCHAR FRECUENCIA <span>▷</span></button><small id="transmission-status" role="status">Audio sintetizado · volumen bajo recomendado.</small></div><div class="transcript"><p><span>03:32:51</span> [interferencia]</p><p><span>03:33:02</span> ¿Por qué la cámara sigue grabando?</p><p><span>03:33:07</span> No somos nosotros.</p><p><span>03:33:09</span> [fin de la transmisión]</p></div></section>
+        <section id="view-visitantes" class="view" hidden><div class="breadcrumb"><span>root / public / visitantes</span><span>[ E09—003 ]</span></div><div class="page-intro"><p class="eyebrow">LIBRO DE VISITAS / COPIA LOCAL</p><h1>Deja una <em>señal.</em></h1><p>Para que alguien sepa que estuviste aquí.</p></div><div id="guest-messages" class="guest-messages"></div><form id="guest-form" class="guest-form"><label for="guest-name">ALIAS</label><input id="guest-name" name="alias" maxlength="32" placeholder="anónimo" autocomplete="off"><label for="guest-message">TU SEÑAL</label><textarea id="guest-message" name="message" maxlength="500" required rows="3" placeholder="¿También has oído algo?"></textarea><button type="submit" class="enter-button">DEJAR RASTRO <span>↗</span></button><small>Las señales nuevas se guardan solo en este navegador.</small><p id="guest-status" role="status"></p></form></section>
+        <section id="view-subsuelo" class="view" hidden><div class="breadcrumb"><span>root / private / subsuelo</span><span>[ E09—004 ]</span></div><div class="page-intro"><p class="eyebrow red">NIVEL 02 / NO HAY MÁS PUERTAS</p><h1>Te estábamos <em>esperando.</em></h1><p>La señal no venía del exterior.</p></div><div class="subsoil"><span class="large-sigil">⊕</span><p>El 17 de noviembre de 1998 desconectamos la estación.<br>La transmisión continuó durante nueve minutos.<br>Después, alguien empezó a contestar.</p><p class="red">Ahora ya sabes de dónde viene tu eco.</p><button class="enter-button" id="reset-session">CERRAR LA CONEXIÓN <span>×</span></button></div></section>
+      </main>
+      <aside class="sidebar" aria-label="Navegación del archivo">
+        <div class="section-label">// sobre este nodo</div>
+
+        <div class="sidebar-note"><span class="tiny-cross">✳</span><p>Si recuerdas este lugar,<br>no es la primera vez<br>que estás aquí.</p></div>
+        <div class="system-box"><div class="section-label">ESTADO DEL NODO</div><dl><dt>servidor</dt><dd>desconocido</dd><dt>último contacto</dt><dd>17.11.1998</dd><dt>integridad</dt><dd class="red">12.8%</dd></dl><div class="integrity"><i></i></div><small>quedan fragmentos.</small></div>
+        <button id="sound-toggle" class="sound-button" aria-pressed="false"><span aria-hidden="true">▥</span> SONIDO: DESACTIVADO</button>
+        <div class="web-badges"><img src="assets/still-here.gif" width="88" height="31" alt="Still here: un ojo que sigue abierto"><span class="html-badge">NO SIGNAL<br><b>NO EXIT</b></span></div>
+        <p class="sidebar-foot">hecho a mano, al otro lado de la red.<br>optimizado para nadie desde 1998.</p>
+      </aside>
+
+    </div>
+    <footer><span>© 1998 ESTACIÓN 09 <i> / </i> TODOS LOS DERECHOS PERDIDOS.</span><span><span class="live-dot"></span> <span id="footer-status">1 PRESENCIA EN ESTE NODO</span></span><button id="forget-button">OLVIDAR ESTA VISITA ↗</button></footer>
+  </div>
+  <dialog id="gate-dialog"><form id="gate-form"><div class="dialog-top"><span>ACCESO RESTRINGIDO / <span id="gate-level">01</span></span><button type="button" class="close-dialog" aria-label="Cerrar">×</button></div><div class="dialog-body"><span class="gate-symbol">⌑</span><h2>La puerta recuerda.</h2><p id="gate-description">Introduce la palabra de acceso para continuar.</p><label for="password">PALABRA DE ACCESO</label><input type="password" aria-describedby="gate-error" id="password" autocomplete="off" required spellcheck="false"><p id="gate-error" class="red" role="status"></p><button type="submit" class="enter-button">ABRIR LA PUERTA <span>↗</span></button><details><summary>Encontré una nota junto a la puerta.</summary><p id="gate-hint"></p></details></div></form></dialog>
+  <dialog id="document-dialog"><div class="dialog-top"><span id="document-title"></span><button type="button" class="close-dialog" aria-label="Cerrar">×</button></div><div id="document-body" class="document-body"></div></dialog>
+  <dialog id="reset-dialog"><div class="dialog-top"><span>CERRAR CONEXIÓN</span><button type="button" class="close-dialog" aria-label="Cerrar">×</button></div><div class="dialog-body"><h2>¿Borrar tu rastro?</h2><p>Se eliminarán tus accesos y tus mensajes locales. Volverás al umbral.</p><button id="confirm-reset" class="enter-button">OLVIDAR ESTA VISITA <span>×</span></button></div></dialog>
+</body>
+</html>

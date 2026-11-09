@@ -1,0 +1,50 @@
+import { test, before, after } from 'node:test';
+import assert from 'node:assert/strict';
+import { server } from '../server.mjs';
+let base;
+before(async () => {
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  base = `http://127.0.0.1:${server.address().port}`;
+});
+after(async () => { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); });
+test('serves the Spanish station and its working client scripts', async () => {
+  const page = await fetch(base);
+  assert.equal(page.status, 200);
+  assert.match(page.headers.get('content-type'), /text\/html/);
+  const html = await page.text();
+  assert.match(html, /lang="es"/);
+  assert.match(html, /id="gate-form"/);
+  for (const path of ['/app.js', '/style.css']) {
+    const response = await fetch(base + path);
+    assert.equal(response.status, 200);
+    assert.ok((await response.text()).length > 1000);
+  }
+});
+test('serves real GIF images, a reduced-motion image and a favicon', async () => {
+  for (const path of ['/assets/corridor.gif', '/assets/still-here.gif']) {
+    const response = await fetch(base + path);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('content-type'), 'image/gif');
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assert.match(bytes.subarray(0, 6).toString(), /GIF8[79]a/);
+    assert.ok(bytes.includes(Buffer.from('NETSCAPE2.0')));
+  }
+  assert.equal((await fetch(base + '/assets/corridor-still.jpg')).status, 200);
+  assert.equal((await fetch(base + '/assets/sigil.svg')).status, 200);
+  const artwork = await fetch(base + '/assets/wired-memory.svg');
+  assert.equal(artwork.status, 200);
+  assert.match(artwork.headers.get('content-type'), /image\/svg\+xml/);
+  assert.match(await artwork.text(), /<svg/);
+});
+test('returns a real 404 for missing files and blocks source/configuration exposure', async () => {
+  for (const path of ['/no-existe', '/package.json', '/server.mjs', '/.git/config', '/%2e%2e%2fREADME.md', '/%ZZ']) {
+    const response = await fetch(base + path);
+    assert.equal(response.status, 404, path);
+  }
+});
+test('HEAD returns resource headers without a body', async () => {
+  const response = await fetch(base, { method: 'HEAD' });
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type'), /text\/html/);
+  assert.equal(await response.text(), '');
+});

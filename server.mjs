@@ -1,0 +1,22 @@
+import { createServer } from 'node:http';
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { resolve, sep, extname } from 'node:path';
+const root = fileURLToPath(new URL('.', import.meta.url));
+const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.gif': 'image/gif', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml' };
+export const server = createServer(async (req, res) => {
+  try {
+    const path = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+    const file = resolve(root, '.' + (path === '/' ? '/index.html' : path));
+    const relative = file.slice(root.length);
+    if (!file.startsWith(root) || relative.split(sep).some(p => p.startsWith('.')) || !types[extname(file)]) {
+      res.writeHead(404).end('No hay nada aquí.'); return;
+    }
+    const data = await readFile(file);
+    res.writeHead(200, { 'Content-Type': types[extname(file)], 'X-Content-Type-Options': 'nosniff' });
+    res.end(req.method === 'HEAD' ? undefined : data);
+  } catch { res.writeHead(404).end('No hay nada aquí.'); }
+});
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  server.listen(Number(process.env.PORT || 3000), '0.0.0.0', () => console.log(`ESTACIÓN 09 · puerto ${process.env.PORT || 3000}`));
+}
