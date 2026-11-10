@@ -133,12 +133,15 @@ async function checkCRT(browser, base, captures, errors) {
   assert.equal(await page.locator('.heptagram').count(), 1);
   assert.equal(await page.locator('.planet').count(), 7);
   assert.equal(await page.locator('.planet.selected').textContent(), '☽');
-  assert.equal(await page.locator('.planet.selected').getAttribute('font-size'), '40');
+  assert.equal(await page.locator('.planet.selected').getAttribute('font-size'), '46');
   assert.equal(await page.locator('.cap').textContent(), 'lo de arriba también mira');
   assert.equal(await page.locator('#gate-text').textContent(), 'Los labios de la sabiduría están cerrados, salvo para los oídos del entendimiento.');
   assert.equal(await page.locator('.sigil #engrave').count(), 1);
   assert.equal(await page.locator('.tick').count(), 49);
   assert.equal(await page.locator('.serpent').count(), 1);
+  assert.equal(await page.locator('.serpent-contour').count(), 2);
+  assert.equal(await page.locator('.serpent-head,.serpent-eye').count(), 2);
+  assert.equal(await page.locator('.planet-backdrop').count(), 7);
   assert.match(await page.locator('.sigil textPath').textContent(), /SOLVE ET COAGULA · VISITA INTERIORA TERRAE · /);
   const stamps = await page.locator('#activity time').evaluateAll(items => items.map(item => Date.parse(item.dateTime)));
   assert.equal(stamps.length, 3); assert.equal(stamps[1] - stamps[0], 4000); assert.equal(stamps[2] - stamps[1], 3000);

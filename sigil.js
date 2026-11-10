@@ -63,7 +63,8 @@
     for (let i = 0; i < 7; i++) {
       const [x, y] = position(i, 170);
       const active = index === i + 1;
-      const glyph = node('text', { x, y, fill: '#e8e8e8', stroke: 'none', 'font-size': active ? 40 : 30, opacity: active ? 1 : .55, 'text-anchor': 'middle', 'dominant-baseline': 'central', class: active ? 'planet selected' : 'planet' });
+      lines.append(node('circle', { cx: x, cy: y, r: 18, fill: '#000', stroke: 'none', class: 'planet-backdrop' }));
+      const glyph = node('text', { x, y, fill: '#e8e8e8', stroke: 'none', 'font-size': active ? 46 : 38, opacity: active ? 1 : .7, 'text-anchor': 'middle', 'dominant-baseline': 'central', class: active ? 'planet selected' : 'planet' });
       glyph.textContent = planets[i]; lines.append(glyph);
     }
     return svg;
