@@ -12,6 +12,7 @@
   let timers = [];
   let idleTimer;
   let logTimer;
+  let loadTimer;
   let lastReturnDetail = -1;
   let tabWasHidden = false;
   let lines = [];
@@ -55,7 +56,7 @@
     footer.append(el('p', 'hecho a mano con el bloc de notas. optimizado para nadie.'));
     const forget = el('button', 'OLVIDAR ESTA VISITA'); forget.type = 'button'; forget.id = 'forget-button';
     forget.addEventListener('click', () => { sound.stop(); store.forget(); go('/', true); }); footer.append(forget);
-    if (store.state.opened) sound.controls(footer);
+    if (store.state.opened && (current >= 0 || location.pathname === '/rastro.html')) sound.controls(footer);
   }
   function addLog(text) {
     lines.push({ stamp: Date.now(), text }); lines = lines.slice(-4);
@@ -121,7 +122,8 @@
     footer(); startReactivity(number);
   }
   function render() {
-    cleanTimers(); main.replaceChildren(); $('#activity').replaceChildren(); lines = [];
+    cleanTimers(); clearTimeout(loadTimer); document.body.classList.remove('waiting');
+    main.replaceChildren(); $('#activity').replaceChildren(); lines = [];
     const match = location.pathname.match(/^\/gate\/(0[0-7])\.html$/);
     current = match ? Number(match[1]) : -1;
     if (location.pathname === '/rastro.html') {
@@ -138,7 +140,8 @@
     else addLog('acceso registrado');
     if (current === 5 && store.state.answers.g04 === 'no' && !reduce.matches) {
       const loading = el('div', undefined, 'loading'); loading.setAttribute('aria-label', 'cargando'); loading.append(el('span', '_', 'cursor')); main.append(loading);
-      timers.push(setTimeout(() => { main.replaceChildren(); gate(5); }, 3000 + Math.random() * 3000));
+      document.body.classList.add('waiting');
+      loadTimer = setTimeout(() => { document.body.classList.remove('waiting'); main.replaceChildren(); gate(5); }, 3000 + Math.random() * 3000);
     } else gate(current);
   }
   // Independent enhancements share the same static shell.

@@ -16,12 +16,7 @@ test('serves the Spanish station and its working client scripts', async () => {
   assert.match(html, /lang="es"/);
   assert.match(html, /id="gate-form"/);
   assert.match(html, /data-door="closed"/);
-  assert.match(html, /id="door-whisper"/);
-  assert.match(html, /id="scene-skip"/);
-  assert.match(html, /id="scene-veil"/);
-  assert.match(html, /class="presence"/);
-  for (const rune of ['e', 'c', 'o']) assert.match(html, new RegExp(`data-rune="${rune}"`));
-  for (const path of ['/app.js', '/style.css', '/interior.js', '/interior.css']) {
+  for (const path of ['/wired.js', '/style.css', '/wired-state.js']) {
     const response = await fetch(base + path);
     assert.equal(response.status, 200);
     assert.ok((await response.text()).length > 1000);
@@ -104,5 +99,15 @@ test('serves the seven uploaded tapes unchanged with their still alternatives', 
     assert.equal(response.status, 200);
     assert.equal(response.headers.get('content-type'), 'image/png');
     assert.equal(Buffer.from(await response.arrayBuffer()).subarray(1, 4).toString(), 'PNG');
+  }
+});
+
+test('serves all eight static gates and the local guestbook without legacy scripts', async () => {
+  for (const path of [...Array.from({ length: 8 }, (_, i) => `/gate/0${i}.html`), '/rastro.html']) {
+    const response = await fetch(base + path); assert.equal(response.status, 200);
+    const html = await response.text();
+    assert.match(html, /noindex,nofollow,noarchive/);
+    assert.match(html, /wired-state.js/);
+    assert.doesNotMatch(html, /src="\/app.js|src="\/interior.js/);
   }
 });

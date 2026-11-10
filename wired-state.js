@@ -7,7 +7,7 @@
   try { if (window.name.startsWith(prefix)) envelope = JSON.parse(window.name.slice(prefix.length)); } catch {}
   let raw;
   try { raw = JSON.parse(localStorage.getItem(key)); } catch {}
-  raw ||= envelope.state;
+  raw ||= envelope?.state;
   const now = Date.now();
   const validNumber = value => Number.isSafeInteger(value) && value >= 0;
   let state = {
@@ -28,10 +28,10 @@
   }
   if (validNumber(raw?.displayVisitorNo) && raw.displayVisitorNo >= 100 && raw.displayVisitorNo <= 999) state.displayVisitorNo = raw.displayVisitorNo;
   const otherDay = today(state.lastVisit) !== today(now);
-  if (!envelope.session || otherDay) { state.visits++; state.returningDay = Boolean(raw && otherDay); }
+  if (!envelope?.session || otherDay) { state.visits++; state.returningDay = Boolean(raw && otherDay); }
   state.lastVisit = now;
   let traces = [];
-  try { traces = JSON.parse(localStorage.getItem('occult_traces')) || []; } catch { traces = envelope.traces || []; }
+  try { traces = JSON.parse(localStorage.getItem('occult_traces')) || []; } catch { traces = envelope?.traces || []; }
   if (!Array.isArray(traces)) traces = [];
   traces = traces.filter(item => typeof item?.message === 'string' && typeof item?.date === 'string').slice(-40).map(item => ({ message: item.message.slice(0, 200), date: item.date }));
   function save() {
