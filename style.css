@@ -360,3 +360,10 @@ body[data-page="control"] .masthead,body[data-page="control"] .main-nav,body[dat
 .terminal.powering-off{animation:crt-off 1.2s ease-in forwards}
 @keyframes crt-off{0%{transform:scale(1,1);filter:brightness(1)}60%{transform:scale(1,.008);filter:brightness(2)}100%{transform:scale(0,.008);filter:brightness(0)}}
 @media(max-width:540px){.terminal{padding:16px 12px 12px;font-size:12px}.terminal-form label,.terminal-form input{font-size:12px}.cam-connect{bottom:38px;font-size:9px;letter-spacing:.1em}}
+/* The footer line keeps the hidden door to the descent; the rest of the footer stays minimal. */
+footer>span:first-child{display:inline;color:#6f6f68;font-size:8px;letter-spacing:.12em}
+footer>span:first-child .hidden-door:hover,footer>span:first-child .hidden-door:focus-visible{color:#e8e8de}
+/* The door to the statue: small and cryptic, but it breathes so it can be found. */
+.reveal-end .hidden-door{display:inline-block;padding:6px 12px;font:22px/1 Georgia,serif;color:#b9b9af;animation:door-breathe 4s ease-in-out infinite}
+@keyframes door-breathe{0%,100%{opacity:.45;text-shadow:none}50%{opacity:1;text-shadow:0 0 10px #ffffff66}}
+body.quiet .reveal-end .hidden-door{animation:none;opacity:.8}
