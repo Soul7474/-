@@ -1,6 +1,6 @@
 # Special Elite
 
-Fuente de Astigmatic (Brian J. Bonislawsky y Jim Lyles), distribuida bajo Apache License 2.0; licencia y aviso de copyright en `LICENSE-SpecialElite.txt`.
+Fuente de Brian J. Bonislawsky DBA Astigmatic (AOETI), distribuida bajo Apache License 2.0; licencia y aviso de copyright en `LICENSE-SpecialElite.txt`.
 
 Archivo latino original, sin modificar, procedente de `@fontsource/special-elite@5.3.0`:
 https://registry.npmjs.org/@fontsource/special-elite/-/special-elite-5.3.0.tgz

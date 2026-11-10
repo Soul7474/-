@@ -15,8 +15,14 @@
 </head>
 <body>
   <svg class="svg-filters" width="0" height="0" aria-hidden="true" focusable="false">
-    <defs><filter id="onebit">
+    <defs><filter id="onebit" color-interpolation-filters="sRGB">
       <feColorMatrix type="saturate" values="0"/>
+      <!-- Lift the original dark photograph before the five-level quantization. -->
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="2.2"/>
+        <feFuncG type="linear" slope="2.2"/>
+        <feFuncB type="linear" slope="2.2"/>
+      </feComponentTransfer>
       <feComponentTransfer>
         <feFuncR type="discrete" tableValues="0 0 .35 .8 1"/>
         <feFuncG type="discrete" tableValues="0 0 .35 .8 1"/>

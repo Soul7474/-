@@ -114,3 +114,11 @@ test('serves all eight static gates and the local guestbook without legacy scrip
     assert.doesNotMatch(html, /src="\/app.js|src="\/interior.js/);
   }
 });
+
+test('serves the self-hosted WOFF2 font with its correct MIME type', async () => {
+  const response = await fetch(base + '/assets/fonts/SpecialElite.woff2');
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('content-type'), 'font/woff2');
+  const bytes = Buffer.from(await response.arrayBuffer());
+  assert.equal(bytes.subarray(0,4).toString(), 'wOF2');
+});

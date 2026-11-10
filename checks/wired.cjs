@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
-const { existsSync, mkdirSync, readFileSync } = require('node:fs');
+const { existsSync, mkdirSync, readFileSync, writeFileSync } = require('node:fs');
 const { join } = require('node:path');
 const { tmpdir } = require('node:os');
 (async () => {
@@ -27,7 +27,9 @@ const { tmpdir } = require('node:os');
     await answer('sí'); await page.waitForURL('**/gate/01.html');
     assert.equal(await page.locator('#gate-text').textContent(), 'Los labios están cerrados.');
     await answer('sí'); await page.waitForURL('**/gate/02.html');
-    assert.equal(await page.locator('#footer p').filter({ hasText: /^visita / }).count(), 2);
+    assert.equal(await page.locator('#elapsed-time').count(), 1);
+    assert.equal(await page.locator('#footer .visit-echo').count(), 1);
+    assert.equal(await page.locator('#footer p').filter({ hasText: /^visita / }).count(), 0);
     await answer('<xss>'); await page.waitForURL('**/gate/03.html');
     assert.match(await page.locator('#activity').textContent(), /otro: <xss>/); assert.equal(await page.locator('xss').count(), 0);
     await answer('lastre'); await page.waitForURL('**/gate/04.html');
@@ -53,7 +55,11 @@ const { tmpdir } = require('node:os');
     await page.locator('a[href="/gate/07.html"]').click(); await page.locator('#exit-button').click();
     assert.notEqual(await page.evaluate(() => OccultStore.state.returnVariation), firstVariation);
     await page.clock.runFor(46000); assert.match(await page.locator('#gate-symbol').getAttribute('style'), /2px/);
-    assert.equal(await page.locator('#activity li').count(), 4);
+    assert.ok(await page.locator('#activity li').count() >= 4);
+    await page.clock.runFor(240000);
+    assert.equal(await page.locator('#activity li').count(), 6);
+    const messages = await page.locator('#activity li').evaluateAll(items => items.map(item => item.lastChild.textContent));
+    assert.ok(messages.every((text, index) => !index || text !== messages[index - 1]));
     await page.evaluate(() => { Object.defineProperty(document, 'hidden', { value: true, configurable: true }); document.dispatchEvent(new Event('visibilitychange')); Object.defineProperty(document, 'hidden', { value: false, configurable: true }); document.dispatchEvent(new Event('visibilitychange')); });
     const log1 = await page.locator('#activity').textContent();
     await page.evaluate(() => { Object.defineProperty(document, 'hidden', { value: true, configurable: true }); document.dispatchEvent(new Event('visibilitychange')); Object.defineProperty(document, 'hidden', { value: false, configurable: true }); document.dispatchEvent(new Event('visibilitychange')); });
@@ -95,7 +101,7 @@ const { tmpdir } = require('node:os');
     }
     for (const color of css.matchAll(/rgba?\((\d+),(\d+),(\d+)/g)) assert.ok(color[1] === color[2] && color[2] === color[3]);
     await checkCRT(browser, base, captures, errors);
-    console.log('PASS: monochrome CRT, sigils, reduced motion, mobile-first layout, access unchanged, sequential gates, direct URL guards, all answers, guestbook, local state, XSS escaping, delay, exit variations, reactivity, sound, mobile, reduced motion, no storage, no external resources.');
+    console.log('PASS: engraving, local typewriter font, full-width masked images, live time, staggered clock logs, six-line log limit, viewport scroll coverage, monochrome CRT, sigils, reduced motion, mobile-first layout, access unchanged, sequential gates, direct URL guards, all answers, guestbook, local state, XSS escaping, delay, exit variations, reactivity, sound, mobile, reduced motion, no storage, no external resources.');
   } finally { await browser?.close(); server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
 
@@ -109,7 +115,14 @@ async function checkCRT(browser, base, captures, errors) {
   assert.equal(await page.locator('.door-art').getAttribute('src'), '/assets/door-009.png');
   assert.equal(await page.locator('.door-art').evaluate(image => image.complete && image.naturalWidth > 0), true);
   assert.equal(await page.locator('#navigation').isVisible(), false);
-  await page.screenshot({ path: join(captures, 'v3-entry-375.png'), fullPage: true });
+  await page.evaluate(() => document.fonts.ready);
+  assert.equal(await page.evaluate(() => [...document.fonts].some(face => face.family === 'Typewriter' && face.status === 'loaded')), true);
+  assert.equal(await page.locator('.door-art').evaluate(image => Math.abs(image.getBoundingClientRect().width - document.querySelector('#content').getBoundingClientRect().width) < 1), true);
+  const photo = await page.locator('.fig-img').evaluate(image => { const css = getComputedStyle(image); return [css.filter, css.maskImage, css.borderTopWidth, css.outlineWidth]; });
+  assert.match(photo[0], /onebit/); assert.doesNotMatch(photo[0], /drop-shadow/); assert.match(photo[1], /radial-gradient/);
+  assert.deepEqual(photo.slice(2), ['0px','0px']);
+  assert.equal(await page.locator('#onebit').count(), 1);
+  await page.screenshot({ path: join(captures, 'v31-entry-375.png'), fullPage: true });
   await page.locator('#password').fill('eco'); await page.locator('#password').press('Enter');
   await page.waitForURL('**/gate/00.html');
   assert.equal(await page.locator('.heptagram').count(), 0);
@@ -120,8 +133,23 @@ async function checkCRT(browser, base, captures, errors) {
   assert.equal(await page.locator('.heptagram').count(), 1);
   assert.equal(await page.locator('.planet').count(), 7);
   assert.equal(await page.locator('.planet.selected').textContent(), '☽');
-  assert.equal(await page.locator('.planet.selected').getAttribute('font-size'), '34');
+  assert.equal(await page.locator('.planet.selected').getAttribute('font-size'), '40');
   assert.equal(await page.locator('.cap').textContent(), 'lo de arriba también mira');
+  assert.equal(await page.locator('#gate-text').textContent(), 'Los labios de la sabiduría están cerrados, salvo para los oídos del entendimiento.');
+  assert.equal(await page.locator('.sigil #engrave').count(), 1);
+  assert.equal(await page.locator('.tick').count(), 49);
+  assert.equal(await page.locator('.serpent').count(), 1);
+  assert.match(await page.locator('.sigil textPath').textContent(), /SOLVE ET COAGULA · VISITA INTERIORA TERRAE · /);
+  const stamps = await page.locator('#activity time').evaluateAll(items => items.map(item => Date.parse(item.dateTime)));
+  assert.equal(stamps.length, 3); assert.equal(stamps[1] - stamps[0], 4000); assert.equal(stamps[2] - stamps[1], 3000);
+  const ages = await page.evaluate(stamps => stamps.map(stamp => Date.now() - stamp), stamps);
+  assert.ok(ages.every((age,index) => age >= [9000,5000,2000][index] && age < [12000,8000,5000][index]));
+  for (const clock of await page.locator('#activity time').allTextContents()) assert.match(clock, /^\d{2}:\d{2}:\d{2}$/);
+  const elapsedSeconds = async () => (await page.locator('#elapsed-time').textContent()).split(':').reduce((total,value) => total * 60 + Number(value), 0);
+  const start = await elapsedSeconds(); await page.clock.runFor(2200);
+  assert.ok(await elapsedSeconds() >= start + 2);
+  const positions = await page.locator('#footer .node-line > span').evaluateAll(items => items.map(item => item.getBoundingClientRect().top));
+  assert.equal(positions.length, 3); assert.ok(positions[0] < positions[1] && positions[1] < positions[2]);
   assert.equal(await page.locator('body').evaluate(body => getComputedStyle(body).textAlign), 'center');
   assert.notEqual(await page.locator('h1').evaluate(title => getComputedStyle(title).textShadow), 'none');
   assert.equal(await page.evaluate(() => document.querySelector('#navigation').getBoundingClientRect().top > document.querySelector('#answer-form').getBoundingClientRect().bottom), true);
@@ -133,9 +161,20 @@ async function checkCRT(browser, base, captures, errors) {
     await page.setViewportSize({ width, height: width === 1280 ? 1000 : 812 });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
     assert.ok(await page.locator('main').evaluate(main => main.getBoundingClientRect().width <= 640));
-    await page.screenshot({ path: join(captures, `v3-luna-${width}.png`), fullPage: true });
+    assert.equal(await page.locator('body').evaluate(body => getComputedStyle(body).fontSize), width < 600 ? '16px' : '18px');
+    assert.equal(await page.locator('h1').evaluate(title => getComputedStyle(title).fontSize), width < 600 ? '22px' : '26px');
+    await page.screenshot({ path: join(captures, `v31-luna-${width}.png`), fullPage: true });
   }
   await page.setViewportSize({ width: 375, height: 812 });
+  // Scroll the real Chromium viewport: fixed CRT layers must stay in place.
+  await page.mouse.wheel(0, 700);
+  await page.waitForFunction(() => scrollY > 100);
+  const scrolled = await page.evaluate(() => ({ y: scrollY, width: innerWidth, height: innerHeight, layers: [...document.querySelectorAll('.texture,.scan,.crt-bars')].map(item => { const r = item.getBoundingClientRect(); return { x:r.x, y:r.y, width:r.width, height:r.height }; }), top: document.querySelector('.bar-top').getBoundingClientRect().top, bottom: document.querySelector('.bar-bottom').getBoundingClientRect().bottom }));
+  for (const layer of scrolled.layers) assert.deepEqual(layer, { x:0, y:0, width:scrolled.width, height:scrolled.height });
+  assert.equal(scrolled.top, 0); assert.equal(scrolled.bottom, scrolled.height);
+  await page.screenshot({ path: join(captures, 'v31-scroll-375.png') });
+  writeFileSync(join(captures, 'v31-scroll.json'), JSON.stringify(scrolled, null, 2));
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.evaluate(() => {
     window.crtEvents = [];
     new MutationObserver(records => {
@@ -147,7 +186,7 @@ async function checkCRT(browser, base, captures, errors) {
       }
     }).observe(document.body, { subtree: true, childList: true, attributes: true, attributeOldValue: true, attributeFilter: ['class', 'style'] });
   });
-  await page.clock.runFor(21000);
+  await page.clock.runFor(41000);
   const events = await page.evaluate(() => crtEvents);
   for (const type of ['slice', 'bloom', 'bar']) {
     const start = events.find(event => event.type === type + '-on');
@@ -158,6 +197,12 @@ async function checkCRT(browser, base, captures, errors) {
     const range = type === 'slice' ? [120, 261] : type === 'bloom' ? [150, 301] : [100, 101];
     assert.ok(duration >= range[0] && duration <= range[1], type + ' duration: ' + duration);
   }
+  for (const [type,min,max] of [['slice',6000,15000],['bloom',8000,20000],['bar',5000,12000]]) {
+    const starts = events.filter(event => event.type === type + '-on');
+    assert.ok(starts.length >= 2, 'repeated ' + type);
+    for (let i = 1; i < starts.length; i++) assert.ok(starts[i].time - starts[i-1].time >= min && starts[i].time - starts[i-1].time <= max);
+  }
+  writeFileSync(join(captures, 'v31-effects.json'), JSON.stringify(events, null, 2));
   const slice = events.find(event => event.type === 'slice-on');
   assert.match(slice.clip, /inset/); assert.match(slice.transform, /translateX/);
   assert.equal(slice.hidden, 'true'); assert.equal(slice.inert, true); assert.equal(slice.ids, 0);
@@ -185,6 +230,6 @@ async function checkCRT(browser, base, captures, errors) {
   assert.equal(await page.locator('img.saturn-art').getAttribute('src'), '/assets/still-here.gif');
   await page.locator('a[href="/rastro.html"]').click();
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-  await page.screenshot({ path: join(captures, 'v3-rastro-375.png'), fullPage: true });
+  await page.screenshot({ path: join(captures, 'v31-rastro-375.png'), fullPage: true });
   assert.deepEqual(errors, []);
 }
