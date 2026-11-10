@@ -65,6 +65,7 @@ setInterval(() => {
   setTimeout(() => { pleaIndex = (pleaIndex + 1) % pleas.length; plea.textContent = pleas[pleaIndex]; plea.classList.remove('fading'); }, 450);
 }, 2800);
 let gateLevel = 1;
+let gateMisses = 0;
 let gateDestination = 'archivo';
 let returnFocus;
 function openDialog(dialog) { returnFocus = document.activeElement; dialog.showModal(); }
@@ -89,7 +90,8 @@ $('#gate-form').addEventListener('submit', event => {
   const answer = $('#password').value.trim().toLocaleLowerCase('es');
   if (answer !== (gateLevel === 1 ? 'eco' : '1998')) {
     $('#gate-error').textContent = 'No es esa. Algo se ha movido al otro lado.';
-    showOmen();
+    gateMisses++;
+    if (!(gateMisses >= 2 && scare('dientes', { delay: 350 }))) showOmen();
     $('#password').setAttribute('aria-invalid', 'true'); $('#password').select(); return;
   }
   state.level = Math.max(state.level, gateLevel); save(); renderArchive();
@@ -102,6 +104,7 @@ $('#gate-form').addEventListener('submit', event => {
 function showDocument(id) {
   const doc = documents.find(item => item.id === id); if (!doc) return;
   if (doc.level > state.level) { openGate(doc.level); return; }
+  if (doc.id === 'noabrir') setTimeout(() => { if ($('#document-dialog').open && $('#document-title').textContent === doc.name) scare('pasillo', { key: 'no-abrir' }); }, 2600);
   $('#document-title').textContent = doc.name;
   const body = $('#document-body'); releaseGIFs(body); body.replaceChildren();
   if (doc.image) { const img = element('img'); img.src = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'assets/corridor-still.jpg' : 'assets/corridor.gif'; img.alt = 'Imagen recuperada del pasillo B.'; body.append(img); }
@@ -186,7 +189,7 @@ function audioContext() { audio ??= new (window.AudioContext || window.webkitAud
 function drone(volume) {
   const ctx = audioContext(); const gain = ctx.createGain(); gain.gain.value = volume; gain.connect(ctx.destination);
   const nodes = [48, 49.4, 96].map(frequency => { const oscillator = ctx.createOscillator(); oscillator.type = 'sine'; oscillator.frequency.value = frequency; oscillator.connect(gain); oscillator.start(); return oscillator; });
-  return { stop() { nodes.forEach(node => node.stop()); gain.disconnect(); } };
+  return { gain, volume, stop() { nodes.forEach(node => node.stop()); gain.disconnect(); } };
 }
 function stopAmbient() { ambient?.stop(); ambient = null; $('#sound-toggle').setAttribute('aria-pressed', 'false'); $('#sound-toggle').innerHTML = '<span aria-hidden="true">▥</span> SONIDO: DESACTIVADO'; window.dispatchEvent(new CustomEvent('station:sound')); }
 $('#sound-toggle').addEventListener('click', async () => {
@@ -402,7 +405,10 @@ function renderDoor() {
   if (doorMode === 'closed') whisperClue();
   else whisper(doorMode === 'peeked' ? 'La puerta se ha abierto. Algo se asoma desde dentro.' : '');
 }
-function ritualMiss(message) { ritual.misses++; whisperClue(message); showOmen(); }
+function ritualMiss(message) {
+  ritual.misses++; whisperClue(message);
+  if (!(ritual.misses >= 3 && scare('cara', { key: 'umbral', delay: 500 }))) showOmen();
+}
 function advanceRitual() {
   ritual.step++; ritual.misses = 0;
   pulse($('.door-recording'), 'rattle'); // the door shivers on its own as each step is done
@@ -888,7 +894,7 @@ function drawStatue() {
   }
 }
 function startStatue() {
-  loadStatue(); drawStatue(); clearInterval(statue.timer);
+  loadStatue(); drawStatue(); clearInterval(statue.timer); statue.enteredAt = performance.now();
   if (!omensEnabled || motionQuery.matches) { statue.frame = 0; drawStatue(); return; }
   statue.timer = setInterval(() => {
     if (document.hidden) return;
@@ -897,6 +903,8 @@ function startStatue() {
       statue.frame += Math.sign(diff) * Math.min(Math.abs(diff), 1);
     } else statue.frame = (statue.frame + .5) % STATUE.frames;
     drawStatue();
+    const still = performance.now() - Math.max(statue.enteredAt, statue.lastPointer);
+    if (still > 9000 && Math.round(statue.frame) % STATUE.frames === 0) scare('dientes', { key: 'estatua' });
   }, 110);
 }
 function stopStatue() { clearInterval(statue.timer); statue.timer = 0; }
@@ -907,6 +915,90 @@ $('#statue-canvas').addEventListener('pointermove', event => {
   statue.follow = (Math.round(x * 8) + STATUE.frames) % STATUE.frames; statue.lastPointer = performance.now();
 });
 $('#omens-toggle').addEventListener('click', () => { if (document.body.dataset.page === 'estatua') startStatue(); });
+
+// Screamers: a real scare, never a flicker. Silence first (the ambient drone drops out, when it is
+// on), then one sudden cut to a face that punches in and shakes, with a distorted sting when sound
+// is on, and a fall into black. On screen 820 ms at most, never more than once every 25 s, never in
+// the first 15 s of a visit, never with calma or reduced motion; each trigger fires once per session.
+const scareImages = { dientes: 'images/c2f15d46dadaea0d78573a3436c1f21d.png', cara: 'assets/cutouts/presence-face.png', pasillo: 'images/2483130d0df7e07e5d073b244c4f0aad.png' };
+const pageStart = performance.now();
+let lastScare = -Infinity;
+let scareBusy = false;
+let scaresWarm = false;
+function scareAllowed() {
+  return omensEnabled && !motionQuery.matches && !document.hidden && !passageActive && !scareBusy &&
+    performance.now() - pageStart > 15000 && performance.now() - lastScare > 25000;
+}
+function scareOnce(key) {
+  try { if (sessionStorage.getItem('estacion09-susto-' + key)) return false; sessionStorage.setItem('estacion09-susto-' + key, '1'); } catch {}
+  return true;
+}
+function duckAmbient(ms) {
+  if (!ambient || audio?.state !== 'running') return;
+  const level = ambient.gain.gain, now = audio.currentTime;
+  level.cancelScheduledValues(now); level.setTargetAtTime(0, now, .06);
+  level.setTargetAtTime(ambient.volume, now + ms / 1000, .8);
+}
+function scareSound() {
+  if (!ambient || audio?.state !== 'running') return;
+  const ctx = audio, t = ctx.currentTime;
+  const master = ctx.createGain(); master.gain.setValueAtTime(.0001, t);
+  master.gain.exponentialRampToValueAtTime(.5, t + .012); master.gain.exponentialRampToValueAtTime(.0001, t + .85);
+  master.connect(ctx.destination);
+  const shaper = ctx.createWaveShaper(); const curve = new Float32Array(1024);
+  for (let i = 0; i < curve.length; i++) curve[i] = Math.tanh((i / 512 - 1) * 6);
+  shaper.curve = curve;
+  const tone = ctx.createBiquadFilter(); tone.type = 'lowpass';
+  tone.frequency.setValueAtTime(5200, t); tone.frequency.exponentialRampToValueAtTime(480, t + .7);
+  shaper.connect(tone); tone.connect(master);
+  [196, 207.6, 293, 415].forEach((frequency, i) => {
+    const oscillator = ctx.createOscillator(); oscillator.type = i % 2 ? 'sawtooth' : 'square';
+    oscillator.frequency.setValueAtTime(frequency, t); oscillator.frequency.exponentialRampToValueAtTime(frequency * .55, t + .8);
+    const gain = ctx.createGain(); gain.gain.value = .22; oscillator.connect(gain); gain.connect(shaper);
+    oscillator.start(t); oscillator.stop(t + .9);
+  });
+  const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * .6), ctx.sampleRate); const data = buffer.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length) ** 2;
+  const noise = ctx.createBufferSource(); noise.buffer = buffer;
+  const band = ctx.createBiquadFilter(); band.type = 'bandpass'; band.frequency.value = 1800; band.Q.value = .7;
+  const noiseGain = ctx.createGain(); noiseGain.gain.value = .6; noise.connect(band); band.connect(noiseGain); noiseGain.connect(master); noise.start(t);
+  const thump = ctx.createOscillator(); thump.frequency.setValueAtTime(70, t); thump.frequency.exponentialRampToValueAtTime(32, t + .35);
+  const thumpGain = ctx.createGain(); thumpGain.gain.setValueAtTime(.7, t); thumpGain.gain.exponentialRampToValueAtTime(.001, t + .4);
+  thump.connect(thumpGain); thumpGain.connect(master); thump.start(t); thump.stop(t + .45);
+  setTimeout(() => master.disconnect(), 1300);
+}
+function scare(kind = 'dientes', { key = null, delay = 0 } = {}) {
+  if (!scareAllowed() || (key && !scareOnce(key))) return false;
+  scareBusy = true; lastScare = performance.now();
+  if (!scaresWarm) { scaresWarm = true; for (const src of Object.values(scareImages)) { const image = new Image(); image.src = src; } }
+  duckAmbient(delay + 1600);
+  setTimeout(() => {
+    if (!omensEnabled || motionQuery.matches || document.hidden) { scareBusy = false; return; }
+    dismissOmen();
+    const screamer = $('#screamer'); const image = screamer.querySelector('img'); const shake = screamer.querySelector('.screamer-shake');
+    screamer.dataset.kind = kind; image.src = scareImages[kind] || scareImages.dientes;
+    screamer.hidden = false;
+    if (typeof screamer.showPopover === 'function') screamer.showPopover(); else screamer.removeAttribute('popover');
+    scareSound();
+    if (typeof image.animate === 'function') {
+      image.animate([{ transform: 'scale(1.42)' }, { offset: .12, transform: 'scale(1)', easing: 'linear' }, { offset: .78, transform: 'scale(1.07)' }, { transform: 'scale(1.13)' }], { duration: 820, easing: 'cubic-bezier(.2,.9,.3,1)' });
+      shake.animate([{ translate: '0 0' }, { translate: '-16px 9px' }, { translate: '14px -8px' }, { translate: '-10px 6px' }, { translate: '8px -5px' }, { translate: '-4px 3px' }, { translate: '0 0' }], { duration: 520, easing: 'steps(6)' });
+      shake.animate([{ filter: 'brightness(1)' }, { offset: .76, filter: 'brightness(1)' }, { filter: 'brightness(0)' }], { duration: 820 });
+    }
+    setTimeout(() => {
+      if (typeof screamer.hidePopover === 'function' && screamer.matches(':popover-open')) screamer.hidePopover();
+      screamer.hidden = true; scareBusy = false;
+    }, 820);
+  }, delay);
+  return true;
+}
+// The descent answers when you reach "[Intentando...]".
+if ('IntersectionObserver' in window) {
+  const trying = $('.descent-panel.c4');
+  if (trying) new IntersectionObserver((entries, observer) => {
+    if (entries.some(entry => entry.isIntersecting) && scare('dientes', { key: 'descenso', delay: 1400 })) observer.disconnect();
+  }, { threshold: .6 }).observe(trying);
+}
 
 // The station asks to be heard before you go in: once per session, only at the threshold.
 // "ESCUCHES" turns on the existing ambient sound (a click, so nothing plays by itself);
