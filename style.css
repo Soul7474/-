@@ -311,3 +311,21 @@ body[data-page="estatua"] .masthead,body[data-page="estatua"] .main-nav,body[dat
 .statue-title{margin:0;font:11px/1.6 'Courier New',monospace;letter-spacing:.3em;color:#8e8e86;text-shadow:none}
 .statue-canvas{display:block;width:min(420px,84vw);height:auto;aspect-ratio:3/4;background:#000;box-shadow:0 0 60px 20px #000;filter:contrast(1.05)}
 .statue-note{margin:0;font:11px/2 'Courier New',monospace;letter-spacing:.14em;color:#9a9a91}
+/* Tapes say what they are: a found-footage label, "sintonizando…" while the heavy GIF downloads,
+   "en pausa · calma" when it is held still on purpose. */
+[data-tape]::before{content:attr(data-tape);position:absolute;left:8px;top:7px;z-index:3;max-width:calc(100% - 16px);padding:1px 7px;background:#000000b8;font:9px/1.6 'Courier New',monospace;letter-spacing:.14em;color:#d6d6cc;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+[data-tape].is-tuning::before{content:attr(data-tape) "  ·  SINTONIZANDO…"}
+[data-tape].is-paused::before{content:attr(data-tape) "  ·  EN PAUSA · CALMA"}
+[data-tape].is-tuning img{filter:grayscale(1) brightness(.45) blur(1px)!important;transition:filter .6s}
+/* The archive's tape is the live feed of camera 09: a monitor, not a loose picture. */
+.cam-monitor{width:min(460px,100%)!important;margin:0 0 34px!important;rotate:-.6deg!important;opacity:1!important;padding:10px;background:#0b0b0a;border:1px solid #2b2b28;box-shadow:inset 0 0 30px #000,0 10px 30px #000}
+.cam-monitor .archive-tape{filter:grayscale(1) brightness(.8) contrast(1.15);-webkit-mask-image:none;mask-image:none;border-radius:6px/10px}
+.cam-rec{position:absolute;right:16px;top:16px;z-index:3;font:9px/1 'Courier New',monospace;letter-spacing:.2em;color:#e0e0d6;animation:rec-pulse 2s steps(2) infinite}
+.cam-time{position:absolute;right:16px;bottom:16px;z-index:3;font:9px/1 'Courier New',monospace;letter-spacing:.12em;color:#c8c8be;text-shadow:0 0 4px #000}
+@keyframes rec-pulse{50%{opacity:.25}}
+body.quiet .cam-rec{animation:none}
+/* The creature behind the interior is meant to be seen, faintly, breathing. */
+#view-interior .chamber-haze{opacity:.36;animation:haze-breathe 9s ease-in-out infinite}
+@keyframes haze-breathe{0%,100%{scale:1}50%{scale:1.06}}
+body.quiet #view-interior .chamber-haze{animation:none}
+@media(max-width:540px){.cam-monitor{width:100%!important;padding:6px;clear:both}[data-tape]::before{font-size:8px;letter-spacing:.08em}}

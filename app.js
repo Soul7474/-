@@ -221,6 +221,7 @@ setInterval(() => {
   seconds++; const stamp = new Date(seconds * 1000).toISOString().slice(11, 19);
   $('#session-clock').textContent = stamp + ' / SESIÓN LOCAL';
   $('#camera-clock').textContent = '03:33:' + String((9 + Math.floor(seconds / 3)) % 60).padStart(2, '0');
+  document.querySelectorAll('.cam-clock').forEach(clock => { clock.textContent = $('#camera-clock').textContent; });
   if (seconds === 35) $('#log-whisper').textContent = 'no has cerrado la ventana_';
   if (seconds === 90) $('#log-whisper').textContent = 'el silencio también responde_';
 }, 1000);
@@ -310,17 +311,32 @@ document.addEventListener('keydown', event => { if (event.key === 'Escape') dism
 document.addEventListener('visibilitychange', () => { if (document.hidden) dismissOmen(); });
 // GIFs load and animate only while visible; stills are real browser captures of each original.
 const watchedGIFs = new Map();
+// Each tape says what it is doing, so a still never looks like a broken GIF: "sintonizando…"
+// while the (heavy) GIF downloads, "en pausa · calma" when it is held still on purpose.
 function refreshGIF(image) {
   const visible = watchedGIFs.get(image);
-  const allowed = visible && !document.hidden && omensEnabled && !motionQuery.matches &&
+  const quiet = !omensEnabled || motionQuery.matches;
+  const allowed = visible && !document.hidden && !quiet &&
     (image.dataset.explicit !== 'true' || image.dataset.playing === 'true');
   const source = allowed ? image.dataset.gif : image.dataset.still;
-  if (image.getAttribute('src') !== source) image.setAttribute('src', source);
+  const tape = image.closest('[data-tape]');
+  if (image.getAttribute('src') !== source) {
+    if (tape && source === image.dataset.gif) tape.classList.add('is-tuning');
+    image.setAttribute('src', source);
+  }
+  if (tape) {
+    if (source !== image.dataset.gif) tape.classList.remove('is-tuning');
+    tape.classList.toggle('is-paused', quiet && image.dataset.explicit !== 'true');
+  }
 }
+document.addEventListener('load', event => {
+  const image = event.target;
+  if (image instanceof HTMLImageElement && image.dataset.gif && image.getAttribute('src') === image.dataset.gif) image.closest('[data-tape]')?.classList.remove('is-tuning');
+}, true);
 function refreshGIFs() { for (const image of watchedGIFs.keys()) refreshGIF(image); }
 const gifObserver = new IntersectionObserver(entries => {
   for (const entry of entries) { watchedGIFs.set(entry.target, entry.isIntersecting); refreshGIF(entry.target); }
-}, { threshold: .05 });
+}, { threshold: .05, rootMargin: '240px 0px' });
 function registerGIFs(root = document) {
   root.querySelectorAll('img[data-gif]').forEach(image => {
     if (watchedGIFs.has(image)) return;
