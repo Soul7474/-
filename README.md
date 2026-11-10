@@ -119,6 +119,18 @@ npm run test:browser
 
 El comando levanta un servidor local temporal, comprueba las mutaciones, posiciones de navegación, apariciones y cancelación, ambas soluciones del sello, sonido optativo, persistencia, reset y vistas móviles; al acabar cierra servidor y navegador. `CHROMIUM_PATH` permite seleccionar el ejecutable. Las capturas de comprobación se guardan en la carpeta temporal `estacion09-check`.
 
+## Ecos de otras webs
+
+Algunas ideas vienen de dos webs personales antiguas: *Terminal 00* (angusnicneven.com) y *Wired Sound for Wired People* (fauux.neocities.org). Se ha tomado la idea, nunca imágenes, textos ni código: todo está hecho con recursos propios de la estación, en su paleta monocroma y en español.
+
+- **Portada «ESCUCHA».** Al llegar al umbral, una vez por sesión, una figura en penumbra (la foto del pasillo aportada, `2483130d…`) y «Da igual. Haré que ESCUCHES». Ese botón activa con tu clic el sonido ambiente que ya existía; «entrar en silencio» o Escape lo dejan apagado. Se recuerda en `sessionStorage`.
+- **Una súplica en muchos idiomas.** Bajo la cabecera, «[recuérdame]» va cambiando entre catorce idiomas (fija con movimiento reducido).
+- **Eres invisible.** «Eres invisible. [hacerte visible]» hasta que firmas el libro de visitas; después, «Eres visible. La estación te ve».
+- **El descenso (`#descenso`).** Una vista oculta muy larga, sobre un fondo de estática en forma de rombos (tres teselas de canvas que se alternan, sin destellos). Paneles en caracteres de ancho completo repiten «Vuelve atrás. Esto es un [CALLEJÓN SIN SALIDA]» mientras el texto se descompone: espaciado, sombra que resbala, corchetes vacíos, una línea entre barras, «[Intentando…]», otra al revés. Hay una franja de ojos recortados de las imágenes de la estación que se desliza al bajar, y al fondo del todo una revelación. Con «calma» o movimiento reducido todo queda quieto.
+- **Puertas que parecen texto.** Enlaces sin subrayado que llevan al descenso (ver soluciones).
+- **404 propio.** `404.html`, que GitHub Pages sirve para cualquier dirección que no exista: fondo de «SIN SEÑAL», rótulos invertidos, las frecuencias conocidas para volver y la figura del ojo en una esquina. El servidor local devuelve la misma página con estado 404.
+- **Detalles.** Esquinas ⌈ ⌉ ⌊ ⌋ en la cabecera, cursores propios (un anillo y, sobre los enlaces, un ojo) y una selección de texto pálida.
+
 ## Recorrido
 
 - **Umbral:** entrada, cámara animada, registro y primeros documentos.
@@ -126,6 +138,7 @@ El comando levanta un servidor local temporal, comprueba las mutaciones, posicio
 - **Transmisiones:** interferencia sintetizada de nueve segundos con transcripción ficticia. El ambiente se activa por separado; no hay audio automático ni archivos remotos.
 - **Los que llegaron:** mensajes de ficción y entradas del visitante guardadas en su navegador.
 - **Subsuelo:** desenlace tras la segunda contraseña.
+- **Descenso:** oculto; solo se llega por las puertas que parecen texto.
 - **Olvidar esta visita:** pide confirmación antes de borrar accesos y mensajes locales.
 
 El sistema respeta movimiento reducido con una imagen estática en vez del GIF principal. Tiene navegación por teclado, diálogos cerrables con Escape, foco visible y presentación adaptable a móvil. Todos los recursos se sirven desde el propio proyecto. No hay rastreo, peticiones externas ni recogida real de identidades.
@@ -144,6 +157,8 @@ Puerta de la entrada (ritual, en orden):
 Primer sello del archivo: `eco`. La pista está en `leeme_antes.txt` y en el libro de visitas.
 
 Segunda puerta: `1998`. La pista está en `no_abrir.txt` y en las fechas de la estación.
+
+El descenso: la palabra «encontrado» de la cita de Fragmentos («No todo lo que está en la red quiere ser encontrado»), la palabra «PERDIDOS» del pie de página y «más abajo» en la página 404.
 
 </details>
 
