@@ -3,7 +3,7 @@
   const store = window.OccultStore;
   if (!store) return;
   const $ = selector => document.querySelector(selector);
-  const main = $('#main');
+  const main = $('#content');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const spheres = ['Umbral', 'Luna', 'Mercurio', 'Venus', 'Sol', 'Marte', 'Júpiter', 'Saturno'];
   const questions = ['¿Sabes por qué has entrado? (sí / no)', '¿Alguien sabe que estás aquí? (sí / no)', 'Escribe una palabra que no hayas dicho nunca en voz alta.', '¿Qué dejarías atrás? (una palabra)', '¿Quieres ver? (sí / no)', '¿Quién abrió la puerta primero? (una palabra)', '¿Cuántas veces has estado aquí? (un número)', '¿Puedes salir? (sí / no)'];
@@ -19,7 +19,7 @@
   const route = number => `/gate/${String(number).padStart(2, '0')}.html`;
   const el = (tag, text, cls) => { const item = document.createElement(tag); if (text !== undefined) item.textContent = text; if (cls) item.className = cls; return item; };
   const time = stamp => new Date(stamp ?? Date.now()).toLocaleTimeString('es-ES', { hour12: false });
-  function go(path, replace = false) { history[replace ? 'replaceState' : 'pushState'](null, '', path); render(); main.focus({ preventScroll: true }); window.scrollTo(0, 0); }
+  function go(path, replace = false) { history[replace ? 'replaceState' : 'pushState'](null, '', path); render(); $('#main').focus({ preventScroll: true }); window.scrollTo(0, 0); }
   const captions = ['se abre cuando uno escucha', 'lo de arriba también mira', 'la palabra vuelve a quien la dice', 'lo que se deja atrás sigue aquí', 'quien ve, ya no puede no ver', 'el orden permanece', 'la cuenta no coincide', 'se acaba cuando siete son uno'];
   function artwork(number) {
     if (number !== 7) return window.renderSigil(number);
@@ -42,26 +42,35 @@
   }
   function cleanTimers() { timers.forEach(clearTimeout); timers = []; clearTimeout(idleTimer); clearTimeout(logTimer); }
   function nav() {
-    const header = $('#navigation'); header.replaceChildren(); header.hidden = !store.state.opened;
-    if (header.hidden) return;
+    const area = $('#navigation'); area.replaceChildren();
+    area.hidden = !store.state.opened || (current < 0 && location.pathname !== '/rastro.html');
+    if (area.hidden) return;
     const menu = el('nav'); menu.setAttribute('aria-label', 'puertas');
+    const links = [];
     for (let i = 0; i <= store.state.gate; i++) {
-      const link = el('a', `[ gate ${String(i).padStart(2, '0')} ]`); link.href = route(i);
-      if (current === i) link.setAttribute('aria-current', 'page'); menu.append(link);
+      const link = el('a', i === 0 ? 'Home' : `Gate ${String(i).padStart(2, '0')}`); link.href = route(i);
+      if (current === i) link.setAttribute('aria-current', 'page'); links.push(link);
     }
-    if (store.state.gate >= 3) { const link = el('a', '[ deja un rastro ]'); link.href = '/rastro.html'; menu.append(link); }
-    header.append(menu);
+    if (store.state.gate >= 3) {
+      const link = el('a', 'Deja un rastro'); link.href = '/rastro.html';
+      if (location.pathname === '/rastro.html') link.setAttribute('aria-current', 'page'); links.push(link);
+    }
+    links.forEach((link, index) => { if (index) menu.append(document.createTextNode(' | ')); menu.append(link); });
+    area.append(menu);
   }
   function footer() {
-    const footer = $('#footer'); footer.replaceChildren(el('hr'));
-    footer.append(el('p', 'visitante nº ' + String(store.state.displayVisitorNo || store.state.visitorNo).padStart(6, '0'), 'visitor-number'));
-    footer.append(el('p', 'visita ' + time(store.state.lastVisit)));
-    if (store.state.answers.g01 === 'sí') footer.append(el('p', 'visita ' + time(store.state.lastVisit + 17 * 60000)));
+    const footer = $('#footer'); footer.replaceChildren();
+    const identity = el('p', undefined, 'node-line');
+    identity.append(document.createTextNode('nodo 009 · '), el('span', 'visitante nº ' + String(store.state.displayVisitorNo || store.state.visitorNo).padStart(6, '0'), 'visitor-number'), document.createTextNode(' · 1 presencia en este nodo'));
+    footer.append(identity, el('p', 'visita ' + time(store.state.lastVisit), 'visit-time'));
+    if (store.state.answers.g01 === 'sí') footer.append(el('p', 'visita ' + time(store.state.lastVisit + 17 * 60000), 'visit-time'));
     if (store.state.returningDay && store.state.visits > 1) footer.append(el('p', 'ya estuviste aquí'));
-    footer.append(el('p', 'hecho a mano con el bloc de notas. optimizado para nadie.'));
-    const forget = el('button', 'OLVIDAR ESTA VISITA'); forget.type = 'button'; forget.id = 'forget-button';
-    forget.addEventListener('click', () => { sound.stop(); store.forget(); go('/', true); }); footer.append(forget);
-    if (store.state.opened && (current >= 0 || location.pathname === '/rastro.html')) sound.controls(footer);
+    const actions = el('div', undefined, 'footer-actions');
+    const forget = el('button', 'olvidar esta visita'); forget.type = 'button'; forget.id = 'forget-button';
+    forget.setAttribute('aria-label', 'OLVIDAR ESTA VISITA');
+    forget.addEventListener('click', () => { sound.stop(); store.forget(); go('/', true); }); actions.append(forget);
+    if (store.state.opened && (current >= 0 || location.pathname === '/rastro.html')) sound.controls(actions);
+    footer.append(actions);
   }
   function addLog(text) {
     lines.push({ stamp: Date.now(), text }); lines = lines.slice(-4);
@@ -73,7 +82,7 @@
   }
   function entry() {
     const section = el('section'); section.dataset.door = 'closed';
-    section.append(el('h1', '⌈ UMBRAL ⌋'), el('p', texts[0]), doorArtwork());
+    section.append(el('h1', '⌈ UMBRAL ⌋'), el('p', texts[0], 'quote'), doorArtwork(), el('p', 'Powered by NOTEPAD.EXE', 'powered'));
     const form = el('form'); form.id = 'gate-form';
     const label = el('label', 'palabra de acceso'); label.htmlFor = 'password';
     const input = el('input'); input.id = 'password'; input.type = 'password'; input.required = true; input.autocomplete = 'off'; input.setAttribute('aria-describedby', 'gate-error');
@@ -87,11 +96,12 @@
     });
   }
   function gate(number) {
-    main.append(el('h1', `⌈ GATE ${String(number).padStart(2, '0')} ⌋ ${spheres[number]}`), symbol(number));
+    main.append(el('h1', `⌈ GATE ${String(number).padStart(2, '0')} ⌋`), el('p', spheres[number], 'sphere'));
     let text = number === 1 && store.state.answers.g00 === 'sí' ? 'Los labios están cerrados.' : texts[number];
     if (number === 7 && store.state.answers.g05) text = store.state.answers.g05;
     if (number === 0 && store.state.returned && store.state.returnVariation === 0) text = 'Como es abajo, es arriba.';
-    const paragraph = el('p', text); paragraph.id = 'gate-text'; main.append(paragraph);
+    const paragraph = el('p', text, 'quote'); paragraph.id = 'gate-text';
+    main.append(paragraph, symbol(number), el('p', 'Powered by NOTEPAD.EXE', 'powered'));
     if (number === 0 && store.state.returned && store.state.returnVariation === 1) $('#gate-symbol').style.transform = 'rotate(180deg)';
     const form = el('form'); form.id = 'answer-form';
     const label = el('label', questions[number]); label.htmlFor = 'answer';
@@ -127,6 +137,7 @@
     footer(); startReactivity(number);
   }
   function render() {
+    document.dispatchEvent(new Event('occult:render'));
     cleanTimers(); clearTimeout(loadTimer); document.body.classList.remove('waiting');
     main.replaceChildren(); $('#activity').replaceChildren(); lines = [];
     const match = location.pathname.match(/^\/gate\/(0[0-7])\.html$/);
@@ -217,7 +228,7 @@
     let ctx, oscillator, gain, timer, resumeTimer;
     let active = false;
     function update() {
-      const status = $('#sound-status'); if (status) status.textContent = active ? 'SONIDO: ACTIVADO' : 'SONIDO: DESACTIVADO';
+      const status = $('#sound-status'); if (status) status.textContent = active ? 'sonido: activado' : 'sonido: desactivado';
       const button = $('#sound-button'); if (button) button.setAttribute('aria-pressed', String(active));
     }
     function stop() {
@@ -244,10 +255,10 @@
         oscillator = next.createOscillator(); gain = next.createGain();
         oscillator.type = 'sine'; oscillator.frequency.value = 52; gain.gain.value = .02;
         oscillator.connect(gain); gain.connect(next.destination); oscillator.start(); active = true; update(); gap();
-      } catch { stop(); const status = $('#sound-status'); if (status) status.textContent = 'SONIDO: NO DISPONIBLE'; }
+      } catch { stop(); const status = $('#sound-status'); if (status) status.textContent = 'sonido: no disponible'; }
     }
     function controls(footer) {
-      const row = el('div', undefined, 'sound-controls'); const status = el('span', active ? 'SONIDO: ACTIVADO' : 'SONIDO: DESACTIVADO'); status.id = 'sound-status'; status.setAttribute('role', 'status');
+      const row = el('span', undefined, 'sound-controls'); const status = el('span', active ? 'sonido: activado' : 'sonido: desactivado'); status.id = 'sound-status'; status.setAttribute('role', 'status');
       const button = el('button', '[ sonido ]'); button.type = 'button'; button.id = 'sound-button'; button.setAttribute('aria-pressed', String(active)); button.addEventListener('click', () => active ? stop() : start());
       row.append(status, button); footer.append(row);
     }
