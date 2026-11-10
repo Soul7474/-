@@ -67,7 +67,7 @@ body[data-page="inicio"]:after{display:none}
 
 /* The threshold opens into an image-led chamber, not an index screen. */
 .door-surface{display:block;width:100%;padding:0;border:0;background:none;line-height:0;cursor:pointer}
-.door-surface:hover .door-photo,.door-surface:hover .door-leaf{filter:grayscale(1) brightness(1.12)}
+.door-surface:hover .door-photo{filter:grayscale(1) brightness(1.12)}
 .door-surface:disabled{cursor:wait}
 #door-passage{position:fixed;inset:0;z-index:70;background:#030303;overflow:hidden;touch-action:manipulation;user-select:none}
 #door-passage .door-stage{position:absolute;transform-origin:0 0;will-change:transform,filter}
@@ -142,11 +142,19 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 /* Closed threshold: the doorway is shut until the visitor completes the ritual. */
 .door-stage{position:relative;display:block;line-height:0}
 .door-stage .door-gap{position:absolute;left:54.2%;top:11.4%;width:19.4%;height:88.6%;overflow:hidden;pointer-events:none}
-.door-stage[data-door="closed"] .door-gap,.door-stage[data-door="peeked"] .door-gap{background:radial-gradient(ellipse 42% 20% at 44% 28%,#0f0f0f,transparent 70%),linear-gradient(180deg,#020202 0%,#050505 40%,#080808 68%,#010101 100%)}
-/* A room behind the door: a far figure, barely there, and the camera grain over it all. */
-.door-stage[data-door="closed"] .door-gap::before,.door-stage[data-door="peeked"] .door-gap::before{content:"";position:absolute;left:24%;top:22%;width:15%;height:33%;background:radial-gradient(ellipse 30% 13% at 50% 9%,#131313 55%,transparent 100%),radial-gradient(ellipse 48% 44% at 50% 54%,#101010 45%,transparent 100%);filter:blur(1.5px)}
-.door-stage[data-door="closed"] .door-gap::after,.door-stage[data-door="peeked"] .door-gap::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23g)'/%3E%3C/svg%3E") 0 0/60px 60px;opacity:.07;mix-blend-mode:screen;pointer-events:none}
-.door-stage .presence{position:absolute;left:10%;top:20%;width:80%;aspect-ratio:400/450;opacity:0;transform:scale(.45);transform-origin:50% 45%;pointer-events:none}
+/* The real leaf of the photographed door, cut out of the photo itself (measured on the 1448×1086 image),
+   so it can swing a little further towards the viewer during the scene; black fills what it uncovers. */
+.door-stage .leaf-void,.door-stage .photo-leaf{display:none;position:absolute;inset:0;width:100%;height:100%;max-width:none;pointer-events:none;clip-path:polygon(73% 4%,92.5% 16%,93% 100%,74% 100%)}
+.door-stage .leaf-void{background:linear-gradient(90deg,#020202,#060606 60%,#0a0a0a)}
+.door-stage .photo-leaf{transform-origin:92.8% 55%;filter:grayscale(1);opacity:.9}
+.door-stage.in-scene .leaf-void,.door-stage.in-scene .photo-leaf{display:block}
+.door-stage.in-scene .door-gap{overflow:visible}
+#door-passage .edge-dark{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse 60% 62% at 50% 46%,transparent 36%,#000000d0 84%,#000 100%)}
+/* During the scene only: a far figure in the doorway, barely there, and the camera grain over it. The entrance shows the photo as it is. */
+.door-stage.in-scene .door-gap::before{content:"";position:absolute;left:24%;top:22%;width:15%;height:33%;background:radial-gradient(ellipse 30% 13% at 50% 9%,#131313 55%,transparent 100%),radial-gradient(ellipse 48% 44% at 50% 54%,#101010 45%,transparent 100%);filter:blur(1.5px)}
+.door-stage.in-scene .door-gap::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23g)'/%3E%3C/svg%3E") 0 0/60px 60px;opacity:.07;mix-blend-mode:screen;pointer-events:none}
+/* The presence is born where the photo already shows a face in the shadow (about x 70%, y 39% of the photo), half behind the leaf edge. */
+.door-stage .presence{position:absolute;left:41.4%;top:18%;width:80%;aspect-ratio:400/450;opacity:0;transform:translateX(0%) scale(.45);transform-origin:50% 50%;pointer-events:none}
 .door-stage .presence-head{position:absolute;inset:0;transform-origin:50% 85%}
 .door-stage .peeker{position:absolute;inset:0;width:100%;height:100%;max-width:none;filter:grayscale(1) contrast(1.32) brightness(1.08);-webkit-mask-image:radial-gradient(ellipse 47% 49% at 50% 47%,#000 38%,transparent 80%);mask-image:radial-gradient(ellipse 47% 49% at 50% 47%,#000 38%,transparent 80%)}
 .door-stage .presence-hair{position:absolute;left:-18%;top:-17%;width:136%;height:120%;border-radius:50%;background:radial-gradient(ellipse 50% 50% at 50% 48%,#131313 46%,#0b0b0b 62%,transparent 72%);filter:blur(4px)}
@@ -154,9 +162,9 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 .door-stage .presence-grain{position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23g)'/%3E%3C/svg%3E") 0 0/90px 90px;mix-blend-mode:overlay;opacity:.55;-webkit-mask-image:radial-gradient(ellipse 46% 48% at 50% 47%,#000 40%,transparent 75%);mask-image:radial-gradient(ellipse 46% 48% at 50% 47%,#000 40%,transparent 75%);animation:grain-jitter .48s steps(3) infinite}
 .door-stage .presence-shade{position:absolute;inset:-14%;background:radial-gradient(ellipse 50% 52% at 50% 52%,transparent 35%,#000000b8 54%,#000000a8 64%,#0000 82%)}
 @keyframes grain-jitter{0%{background-position:0 0}33%{background-position:-31px 17px}66%{background-position:23px -29px}100%{background-position:0 0}}
-.door-stage .frame-hand{position:absolute;transform-origin:88% 55%;left:49.6%;top:46%;width:10.6%;height:auto;max-width:none;opacity:0;pointer-events:none;filter:grayscale(1) brightness(.7) contrast(1.1);-webkit-mask-image:linear-gradient(to left,transparent 4%,#000 42%);mask-image:linear-gradient(to left,transparent 4%,#000 42%)}
+.door-stage .frame-hand{position:absolute;transform-origin:88% 55%;left:50.9%;top:46%;width:10.6%;height:auto;max-width:none;opacity:0;pointer-events:none;filter:grayscale(1) brightness(.7) contrast(1.1);-webkit-mask-image:linear-gradient(to left,transparent 4%,#000 42%);mask-image:linear-gradient(to left,transparent 4%,#000 42%)}
 .door-stage[data-door="open"] .presence,.door-stage[data-door="open"] .frame-hand{display:none}
-.door-stage[data-door="peeked"] .presence{opacity:1;transform:scale(1)}
+.door-stage[data-door="peeked"] .presence{opacity:1;transform:translateX(-29%) scale(1)}
 .door-stage[data-door="peeked"] .frame-hand{opacity:1}
 /* The passage: a rig that can shake, the hand that reaches for you, and the fall inside. */
 #door-passage .passage-rig{position:absolute;inset:0}
@@ -176,8 +184,6 @@ body.quiet .vhs-tracking{animation:none;display:none}body.quiet .watcher .eye-pu
 #door-passage .fall-text{position:relative;z-index:1;margin:0 16px;font:clamp(18px,2.6vw,42px)/1.4 'Courier New',monospace;letter-spacing:.14em;color:#dcdcd2;text-align:center;text-shadow:0 0 8px #ffffff2e}
 #door-passage .fall-text span{opacity:0}
 @media(max-width:540px){#door-passage .fall-text{letter-spacing:.06em}}
-.door-stage .door-leaf{position:absolute;left:53.8%;top:10.9%;width:20.2%;height:89.1%;max-width:none;opacity:.96;transform-origin:0 50%;filter:grayscale(1) blur(.45px) contrast(.95) brightness(.74)}
-.door-stage:not([data-door="closed"]) .door-leaf{display:none}
 .door-recording.rattle{animation:door-rattle .34s linear 1}
 .door-recording.knock{animation:door-knock .2s ease-out 1}
 @keyframes door-rattle{0%,100%{translate:0}20%{translate:-3px 0}40%{translate:3px 0}60%{translate:-2px 0}80%{translate:1px 0}}

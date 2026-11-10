@@ -561,42 +561,48 @@ async function openingScene() {
   doorMode = 'open'; renderDoor();
   if (!mount) { location.hash = 'interior'; return; }
   const { copy, rig, bounds, id } = mount;
-  const leaf = copy.querySelector('.door-leaf'); const face = copy.querySelector('.presence'); const head = copy.querySelector('.presence-head'); const frameHand = copy.querySelector('.frame-hand');
-  const depth = leaf.offsetWidth * 3.2;
+  const face = copy.querySelector('.presence'); const head = copy.querySelector('.presence-head'); const frameHand = copy.querySelector('.frame-hand');
+  const photoLeaf = copy.querySelector('.photo-leaf');
+  copy.classList.add('in-scene');
+  const depth = copy.offsetWidth * 1.4;
   const near = Math.max(innerHeight * 1.5 / bounds.height, innerWidth * .62 / bounds.width);
-  const view = focusOn(bounds, .6, .45, near);
-  const closer = focusOn(bounds, .62, .43, near * 1.18);
+  const view = focusOn(bounds, .62, .45, near);
+  const closer = focusOn(bounds, .63, .43, near * 1.18);
 
   armSkip(id);
 
-  // Approach and the door swinging open into the dark; the fingers find the frame
-  // while the door is still moving, so there is no empty wait before the face.
+  // The photo already shows the door ajar: there is no leaf to open. The camera creeps slowly
+  // towards the black gap while the edges darken, and the real leaf (cut out of the photo)
+  // swings a little further towards you. The fingers find the frame before it settles.
+  const shade = element('div', undefined, 'edge-dark'); rig.append(shade);
   const approach = play(copy, [
     { transform: 'translate(0px, 0px) scale(1)', filter: 'grayscale(1) brightness(1)' },
-    { transform: view, filter: 'grayscale(1) brightness(.9)' }
-  ], { duration: 1200, easing: 'cubic-bezier(.55,.05,.35,1)' });
-  const opening = play(leaf, [
-    { transform: `perspective(${depth}px) rotateY(0deg)`, filter: 'grayscale(1) blur(.45px) contrast(.95) brightness(.74)', opacity: .96 },
-    { offset: .14, transform: `perspective(${depth}px) rotateY(5deg)` },
-    { offset: .3, transform: `perspective(${depth}px) rotateY(4deg)` },
-    { offset: .9, transform: `perspective(${depth}px) rotateY(72deg)`, filter: 'grayscale(1) blur(.45px) contrast(.95) brightness(.2)', opacity: .96 },
-    { transform: `perspective(${depth}px) rotateY(80deg)`, filter: 'grayscale(1) blur(.45px) contrast(.95) brightness(.08)', opacity: 0 }
-  ], { delay: 900, duration: 1500, easing: 'ease-in' });
-  // a) Fingers curl out of the dark and grip the door frame.
+    { transform: view, filter: 'grayscale(1) brightness(.88)' }
+  ], { duration: 2400, easing: 'cubic-bezier(.35,0,.25,1)' });
+  play(shade, [{ opacity: 0 }, { opacity: .85 }], { duration: 2400, easing: 'ease-in' });
+  const swing = play(photoLeaf, [
+    { transform: `perspective(${depth}px) rotateY(0deg)`, filter: 'grayscale(1) brightness(1)' },
+    { offset: .25, transform: `perspective(${depth}px) rotateY(3deg)` },
+    { offset: .4, transform: `perspective(${depth}px) rotateY(2.4deg)` },
+    { transform: `perspective(${depth}px) rotateY(17deg)`, filter: 'grayscale(1) brightness(.8)' }
+  ], { delay: 500, duration: 1900, easing: 'ease-in-out' });
+  // a) Fingers curl out of the dark and grip the left frame, the wall's peeling edge.
   const grip = play(frameHand, [
     { opacity: 0, transform: 'translateX(38%) scale(.96)' },
     { offset: .6, opacity: .9, transform: 'translateX(8%) scale(1)' },
     { opacity: 1, transform: 'translateX(0%) scale(1)' }
   ], { delay: 1700, duration: 900, easing: 'cubic-bezier(.2,.6,.3,1)' });
-  if (!await settled(id, approach, opening, grip)) return;
+  if (!await settled(id, approach, swing, grip)) return;
 
-  // b) A face comes out of the gap, closer and closer. It is alive: the head tilts slowly and
-  // sways; once, at about half way, it stops dead for a moment and then moves again.
+  // b) The face that the photo already shows in the shadow comes forward: it starts dark and blurred
+  // on that very spot, half behind the leaf, and grows, lightens and leans out from there. It is
+  // alive: the head tilts slowly and sways; once, half way, it stops dead and then moves again.
   const emerge = play(face, [
-    { offset: 0, opacity: 0, transform: 'scale(.45)', filter: 'brightness(.3) blur(3px)', easing: 'cubic-bezier(.4,0,.6,1)' },
-    { offset: .5, opacity: .85, transform: 'scale(.82)', filter: 'brightness(.85) blur(1px)' },
-    { offset: .62, opacity: .85, transform: 'scale(.82)', filter: 'brightness(.85) blur(1px)', easing: 'cubic-bezier(.5,0,.5,1)' },
-    { offset: 1, opacity: 1, transform: 'scale(1.2)', filter: 'brightness(1.12) blur(0px)' }
+    { offset: 0, opacity: 0, transform: 'translateX(0%) scale(.45)', filter: 'brightness(.25) blur(3px)', easing: 'cubic-bezier(.4,0,.6,1)' },
+    { offset: .12, opacity: .5, transform: 'translateX(-2%) scale(.48)', filter: 'brightness(.3) blur(3px)' },
+    { offset: .5, opacity: .85, transform: 'translateX(-14%) scale(.82)', filter: 'brightness(.85) blur(1px)' },
+    { offset: .62, opacity: .85, transform: 'translateX(-14%) scale(.82)', filter: 'brightness(.85) blur(1px)', easing: 'cubic-bezier(.5,0,.5,1)' },
+    { offset: 1, opacity: 1, transform: 'translateX(-29%) scale(1.2)', filter: 'brightness(1.12) blur(0px)' }
   ], { duration: 3000 });
   play(head, [
     { offset: 0, transform: 'translate(0%, 0%) rotate(0deg)' },

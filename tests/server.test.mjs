@@ -53,7 +53,7 @@ test('serves real GIF images, a reduced-motion image and a favicon', async () =>
   const presence = await fetch(base + '/assets/presence.png');
   assert.equal(presence.status, 200);
   assert.equal(presence.headers.get('content-type'), 'image/png');
-  for (const path of ['/assets/inner-relic.png', '/assets/echo-form.svg', '/assets/trace-form.svg', '/assets/door-shut.svg', '/assets/cutouts/presence-face.png', '/assets/cutouts/presence-hand.png', '/images/c2f15d46dadaea0d78573a3436c1f21d.png', '/images/2483130d0df7e07e5d073b244c4f0aad.png']) {
+  for (const path of ['/assets/inner-relic.png', '/assets/echo-form.svg', '/assets/trace-form.svg', '/assets/cutouts/presence-face.png', '/assets/cutouts/presence-hand.png', '/images/c2f15d46dadaea0d78573a3436c1f21d.png', '/images/2483130d0df7e07e5d073b244c4f0aad.png']) {
     assert.equal((await fetch(base + path)).status, 200, path);
   }
 });
