@@ -137,7 +137,7 @@ function showVision(name) {
   $('#document-body').replaceChildren(image); openDialog($('#document-dialog'));
   registerGIFs($('#document-body'));
 }
-const viewNames = ['inicio', 'interior', 'archivo', 'fragmentos', 'transmisiones', 'visitantes', 'subsuelo', 'descenso'];
+const viewNames = ['inicio', 'interior', 'archivo', 'fragmentos', 'transmisiones', 'visitantes', 'subsuelo', 'descenso', 'estatua'];
 let currentView = '';
 function route() {
   const target = location.hash.slice(1) || 'inicio';
@@ -150,6 +150,7 @@ function route() {
   dismissOmen();
   document.body.dataset.page = name;
   if (name === 'descenso') startDescent(); else stopDescent();
+  if (name === 'estatua') startStatue(); else stopStatue();
   $('#entry-portal').hidden = name !== 'inicio';
   document.querySelectorAll('.view').forEach(view => view.hidden = view.id !== `view-${name}`);
   document.querySelectorAll('[data-view]').forEach(link => { link.classList.toggle('active', link.dataset.view === name); if (link.dataset.view === name) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
@@ -838,6 +839,58 @@ window.addEventListener('scroll', () => {
   document.querySelectorAll('.eye-strip').forEach((strip, i) => strip.style.setProperty('--shift', `${Math.round(Math.sin(scrollY / 90 + i * 1.7) * 14)}px`));
 }, { passive: true });
 $('#omens-toggle').addEventListener('click', () => { if (document.body.dataset.page === 'descenso') startDescent(); });
+
+// The statue (#estatua): a marble bust (Poly Haven "Marble Bust 01", CC0) rendered in Blender as a
+// 48-frame turntable, drawn here as a monochrome phosphor triad screen. It turns slowly; move the
+// pointer over it and it turns its face towards you. Still, facing you, with calma or reduced motion.
+const statue = { image: null, data: null, frame: 0, timer: 0, follow: null, lastPointer: -Infinity };
+const STATUE = { frames: 48, cols: 8, w: 168, h: 224 };
+function loadStatue() {
+  if (statue.image) return;
+  statue.image = new Image();
+  statue.image.onload = () => {
+    const canvas = document.createElement('canvas'); canvas.width = statue.image.width; canvas.height = statue.image.height;
+    const context = canvas.getContext('2d'); if (!context) return;
+    context.drawImage(statue.image, 0, 0); statue.data = context.getImageData(0, 0, canvas.width, canvas.height);
+    drawStatue();
+  };
+  statue.image.src = 'assets/statue-turntable.png';
+}
+function drawStatue() {
+  const canvas = $('#statue-canvas'); if (!canvas || !statue.data) return;
+  const context = canvas.getContext('2d'); if (!context) return;
+  const W = canvas.width, H = canvas.height, cell = 5, cols = Math.floor(W / cell), rows = Math.floor(H / cell);
+  const f = ((Math.round(statue.frame) % STATUE.frames) + STATUE.frames) % STATUE.frames;
+  const ox = (f % STATUE.cols) * STATUE.w, oy = Math.floor(f / STATUE.cols) * STATUE.h, sheetW = statue.data.width, px = statue.data.data;
+  context.fillStyle = '#000'; context.fillRect(0, 0, W, H);
+  for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) {
+    const sx = ox + Math.floor((col + .5) / cols * STATUE.w), sy = oy + Math.floor((row + .5) / rows * STATUE.h);
+    let l = px[(sy * sheetW + sx) * 4] / 255; if (l < .03) continue;
+    l = Math.min(1, Math.pow(l * 1.7, .85));
+    const x = col * cell, y = row * cell;
+    for (let k = 0; k < 3; k++) { const v = Math.round(255 * l * [.82, 1, .9][k]); context.fillStyle = `rgb(${v},${v},${v * .97})`; context.fillRect(x + k * 1.67, y, 1.25, cell - 1.4); }
+  }
+}
+function startStatue() {
+  loadStatue(); drawStatue(); clearInterval(statue.timer);
+  if (!omensEnabled || motionQuery.matches) { statue.frame = 0; drawStatue(); return; }
+  statue.timer = setInterval(() => {
+    if (document.hidden) return;
+    if (performance.now() - statue.lastPointer < 2500 && statue.follow !== null) {
+      const diff = ((statue.follow - statue.frame + STATUE.frames * 1.5) % STATUE.frames) - STATUE.frames / 2;
+      statue.frame += Math.sign(diff) * Math.min(Math.abs(diff), 1);
+    } else statue.frame = (statue.frame + .5) % STATUE.frames;
+    drawStatue();
+  }, 110);
+}
+function stopStatue() { clearInterval(statue.timer); statue.timer = 0; }
+$('#statue-canvas').addEventListener('pointermove', event => {
+  if (!omensEnabled || motionQuery.matches) return;
+  const box = event.currentTarget.getBoundingClientRect(); const x = (event.clientX - box.left) / box.width * 2 - 1;
+  // Frame 0 faces you; positive frames turn its face towards the right of the screen.
+  statue.follow = (Math.round(x * 8) + STATUE.frames) % STATUE.frames; statue.lastPointer = performance.now();
+});
+$('#omens-toggle').addEventListener('click', () => { if (document.body.dataset.page === 'estatua') startStatue(); });
 
 // The station asks to be heard before you go in: once per session, only at the threshold.
 // "ESCUCHES" turns on the existing ambient sound (a click, so nothing plays by itself);

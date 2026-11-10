@@ -305,3 +305,9 @@ body[data-page="descenso"] footer,.descent .return-threshold{position:relative;z
 @keyframes descent-try{0%,100%{opacity:.45}50%{opacity:1}}
 body.quiet .descent-panel,body.quiet .descent-panel p{animation:none}
 @media(max-width:540px){.descent-panel{font-size:11px;letter-spacing:.08em;padding:18px 14px}.descent-panel.c1,.descent-panel.c2{letter-spacing:.2em}.descent-gap{height:calc(var(--gap) * 80px)}.eye-strip{height:46px}.descent-chip{letter-spacing:.14em}.descent-sigils span{font-size:70px}}
+/* The statue room (#estatua): a turning bust drawn as a phosphor screen, alone in the dark. */
+body[data-page="estatua"] .masthead,body[data-page="estatua"] .main-nav,body[data-page="estatua"] .sidebar,body[data-page="estatua"] .broadcast,body[data-page="estatua"] .inner-watchers{display:none}
+.statue-room{display:flex;flex-direction:column;align-items:center;gap:18px;padding:40px 0 30px;text-align:center}
+.statue-title{margin:0;font:11px/1.6 'Courier New',monospace;letter-spacing:.3em;color:#8e8e86;text-shadow:none}
+.statue-canvas{display:block;width:min(420px,84vw);height:auto;aspect-ratio:3/4;background:#000;box-shadow:0 0 60px 20px #000;filter:contrast(1.05)}
+.statue-note{margin:0;font:11px/2 'Courier New',monospace;letter-spacing:.14em;color:#9a9a91}

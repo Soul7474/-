@@ -128,6 +128,7 @@ Algunas ideas vienen de dos webs personales antiguas: *Terminal 00* (angusnicnev
 - **Eres invisible.** «Eres invisible. [hacerte visible]» hasta que firmas el libro de visitas; después, «Eres visible. La estación te ve».
 - **El descenso (`#descenso`).** Una vista oculta muy larga, sobre un fondo de estática en forma de rombos (tres teselas de canvas que se alternan, sin destellos). Paneles en caracteres de ancho completo repiten «Vuelve atrás. Esto es un [CALLEJÓN SIN SALIDA]» mientras el texto se descompone: espaciado, sombra que resbala, corchetes vacíos, una línea entre barras, «[Intentando…]», otra al revés. Hay una franja de ojos recortados de las imágenes de la estación que se desliza al bajar, y al fondo del todo una revelación. Con «calma» o movimiento reducido todo queda quieto.
 - **Puertas que parecen texto.** Enlaces sin subrayado que llevan al descenso (ver soluciones).
+- **La estatua (`#estatua`).** Al fondo del descenso, un «∴» lleva a una sala oscura con un busto de mármol que gira dibujado como una pantalla de fósforo (tríadas de puntos en grises y líneas de barrido) sobre un `<canvas>`. Si mueves el puntero sobre él, vuelve la cara hacia ti. Con «calma» o movimiento reducido se queda quieto, de frente. El busto es *Marble Bust 01* de Rico Cilliers en Poly Haven (CC0). Se renderizó en Blender como un giro de 48 fotogramas, con fondo negro, luz principal dura y contraluz débil, y se guardó en una sola hoja en escala de grises: `assets/statue-turntable.png` (8×6 fotogramas de 168×224 px).
 - **404 propio.** `404.html`, que GitHub Pages sirve para cualquier dirección que no exista: fondo de «SIN SEÑAL», rótulos invertidos, las frecuencias conocidas para volver y la figura del ojo en una esquina. El servidor local devuelve la misma página con estado 404.
 - **Detalles.** Esquinas ⌈ ⌉ ⌊ ⌋ en la cabecera, cursores propios (un anillo y, sobre los enlaces, un ojo) y una selección de texto pálida.
 
@@ -158,7 +159,7 @@ Primer sello del archivo: `eco`. La pista está en `leeme_antes.txt` y en el lib
 
 Segunda puerta: `1998`. La pista está en `no_abrir.txt` y en las fechas de la estación.
 
-El descenso: la palabra «encontrado» de la cita de Fragmentos («No todo lo que está en la red quiere ser encontrado»), la palabra «PERDIDOS» del pie de página y «más abajo» en la página 404.
+El descenso: la palabra «encontrado» de la cita de Fragmentos («No todo lo que está en la red quiere ser encontrado»), la palabra «PERDIDOS» del pie de página y «más abajo» en la página 404. La estatua: el «∴» bajo la revelación final del descenso.
 
 </details>
 

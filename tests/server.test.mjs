@@ -24,6 +24,8 @@ test('serves the Spanish station and its working client scripts', async () => {
   assert.match(html, /id="listen-cover"/);
   assert.match(html, /id="visibility"/);
   assert.match(html, /href="#descenso"/);
+  assert.match(html, /id="view-estatua"/);
+  assert.match(html, /id="statue-canvas"/);
   for (const rune of ['e', 'c', 'o']) assert.match(html, new RegExp(`data-rune="${rune}"`));
   for (const path of ['/app.js', '/style.css', '/interior.js', '/interior.css']) {
     const response = await fetch(base + path);
@@ -57,7 +59,7 @@ test('serves real GIF images, a reduced-motion image and a favicon', async () =>
   const presence = await fetch(base + '/assets/presence.png');
   assert.equal(presence.status, 200);
   assert.equal(presence.headers.get('content-type'), 'image/png');
-  for (const path of ['/assets/inner-relic.png', '/assets/echo-form.svg', '/assets/trace-form.svg', '/assets/cutouts/presence-face.png', '/assets/cutouts/presence-hand.png', '/images/c2f15d46dadaea0d78573a3436c1f21d.png', '/images/2483130d0df7e07e5d073b244c4f0aad.png']) {
+  for (const path of ['/assets/inner-relic.png', '/assets/echo-form.svg', '/assets/trace-form.svg', '/assets/statue-turntable.png', '/assets/cutouts/presence-face.png', '/assets/cutouts/presence-hand.png', '/images/c2f15d46dadaea0d78573a3436c1f21d.png', '/images/2483130d0df7e07e5d073b244c4f0aad.png']) {
     assert.equal((await fetch(base + path)).status, 200, path);
   }
 });
