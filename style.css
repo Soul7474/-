@@ -176,3 +176,6 @@ body.waiting #navigation, body.waiting #activity, body.waiting #footer { display
   body { font-size: 18px; }
   h1, h2 { font-size: 26px; }
 }
+
+.node-line > span { display: block; }
+.node-duration { font-variant-numeric: tabular-nums; }

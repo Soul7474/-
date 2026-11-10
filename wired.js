@@ -7,18 +7,36 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const spheres = ['Umbral', 'Luna', 'Mercurio', 'Venus', 'Sol', 'Marte', 'Júpiter', 'Saturno'];
   const questions = ['¿Sabes por qué has entrado? (sí / no)', '¿Alguien sabe que estás aquí? (sí / no)', 'Escribe una palabra que no hayas dicho nunca en voz alta.', '¿Qué dejarías atrás? (una palabra)', '¿Quieres ver? (sí / no)', '¿Quién abrió la puerta primero? (una palabra)', '¿Cuántas veces has estado aquí? (un número)', '¿Puedes salir? (sí / no)'];
-  const texts = ['Como es arriba, es abajo.', 'Los labios de la sabiduría\nestán cerrados.', 'La palabra permanece.', 'Puedes dejar una cosa.', 'Conócete a ti mismo.', 'Queda una marca.', 'El registro está completo.', 'La puerta permanece abierta.'];
+  const texts = ['Como es arriba, es abajo.', 'Los labios de la sabiduría están cerrados, salvo para los oídos del entendimiento.', 'La palabra permanece.', 'Puedes dejar una cosa.', 'Conócete a ti mismo.', 'Queda una marca.', 'El registro está completo.', 'La puerta permanece abierta.'];
   let current = -1;
   let timers = [];
   let idleTimer;
   let logTimer;
   let loadTimer;
+  let durationTimer;
+  let nodeStartedAt = Date.now();
+  const logEntries = ['sesión mantenida', 'lectura registrada', 'acceso sin autorizar: tolerado', 'canal disponible', 'sincronización verificada'];
   let lastReturnDetail = -1;
   let tabWasHidden = false;
   let lines = [];
   const route = number => `/gate/${String(number).padStart(2, '0')}.html`;
   const el = (tag, text, cls) => { const item = document.createElement(tag); if (text !== undefined) item.textContent = text; if (cls) item.className = cls; return item; };
-  const time = stamp => new Date(stamp ?? Date.now()).toLocaleTimeString('es-ES', { hour12: false });
+  const time = stamp => {
+    const now = new Date(stamp ?? Date.now());
+    return [now.getHours(), now.getMinutes(), now.getSeconds()].map(value => String(value).padStart(2, '0')).join(':');
+  };
+  function elapsed() {
+    const seconds = Math.max(0, Math.floor((Date.now() - nodeStartedAt) / 1000));
+    return [Math.floor(seconds / 3600), Math.floor(seconds / 60) % 60, seconds % 60].map(value => String(value).padStart(2, '0')).join(':');
+  }
+  function updateDuration() {
+    clearTimeout(durationTimer);
+    const output = $('#elapsed-time');
+    if (output) output.textContent = elapsed();
+    if (!document.hidden) durationTimer = setTimeout(updateDuration, 1000 - Math.max(0, Date.now() - nodeStartedAt) % 1000);
+  }
+  window.addEventListener('pagehide', () => clearTimeout(durationTimer));
+  window.addEventListener('pageshow', updateDuration);
   function go(path, replace = false) { history[replace ? 'replaceState' : 'pushState'](null, '', path); render(); $('#main').focus({ preventScroll: true }); window.scrollTo(0, 0); }
   const captions = ['se abre cuando uno escucha', 'lo de arriba también mira', 'la palabra vuelve a quien la dice', 'lo que se deja atrás sigue aquí', 'quien ve, ya no puede no ver', 'el orden permanece', 'la cuenta no coincide', 'se acaba cuando siete son uno'];
   function artwork(number) {
@@ -61,23 +79,30 @@
   function footer() {
     const footer = $('#footer'); footer.replaceChildren();
     const identity = el('p', undefined, 'node-line');
-    identity.append(document.createTextNode('nodo 009 · '), el('span', 'visitante nº ' + String(store.state.displayVisitorNo || store.state.visitorNo).padStart(6, '0'), 'visitor-number'), document.createTextNode(' · 1 presencia en este nodo'));
-    footer.append(identity, el('p', 'visita ' + time(store.state.lastVisit), 'visit-time'));
-    if (store.state.answers.g01 === 'sí') footer.append(el('p', 'visita ' + time(store.state.lastVisit + 17 * 60000), 'visit-time'));
+    identity.append(el('span', 'nodo 009'), el('span', 'visitante nº ' + String(store.state.displayVisitorNo || store.state.visitorNo).padStart(6, '0'), 'visitor-number'), el('span', '1 presencia en este nodo'));
+    const duration = el('p', 'tiempo en el nodo ', 'node-duration');
+    const output = el('span', elapsed()); output.id = 'elapsed-time'; duration.append(output);
+    footer.append(identity, duration);
+    if (store.state.answers.g01 === 'sí') footer.append(el('p', 'conexión ' + time(store.state.lastVisit + 17 * 60000), 'visit-echo'));
     if (store.state.returningDay && store.state.visits > 1) footer.append(el('p', 'ya estuviste aquí'));
     const actions = el('div', undefined, 'footer-actions');
     const forget = el('button', 'olvidar esta visita'); forget.type = 'button'; forget.id = 'forget-button';
     forget.setAttribute('aria-label', 'OLVIDAR ESTA VISITA');
-    forget.addEventListener('click', () => { sound.stop(); store.forget(); go('/', true); }); actions.append(forget);
+    forget.addEventListener('click', () => { sound.stop(); store.forget(); nodeStartedAt = Date.now(); go('/', true); }); actions.append(forget);
     if (store.state.opened && (current >= 0 || location.pathname === '/rastro.html')) sound.controls(actions);
-    footer.append(actions);
+    footer.append(actions); updateDuration();
   }
-  function addLog(text) {
-    lines.push({ stamp: Date.now(), text }); lines = lines.slice(-4);
+  function nextLog() {
+    const choices = logEntries.filter(text => text !== lines.at(-1)?.text);
+    return choices[Math.floor(Math.random() * choices.length)];
+  }
+  function addLog(text, stamp = Date.now()) {
+    if (text === lines.at(-1)?.text) text = nextLog();
+    lines.push({ stamp, text }); lines = lines.slice(-6);
     const area = $('#activity'); area.replaceChildren();
     if (!store.state.opened) return;
     const list = el('ol');
-    for (const line of lines) { const item = el('li'); item.append(el('time', time(line.stamp), 'log-time'), document.createTextNode(line.text)); list.append(item); }
+    for (const line of lines) { const item = el('li'); const clock = el('time', time(line.stamp), 'log-time'); clock.dateTime = new Date(line.stamp).toISOString(); item.append(clock, document.createTextNode(line.text)); list.append(item); }
     area.append(list);
   }
   function entry() {
@@ -151,9 +176,9 @@
     nav(); footer();
     document.title = current >= 0 ? `gate ${String(current).padStart(2, '0')} · occult` : 'occult';
     if (current < 0) { sound.stop(); $('#navigation').hidden = true; entry(); return; }
-    addLog('sesión iniciada'); addLog('lectura registrada');
-    if (store.state.answers.g02) addLog('otro: ' + store.state.answers.g02);
-    else addLog('acceso registrado');
+    const now = Date.now();
+    addLog('sesión iniciada', now - 9000); addLog('lectura registrada', now - 5000);
+    addLog(store.state.answers.g02 ? 'otro: ' + store.state.answers.g02 : 'acceso registrado', now - 2000);
     if (current === 5 && store.state.answers.g04 === 'no' && !reduce.matches) {
       const loading = el('div', undefined, 'loading'); loading.setAttribute('aria-label', 'cargando'); loading.append(el('span', '_', 'cursor')); main.append(loading);
       document.body.classList.add('waiting');
@@ -170,8 +195,7 @@
     clearTimeout(logTimer);
     if (reduce.matches || current < 0 || document.hidden) return;
     logTimer = setTimeout(() => {
-      const entries = ['sesión mantenida', 'lectura registrada', 'acceso sin autorizar: tolerado'];
-      addLog(entries[Math.floor(Math.random() * entries.length)]); planLog();
+      addLog(nextLog()); planLog();
     }, 20000 + Math.random() * 20000);
   }
   function startReactivity(number) {
@@ -185,7 +209,7 @@
   }
   for (const event of ['pointermove', 'pointerdown', 'touchstart', 'keydown']) document.addEventListener(event, armIdle, { passive: true });
   document.addEventListener('visibilitychange', () => {
-    sound.visibility();
+    sound.visibility(); updateDuration();
     if (document.hidden) { tabWasHidden = true; cleanTimers(); return; }
     if (tabWasHidden && !reduce.matches && current >= 0) {
       const detail = lastReturnDetail === 0 ? 1 : 0; lastReturnDetail = detail;
