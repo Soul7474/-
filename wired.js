@@ -20,20 +20,25 @@
   const el = (tag, text, cls) => { const item = document.createElement(tag); if (text !== undefined) item.textContent = text; if (cls) item.className = cls; return item; };
   const time = stamp => new Date(stamp ?? Date.now()).toLocaleTimeString('es-ES', { hour12: false });
   function go(path, replace = false) { history[replace ? 'replaceState' : 'pushState'](null, '', path); render(); main.focus({ preventScroll: true }); window.scrollTo(0, 0); }
+  const captions = ['se abre cuando uno escucha', 'lo de arriba también mira', 'la palabra vuelve a quien la dice', 'lo que se deja atrás sigue aquí', 'quien ve, ya no puede no ver', 'el orden permanece', 'la cuenta no coincide', 'se acaba cuando siete son uno'];
+  function artwork(number) {
+    if (number !== 7) return window.renderSigil(number);
+    const image = el('img'); image.src = '/assets/still-here.gif'; image.alt = 'Emisión del nodo 009'; image.className = 'saturn-art'; image.width = 88; image.height = 31;
+    if (!reduce.matches) return image;
+    // Freeze a locally decoded frame; no animated image is displayed in reduced motion.
+    const still = el('canvas'); still.className = 'saturn-art'; still.setAttribute('role', 'img'); still.setAttribute('aria-label', image.alt);
+    image.onload = () => { still.width = image.naturalWidth; still.height = image.naturalHeight; still.getContext('2d')?.drawImage(image, 0, 0); };
+    return still;
+  }
   function symbol(number) {
-    const shapes = [
-      '<path d="M25 12h70v96H25zM40 25h40v83M65 67h4"/>',
-      '<path d="M80 17a44 44 0 1 0 0 86 49 49 0 0 1 0-86Z"/>',
-      '<circle cx="60" cy="53" r="25"/><path d="M37 12a23 23 0 0 0 46 0M60 78v30M45 96h30"/>',
-      '<circle cx="60" cy="43" r="27"/><path d="M60 70v39M44 94h32"/>',
-      '<circle cx="60" cy="60" r="40"/><circle cx="60" cy="60" r="4"/>',
-      '<circle cx="47" cy="72" r="27"/><path d="M66 53 103 16M78 16h25v25"/>',
-      '<path d="M40 24q37 3 0 48h43M77 20v88"/>',
-      '<path d="M43 12v62m-18-43h37M43 57q44-35 34 11t11 30"/>'
-    ];
     const figure = el('figure'); figure.id = 'gate-symbol';
-    figure.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Símbolo de ${spheres[number]}"><g fill="none" stroke="currentColor" stroke-width="1.5">${shapes[number]}</g></svg>`;
+    figure.append(artwork(number), el('figcaption', captions[number], 'cap'));
     return figure;
+  }
+  function doorArtwork() {
+    const figure = el('figure');
+    const image = el('img'); image.src = '/assets/door-009.png'; image.alt = 'Puerta de acceso'; image.className = 'door-art'; image.width = 1448; image.height = 1086;
+    figure.append(image, el('figcaption', captions[0], 'cap')); return figure;
   }
   function cleanTimers() { timers.forEach(clearTimeout); timers = []; clearTimeout(idleTimer); clearTimeout(logTimer); }
   function nav() {
@@ -68,7 +73,7 @@
   }
   function entry() {
     const section = el('section'); section.dataset.door = 'closed';
-    section.append(el('h1', '⌈ UMBRAL ⌋'), el('p', texts[0]));
+    section.append(el('h1', '⌈ UMBRAL ⌋'), el('p', texts[0]), doorArtwork());
     const form = el('form'); form.id = 'gate-form';
     const label = el('label', 'palabra de acceso'); label.htmlFor = 'password';
     const input = el('input'); input.id = 'password'; input.type = 'password'; input.required = true; input.autocomplete = 'off'; input.setAttribute('aria-describedby', 'gate-error');

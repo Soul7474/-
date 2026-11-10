@@ -139,3 +139,9 @@ body.waiting #navigation, body.waiting #activity, body.waiting #footer { display
   #screen-glitch { display: none; }
   .bloom { filter: none; }
 }
+
+.sigil { filter: drop-shadow(0 0 4px rgba(255,255,255,.5)); width: min(78vw,340px); height: auto; margin: 24px auto; }
+.planet { font-family: "DejaVu Sans", "Segoe UI Symbol", serif; letter-spacing: normal; text-shadow: none; }
+.planet.selected { filter: drop-shadow(0 0 6px #fff); }
+.door-art, .saturn-art { width: min(78vw,340px); filter: grayscale(1) contrast(1.6) brightness(.9) drop-shadow(0 0 6px rgba(255,255,255,.4)); }
+.cap { font-family: "Snell Roundhand", "Apple Chancery", "Brush Script MT", "URW Chancery L", cursive; font-style: italic; font-size: 20px; letter-spacing: .02em; line-height: 1.4; color: #cfcfcf; }
