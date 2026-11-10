@@ -132,3 +132,10 @@ body.waiting #navigation, body.waiting #activity, body.waiting #footer { display
 @media (prefers-reduced-motion: reduce) {
   .texture, .scan, .crt-bars { display: none; }
 }
+
+#screen-glitch { position: fixed; z-index: 40; pointer-events: none; margin: 0; background: var(--bg); }
+.bloom { filter: blur(2.5px); text-shadow: var(--glow-strong); }
+@media (prefers-reduced-motion: reduce) {
+  #screen-glitch { display: none; }
+  .bloom { filter: none; }
+}
