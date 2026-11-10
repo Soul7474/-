@@ -179,3 +179,5 @@ body.waiting #navigation, body.waiting #activity, body.waiting #footer { display
 
 .node-line > span { display: block; }
 .node-duration { font-variant-numeric: tabular-nums; }
+
+.door-art { aspect-ratio: 4 / 5; object-fit: cover; object-position: 85% 50%; }
