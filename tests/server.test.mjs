@@ -20,6 +20,10 @@ test('serves the Spanish station and its working client scripts', async () => {
   assert.match(html, /id="scene-skip"/);
   assert.match(html, /id="scene-veil"/);
   assert.match(html, /class="presence"/);
+  assert.match(html, /id="view-descenso"/);
+  assert.match(html, /id="listen-cover"/);
+  assert.match(html, /id="visibility"/);
+  assert.match(html, /href="#descenso"/);
   for (const rune of ['e', 'c', 'o']) assert.match(html, new RegExp(`data-rune="${rune}"`));
   for (const path of ['/app.js', '/style.css', '/interior.js', '/interior.css']) {
     const response = await fetch(base + path);
@@ -62,6 +66,12 @@ test('returns a real 404 for missing files and blocks source/configuration expos
     const response = await fetch(base + path);
     assert.equal(response.status, 404, path);
   }
+});
+test('missing addresses get the station 404 page with a 404 status', async () => {
+  const response = await fetch(base + '/una-frecuencia-que-no-existe');
+  assert.equal(response.status, 404);
+  assert.match(response.headers.get('content-type'), /text\/html/);
+  assert.match(await response.text(), /ESTA FRECUENCIA NO EXISTE/);
 });
 test('HEAD returns resource headers without a body', async () => {
   const response = await fetch(base, { method: 'HEAD' });
