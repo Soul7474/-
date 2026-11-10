@@ -42,12 +42,22 @@
     else {
       const points = Array.from({ length: 7 }, (_, step) => position(step * 2 % 7, 120).map(value => value.toFixed(2)).join(',')).join(' ');
       lines.append(node('polygon', { points, 'stroke-width': 1.5, class: 'heptagram', opacity: .5 }));
-      const serpent = Array.from({ length: 180 }, (_, point) => {
-        const angle = point * 2 * Math.PI / 180;
-        const radius = 64 + 9 * Math.sin(7 * angle);
-        return `${point ? 'L' : 'M'}${(200 + radius * Math.cos(angle)).toFixed(2)} ${(200 + radius * Math.sin(angle)).toFixed(2)}`;
-      }).join(' ') + ' Z';
-      lines.append(node('path', { d: serpent, 'stroke-width': 2.6, class: 'serpent' }));
+      const serpent = node('g', { class: 'serpent', 'stroke-width': 2.6 });
+      for (const offset of [-3, 3]) {
+        const contour = Array.from({ length: 180 }, (_, point) => {
+          const angle = point * 2 * Math.PI / 180;
+          const radius = 64 + 4 * Math.sin(23 * angle) + offset;
+          return `${point ? 'L' : 'M'}${(200 + radius * Math.cos(angle)).toFixed(2)} ${(200 + radius * Math.sin(angle)).toFixed(2)}`;
+        }).join(' ') + ' Z';
+        serpent.append(node('path', { d: contour, class: 'serpent-contour' }));
+      }
+      // At theta=0 the tangent is (dr/dtheta, r) = (92, 64).
+      const length = Math.hypot(92, 64);
+      const [tx, ty] = [92 / length, 64 / length];
+      const point = (along, across) => `${(264 + tx * along - ty * across).toFixed(2)},${(200 + ty * along + tx * across).toFixed(2)}`;
+      serpent.append(node('polygon', { points: [point(9, 0), point(-4, 5), point(-4, -5)].join(' '), fill: '#e8e8e8', stroke: 'none', class: 'serpent-head' }));
+      serpent.append(node('circle', { cx: 264 + tx - ty, cy: 200 + ty + tx, r: 1.6, fill: '#000', stroke: 'none', class: 'serpent-eye' }));
+      lines.append(serpent);
     }
     svg.append(lines);
     for (let i = 0; i < 7; i++) {
