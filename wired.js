@@ -7,7 +7,7 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const spheres = ['Umbral', 'Luna', 'Mercurio', 'Venus', 'Sol', 'Marte', 'Júpiter', 'Saturno'];
   const questions = ['¿Sabes por qué has entrado? (sí / no)', '¿Alguien sabe que estás aquí? (sí / no)', 'Escribe una palabra que no hayas dicho nunca en voz alta.', '¿Qué dejarías atrás? (una palabra)', '¿Quieres ver? (sí / no)', '¿Quién abrió la puerta primero? (una palabra)', '¿Cuántas veces has estado aquí? (un número)', '¿Puedes salir? (sí / no)'];
-  const texts = ['Como es arriba, es abajo.', 'Los labios de la sabiduría están cerrados,\nsalvo para los oídos del entendimiento.', 'La palabra permanece.', 'Puedes dejar una cosa.', 'Conócete a ti mismo.', 'Queda una marca.', 'El registro está completo.', 'La puerta permanece abierta.'];
+  const texts = ['Como es arriba, es abajo.', 'Los labios de la sabiduría\nestán cerrados.', 'La palabra permanece.', 'Puedes dejar una cosa.', 'Conócete a ti mismo.', 'Queda una marca.', 'El registro está completo.', 'La puerta permanece abierta.'];
   let current = -1;
   let timers = [];
   let idleTimer;

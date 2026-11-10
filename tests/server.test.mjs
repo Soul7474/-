@@ -16,7 +16,7 @@ test('serves the Spanish station and its working client scripts', async () => {
   assert.match(html, /lang="es"/);
   assert.match(html, /id="gate-form"/);
   assert.match(html, /data-door="closed"/);
-  for (const path of ['/wired.js', '/style.css', '/wired-state.js']) {
+  for (const path of ['/wired.js', '/style.css', '/wired-state.js', '/crt.js', '/sigil.js']) {
     const response = await fetch(base + path);
     assert.equal(response.status, 200);
     assert.ok((await response.text()).length > 1000);
@@ -108,6 +108,9 @@ test('serves all eight static gates and the local guestbook without legacy scrip
     const html = await response.text();
     assert.match(html, /noindex,nofollow,noarchive/);
     assert.match(html, /wired-state.js/);
+    assert.match(html, /id="screen"/);
+    assert.match(html, /crt.js/);
+    assert.match(html, /sigil.js/);
     assert.doesNotMatch(html, /src="\/app.js|src="\/interior.js/);
   }
 });

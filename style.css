@@ -19,8 +19,6 @@ body {
   text-shadow: var(--glow);
 }
 main { max-width: 640px; margin: 0 auto; padding: 40px 16px 80px; }
-/* These wrappers also accommodate the static shells before JavaScript runs. */
-body > header, body > aside, body > footer { max-width: 640px; margin: 0 auto; padding: 16px; }
 h1, h2 {
   font-weight: normal;
   letter-spacing: .25em;
@@ -141,7 +139,7 @@ body.waiting #navigation, body.waiting #activity, body.waiting #footer { display
 }
 
 .sigil { filter: drop-shadow(0 0 4px rgba(255,255,255,.5)); width: min(78vw,340px); height: auto; margin: 24px auto; }
-.planet { font-family: "DejaVu Sans", "Segoe UI Symbol", serif; letter-spacing: normal; text-shadow: none; }
+.planet { font-family: "DejaVu Sans", "Segoe UI Symbol", serif; letter-spacing: normal; }
 .planet.selected { filter: drop-shadow(0 0 6px #fff); }
 .door-art, .saturn-art { width: min(78vw,340px); filter: grayscale(1) contrast(1.6) brightness(.9) drop-shadow(0 0 6px rgba(255,255,255,.4)); }
 .cap { font-family: "Snell Roundhand", "Apple Chancery", "Brush Script MT", "URW Chancery L", cursive; font-style: italic; font-size: 20px; letter-spacing: .02em; line-height: 1.4; color: #cfcfcf; }
@@ -149,3 +147,5 @@ body.waiting #navigation, body.waiting #activity, body.waiting #footer { display
 #navigation { margin: 26px auto 0; }
 .footer-actions { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 0 18px; }
 .footer-actions .sound-controls { margin: 0; }
+
+.sound-controls { display: inline-flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: .8em; }

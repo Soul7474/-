@@ -37,8 +37,9 @@
     });
     const start = Math.max(0, -rect.top) / rect.height * 100;
     const end = Math.min(rect.height, innerHeight - rect.top) / rect.height * 100;
-    const height = Math.min(random(8, 25), end - start);
-    const top = random(start, Math.max(start, end - height));
+    const height = random(8, 25);
+    const first = Math.min(start, 100 - height);
+    const top = random(first, Math.max(first, Math.min(100 - height, end - height)));
     Object.assign(clone.style, {
       top: `${rect.top}px`, left: `${rect.left}px`, width: `${rect.width}px`,
       clipPath: `inset(${top}% 0 ${100 - top - height}% 0)`,
@@ -67,10 +68,11 @@
       repeat(action, min, max);
     }, random(min, max));
   }
-  function stop() { running = false; pending.forEach(clearTimeout); pending.clear(); clearFrame(); }
+  function stop() { running = false; document.documentElement.dataset.crt = 'off'; pending.forEach(clearTimeout); pending.clear(); clearFrame(); }
   function start() {
-    if (running || reduced.matches || document.hidden) return;
-    running = true; repeat(slice, 6000, 15000); repeat(bloom, 8000, 20000); repeat(bar, 5000, 12000);
+    if (running) return;
+    if (reduced.matches || document.hidden) { document.documentElement.dataset.crt = 'off'; return; }
+    running = true; document.documentElement.dataset.crt = 'active'; repeat(slice, 6000, 15000); repeat(bloom, 8000, 20000); repeat(bar, 5000, 12000);
   }
   reduced.addEventListener('change', () => { stop(); start(); });
   document.addEventListener('visibilitychange', () => { stop(); start(); });
