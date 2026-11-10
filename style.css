@@ -339,3 +339,24 @@ body.quiet #view-interior .chamber-haze{animation:none}
 .screamer[data-kind="cara"] img{object-fit:contain;filter:grayscale(1) contrast(1.6) brightness(1.3)}
 .screamer[data-kind="pasillo"] img{object-position:50% 22%;filter:grayscale(1) contrast(1.5) brightness(1.25)}
 @media(prefers-reduced-motion:reduce){.screamer{display:none!important}}
+/* The last shift: the camera connects to room 0, a console with a login and a few orders. */
+.cam-connect{position:absolute;left:50%;bottom:44px;z-index:4;translate:-50% 0;padding:8px 14px;background:#000000d9;border:1px solid #9a9a91;color:#ededE2;font:10px/1.6 'Courier New',monospace;letter-spacing:.2em;text-decoration:none;white-space:nowrap}
+.cam-connect:hover,.cam-connect:focus-visible{background:#d6d6cc;color:#050505}
+.guest-reply{border-left:2px solid #6f6f68;padding-left:14px}
+.guest-reply p{color:#cfcfc4}
+body[data-page="control"] .masthead,body[data-page="control"] .main-nav,body[data-page="control"] .sidebar,body[data-page="control"] .broadcast,body[data-page="control"] .inner-watchers{display:none}
+.control-room{padding:40px 0 30px}
+.control-title{margin:0 0 18px;font:11px/1.6 'Courier New',monospace;letter-spacing:.3em;color:#8e8e86;text-align:center}
+.terminal{position:relative;max-width:720px;margin:0 auto 26px;padding:22px 22px 16px;background:#030303;border:1px solid #2e2e2a;box-shadow:inset 0 0 60px #000,0 0 40px #000;font:13px/1.9 'Courier New',monospace;color:#d4d4c9;transform-origin:50% 50%}
+.terminal::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(transparent 0 2px,#0000005c 2px 3px),radial-gradient(ellipse at 50% 50%,transparent 55%,#000000b0 100%)}
+.terminal-log{min-height:260px;max-height:52vh;overflow:auto;overflow-wrap:anywhere}
+.terminal-line{margin:0;white-space:pre-wrap}
+.terminal-line.dim{color:#8a8a82}.terminal-line.echo{color:#6f6f68}
+.terminal-line.final{font-size:16px;letter-spacing:.2em;color:#f0f0e6;text-align:center;margin:40px 0}
+.terminal-form{display:flex;align-items:center;gap:10px;margin-top:10px;border-top:1px solid #1e1e1b;padding-top:10px}
+.terminal-form label{margin:0;flex-shrink:0;font:13px 'Courier New',monospace;letter-spacing:.06em;color:#bdbdb3}
+.terminal-form input{border:0;background:transparent;padding:4px 0;color:#f0f0e6;font:13px 'Courier New',monospace;caret-color:#f0f0e6}
+.terminal-form input:focus-visible{outline:1px dashed #6f6f68;outline-offset:3px}
+.terminal.powering-off{animation:crt-off 1.2s ease-in forwards}
+@keyframes crt-off{0%{transform:scale(1,1);filter:brightness(1)}60%{transform:scale(1,.008);filter:brightness(2)}100%{transform:scale(0,.008);filter:brightness(0)}}
+@media(max-width:540px){.terminal{padding:16px 12px 12px;font-size:12px}.terminal-form label,.terminal-form input{font-size:12px}.cam-connect{bottom:38px;font-size:9px;letter-spacing:.1em}}

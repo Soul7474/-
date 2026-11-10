@@ -26,6 +26,10 @@ test('serves the Spanish station and its working client scripts', async () => {
   assert.match(html, /href="#descenso"/);
   assert.match(html, /id="view-estatua"/);
   assert.match(html, /id="statue-canvas"/);
+  assert.match(html, /id="view-control"/);
+  assert.match(html, /class="cam-connect"/);
+  assert.match(html, /id="screamer"/);
+  assert.match(html, /data-tape="CAM_09/);
   for (const rune of ['e', 'c', 'o']) assert.match(html, new RegExp(`data-rune="${rune}"`));
   for (const path of ['/app.js', '/style.css', '/interior.js', '/interior.css']) {
     const response = await fetch(base + path);

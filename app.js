@@ -1,11 +1,12 @@
 const $ = (selector) => document.querySelector(selector);
 const storageKey = 'estacion09-v1';
-let state = { level: 0, guests: [] };
+let state = { level: 0, guests: [], operator: false, ended: false };
 let storageAvailable = true;
 try {
   const saved = JSON.parse(localStorage.getItem(storageKey));
   if (saved) {
     state.level = [0, 1, 2].includes(saved.level) ? saved.level : 0;
+    state.operator = saved.operator === true; state.ended = saved.ended === true;
     state.guests = Array.isArray(saved.guests) ? saved.guests.filter(g => typeof g.alias === 'string' && typeof g.message === 'string' && typeof g.date === 'string').slice(-30) : [];
   }
 } catch { storageAvailable = false; }
@@ -17,10 +18,14 @@ const documents = [
   { id: 'operador', name: 'operador_09.log', description: 'Turno de noche. Registro incompleto.', size: '2.4 KB', level: 1, content: '03:10 — Todos se han ido.\n03:18 — La cámara del pasillo B sigue en línea.\n03:21 — Estoy mirando mi silla desde el pasillo.\n03:24 — Estoy sentado en mi silla.\n03:29 — Las dos cosas son ciertas.\n03:33 — [ENTRADA BORRADA]\n\nEl libro de visitas es lo único que no ha cambiado.' },
   { id: 'frecuencia', name: 'frecuencia_098.txt', description: 'Instrucciones para un receptor que ya no existe.', size: '0.4 KB', level: 0, content: 'FRECUENCIA: 09.8\nORIGEN: LOCAL\nDESTINO: DESCONOCIDO\n\nNo es una voz. Es el espacio entre dos voces.\n\nVe a Transmisiones. Si decides escuchar, no subas el volumen. No hace falta.' },
   { id: 'lista', name: 'presencias.dat', description: 'Hay un nombre más del que debería.', size: '0.2 KB', level: 2, content: 'PRESENCIAS REGISTRADAS\n\nOPERADOR 01 — AUSENTE\nOPERADOR 02 — AUSENTE\nOPERADOR 09 — AUSENTE\nVISITANTE — PRESENTE\nVISITANTE — PRESENTE\n\nNo entraste dos veces.' },
+  { id: 'inventario', name: 'inventario_1998.txt', description: 'Lo que había en la estación. Y una cosa más.', size: '0.6 KB', level: 1, content: 'INVENTARIO · ESTACIÓN 09 · 16.11.1998\n\n1 consola de control (sala 0). Acceso: el nombre del operador y la palabra de vigilia.\n3 cámaras: pasillo A, pasillo C, pasillo B.\n   No hay pasillo B en los planos. La cámara 09 lo graba igual.\n1 receptor, frecuencia 09.8.\n1 libro de visitas.\n1 busto de mármol. No figura en el pedido. Nadie firmó su entrega.\n\nNota: el busto estaba de cara a la pared cuando lo encontramos.\nA la mañana siguiente, no.' },
+  { id: 'turno', name: 'turno_noche.log', description: 'La entrada borrada. Una parte.', size: '1.1 KB', level: 2, content: 'TURNO DE NOCHE · OPERADOR 09 · 17.11.1998 · RECUPERADO EN PARTE\n\n03:34 — La estatua ha girado la cabeza mientras escribía.\n03:36 — Solo se mueve cuando no la miro. Ahora lo sé.\n03:39 — Lleva algo escrito en la nuca. Para leerlo hay que dejar que te dé la espalda. No la sigas con la mirada.\n03:41 — Lo he leído. Es la palabra de vigilia. No voy a escribirla aquí.\n03:42 — La han puesto al fondo, donde ya no se pide volver.\n03:44 — Si alguien firma con mi nombre en el libro de visitas, la cámara del pasillo B le dejará pasar a la sala 0.\n03:45 — Yo ya no puedo firmar. Mi nombre ya no es mío.\n03:4■ — [LA CINTA SE CORTA]' },
   { id: 'salida', name: 'salida.txt', description: 'Una instrucción que todavía funciona.', size: '0.1 KB', level: 2, content: 'Puedes cerrar la conexión.\n\nEn el subsuelo hay un interruptor.\nBorrará tus accesos y los mensajes que hayas dejado en este navegador.\n\nNo va a impedir que vuelvas.\nPero esta vez la estación no te recordará.' }
 ];
 function element(tag, text, className) { const el = document.createElement(tag); if (text !== undefined) el.textContent = text; if (className) el.className = className; return el; }
 function renderArchive() {
+  const connect = $('.cam-connect'); if (connect) connect.hidden = !state.operator;
+  if (state.ended) $('#footer-status').textContent = '2 PRESENCIAS EN ESTE NODO';
   const list = $('#archive-list'); list.replaceChildren();
   documents.forEach(doc => {
     const locked = doc.level > state.level;
@@ -47,13 +52,20 @@ function renderGuests() {
     const date = new Date(guest.date); const time = element('time', Number.isNaN(date.valueOf()) ? 'FECHA DESCONOCIDA' : date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }));
     header.append(element('span', guest.alias), time); article.append(header, element('p', guest.message)); $('#guest-messages').append(article);
   }
+  if (state.operator) {
+    const reply = element('article', undefined, 'guest-entry guest-reply'); const header = element('div');
+    header.append(element('span', 'sin_remitente'), element('time', '03:44'));
+    reply.append(header, element('p', 'Tú no eres él. Pero la cámara del pasillo B ya no os distingue.'));
+    $('#guest-messages').append(reply);
+  }
   renderVisibility();
 }
 // You stay invisible to the station until you leave a trace in the guestbook.
 function renderVisibility() {
   const line = $('#visibility'); if (!line) return;
   line.replaceChildren();
-  if (state.guests.length) line.append('Eres visible. La estación te ve.');
+  if (state.ended) line.append('Eres el operador. La estación no te deja salir.');
+  else if (state.guests.length) line.append('Eres visible. La estación te ve.');
   else { const link = element('a', '[hacerte visible]'); link.href = '#visitantes'; line.append('Eres invisible. ', link); }
 }
 // One plea, in many languages, the way a stuck transmission repeats itself.
@@ -140,12 +152,13 @@ function showVision(name) {
   $('#document-body').replaceChildren(image); openDialog($('#document-dialog'));
   registerGIFs($('#document-body'));
 }
-const viewNames = ['inicio', 'interior', 'archivo', 'fragmentos', 'transmisiones', 'visitantes', 'subsuelo', 'descenso', 'estatua'];
+const viewNames = ['inicio', 'interior', 'archivo', 'fragmentos', 'transmisiones', 'visitantes', 'subsuelo', 'descenso', 'estatua', 'control'];
 let currentView = '';
 function route() {
   const target = location.hash.slice(1) || 'inicio';
   if (target === 'main') { $('#main').focus({ preventScroll: true }); return; }
   const name = viewNames.includes(target) ? target : 'inicio';
+  if (name === 'control' && !state.operator) { history.replaceState(null, '', '#archivo'); route(); return; }
   if (name === 'subsuelo' && state.level < 2) {
     history.replaceState(null, '', '#inicio'); route(); openGate(2); return;
   }
@@ -154,6 +167,7 @@ function route() {
   document.body.dataset.page = name;
   if (name === 'descenso') startDescent(); else stopDescent();
   if (name === 'estatua') startStatue(); else stopStatue();
+  if (name === 'control') bootConsole();
   $('#entry-portal').hidden = name !== 'inicio';
   document.querySelectorAll('.view').forEach(view => view.hidden = view.id !== `view-${name}`);
   document.querySelectorAll('[data-view]').forEach(link => { link.classList.toggle('active', link.dataset.view === name); if (link.dataset.view === name) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
@@ -171,13 +185,16 @@ window.addEventListener('hashchange', route);
 $('#guest-form').addEventListener('submit', event => {
   event.preventDefault(); const message = $('#guest-message').value.trim();
   if (!message) { $('#guest-status').textContent = 'El vacío no deja rastro. Escribe una señal.'; return; }
-  state.guests.push({ alias: $('#guest-name').value.trim().slice(0, 32) || 'anónimo', message: message.slice(0, 500), date: new Date().toISOString() });
-  state.guests = state.guests.slice(-30); save(); renderGuests(); $('#guest-form').reset();
-  $('#guest-status').textContent = storageAvailable ? 'Señal guardada. La estación te recuerda.' : 'Señal recibida durante esta sesión. Este navegador no permite guardarla.';
+  const alias = $('#guest-name').value.trim().slice(0, 32) || 'anónimo';
+  const signedAsOperator = alias.toLocaleLowerCase('es') === 'operador_09';
+  state.guests.push({ alias, message: message.slice(0, 500), date: new Date().toISOString() });
+  if (signedAsOperator) state.operator = true;
+  state.guests = state.guests.slice(-30); save(); renderGuests(); renderArchive(); $('#guest-form').reset();
+  $('#guest-status').textContent = signedAsOperator ? 'Señal guardada. Algo se ha encendido en el pasillo B.' : storageAvailable ? 'Señal guardada. La estación te recuerda.' : 'Señal recibida durante esta sesión. Este navegador no permite guardarla.';
 });
 for (const id of ['forget-button', 'reset-session']) $('#' + id).addEventListener('click', () => openDialog($('#reset-dialog')));
 $('#confirm-reset').addEventListener('click', () => {
-  state = { level: 0, guests: [] }; save();
+  state = { level: 0, guests: [], operator: false, ended: false }; save();
   try { localStorage.removeItem(doorSceneKey); } catch {}
   doorSceneSeen = false; stopAmbient(); closeDialog($('#reset-dialog')); location.hash = 'inicio'; location.reload();
 });
@@ -885,13 +902,30 @@ function drawStatue() {
   const f = ((Math.round(statue.frame) % STATUE.frames) + STATUE.frames) % STATUE.frames;
   const ox = (f % STATUE.cols) * STATUE.w, oy = Math.floor(f / STATUE.cols) * STATUE.h, sheetW = statue.data.width, px = statue.data.data;
   context.fillStyle = '#000'; context.fillRect(0, 0, W, H);
+  const back = Math.max(0, 1 - Math.abs(f - 24) / 3.5); const carving = back > 0 ? statueCarving(cols, rows) : null;
   for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) {
     const sx = ox + Math.floor((col + .5) / cols * STATUE.w), sy = oy + Math.floor((row + .5) / rows * STATUE.h);
     let l = px[(sy * sheetW + sx) * 4] / 255; if (l < .03) continue;
     l = Math.min(1, Math.pow(l * 1.7, .85));
+    if (carving && carving[row * cols + col]) l *= 1 - .8 * back;
     const x = col * cell, y = row * cell;
     for (let k = 0; k < 3; k++) { const v = Math.round(255 * l * [.82, 1, .9][k]); context.fillStyle = `rgb(${v},${v},${v * .97})`; context.fillRect(x + k * 1.67, y, 1.25, cell - 1.4); }
   }
+}
+// A 5×7 dot font for the one word carved into the nape: V I G I L I A.
+const carvedGlyphs = { V: ['10001', '10001', '10001', '10001', '10001', '01010', '00100'], I: ['1', '1', '1', '1', '1', '1', '1'], G: ['01110', '10001', '10000', '10111', '10001', '10001', '01110'], L: ['10000', '10000', '10000', '10000', '10000', '10000', '11111'], A: ['01110', '10001', '10001', '11111', '10001', '10001', '10001'] };
+let carvedMask = null;
+function statueCarving(cols, rows) {
+  if (carvedMask && carvedMask.cols === cols && carvedMask.rows === rows) return carvedMask.cells;
+  const cells = new Uint8Array(cols * rows); const word = 'VIGILIA';
+  const width = [...word].reduce((sum, letter) => sum + carvedGlyphs[letter][0].length, 0) + word.length - 1;
+  let x = Math.round(cols * .47 - width / 2); const top = Math.round(rows * .355);
+  for (const letter of word) {
+    const glyph = carvedGlyphs[letter];
+    glyph.forEach((line, y) => [...line].forEach((bit, dx) => { if (bit === '1') cells[(top + y) * cols + x + dx] = 1; }));
+    x += glyph[0].length + 1;
+  }
+  carvedMask = { cols, rows, cells }; return cells;
 }
 function startStatue() {
   loadStatue(); drawStatue(); clearInterval(statue.timer); statue.enteredAt = performance.now();
@@ -967,8 +1001,9 @@ function scareSound() {
   thump.connect(thumpGain); thumpGain.connect(master); thump.start(t); thump.stop(t + .45);
   setTimeout(() => master.disconnect(), 1300);
 }
-function scare(kind = 'dientes', { key = null, delay = 0 } = {}) {
-  if (!scareAllowed() || (key && !scareOnce(key))) return false;
+function scare(kind = 'dientes', { key = null, delay = 0, force = false } = {}) {
+  const allowed = force ? omensEnabled && !motionQuery.matches && !document.hidden && !scareBusy : scareAllowed();
+  if (!allowed || (key && !scareOnce(key))) return false;
   scareBusy = true; lastScare = performance.now();
   if (!scaresWarm) { scaresWarm = true; for (const src of Object.values(scareImages)) { const image = new Image(); image.src = src; } }
   duckAmbient(delay + 1600);
@@ -999,6 +1034,77 @@ if ('IntersectionObserver' in window) {
     if (entries.some(entry => entry.isIntersecting) && scare('dientes', { key: 'descenso', delay: 1400 })) observer.disconnect();
   }, { threshold: .6 }).observe(trying);
 }
+
+// Room 0 (#control): the console of the station. Log in with the operator's name and the word of
+// vigil; then a few orders tell the rest of the story. "apagar" ends it.
+const consoleState = { step: 'name', tries: 0, booted: false, confirm: false };
+function consoleLine(text, cls = '') {
+  const line = element('p', text, 'terminal-line ' + cls); $('#terminal-log').append(line);
+  line.scrollIntoView({ block: 'nearest' }); return line;
+}
+function consolePrompt(label) { $('#terminal-prompt').textContent = label; }
+function bootConsole() {
+  if (consoleState.booted) { $('#terminal-input').focus({ preventScroll: true }); return; }
+  consoleState.booted = true; $('#terminal-log').replaceChildren();
+  if (state.ended) {
+    ['ESTACIÓN 09 · SALA 0', 'La consola está apagada.', 'Aun así, alguien escribe al otro lado:', 'gracias por quedarte.'].forEach(text => consoleLine(text, 'dim'));
+    $('#terminal-input').disabled = true; consolePrompt('—'); return;
+  }
+  ['ESTACIÓN 09 · SALA 0 · CONSOLA v0.98', 'conexión desde: pasillo B / cámara 09', 'identifíquese.'].forEach(text => consoleLine(text, 'dim'));
+  consoleState.step = 'name'; consolePrompt('OPERADOR>'); $('#terminal-input').type = 'text';
+  $('#terminal-input').focus({ preventScroll: true });
+}
+const consoleOrders = {
+  ayuda: () => ['órdenes: estado · registro · camaras · presencias · frecuencia · escuchar · apagar · salir'],
+  estado: () => ['nodo 009: en línea desde 1998.', 'integridad: 27 %.', `presencias: ${state.ended ? 2 : 1}. operadores: 0.`],
+  registro: () => ['03:33 — Ya no estoy en la silla. Ya no estoy en el pasillo.', '03:33 — Estoy de cara a la pared y alguien me ha dado la vuelta.', '03:33 — Si lees esto: no la mires de frente.', '03:33 — No apagues la estación. Si la apagas, alguien tiene que quedarse dentro.'],
+  camaras: () => ['CAM 07 · pasillo A · sin señal', 'CAM 08 · pasillo C · sin señal', 'CAM 09 · pasillo B · hay alguien. es usted.'],
+  presencias: () => ['OPERADOR 09 · en la estatua', 'VISITANTE · usted', ...state.guests.slice(-6).map(guest => `${guest.alias} · estuvo aquí`)],
+  frecuencia: () => ['09.8 · no es una voz. es el espacio entre dos voces.'],
+  escuchar: () => { const wasOn = Boolean(ambient); $('#sound-toggle').click(); return ['receptor: ' + (wasOn ? 'apagado.' : 'encendido.')]; },
+  eco: () => ['eco…', 'eco…', 'eco…'],
+  umbra: () => ['la sombra ya sabe su nombre.'],
+  1998: () => ['el año en que todo se detuvo. sigue detenido.'],
+  vigilia: () => ['ya está despierto. no hace falta repetirlo.'],
+  salir: () => { location.hash = 'archivo'; return []; },
+  apagar: () => { consoleState.confirm = true; consolePrompt('¿APAGAR? (s/n)>'); return ['¿Apagar la estación? Alguien tendrá que quedarse dentro.']; }
+};
+function endStation() {
+  $('#terminal-input').disabled = true; consolePrompt('—');
+  ['apagando receptor…', 'apagando cámaras…', 'apagando operador…'].forEach((text, i) => setTimeout(() => consoleLine(text, 'dim'), 500 + i * 700));
+  setTimeout(() => {
+    $('.terminal').classList.add('powering-off');
+    scare('cara', { key: 'final', delay: 900, force: true });
+  }, 2800);
+  setTimeout(() => {
+    state.ended = true; save(); renderArchive(); renderGuests();
+    $('.terminal').classList.remove('powering-off'); $('#terminal-log').replaceChildren();
+    ['La estación ya no necesita operador.', 'Ahora le tiene a usted.'].forEach(text => consoleLine(text, 'final'));
+  }, 5200);
+}
+$('#terminal-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const input = $('#terminal-input'); const raw = input.value.trim(); const value = raw.toLocaleLowerCase('es'); input.value = '';
+  if (!raw) return;
+  consoleLine(`${$('#terminal-prompt').textContent} ${consoleState.step === 'word' ? '•'.repeat(raw.length) : raw}`, 'echo');
+  if (consoleState.step === 'name') {
+    if (value === 'operador_09') { consoleState.step = 'word'; consolePrompt('PALABRA DE VIGILIA>'); input.type = 'password'; consoleLine('nombre reconocido. su nombre no es suyo, pero sirve.', 'dim'); }
+    else consoleLine('Ese no es el nombre. Lo firmó usted mismo hace un momento.');
+    return;
+  }
+  if (consoleState.step === 'word') {
+    if (value === 'vigilia') { consoleState.step = 'orders'; input.type = 'text'; consolePrompt('09>'); consoleLine('Bienvenido de nuevo, operador 09. Lleva 27 años fuera de turno.'); consoleLine('escriba «ayuda».', 'dim'); }
+    else { consoleState.tries++; consoleLine('No es la palabra. La estatua no se la ha enseñado.'); if (consoleState.tries >= 3) scare('dientes', { key: 'consola' }); }
+    return;
+  }
+  if (consoleState.confirm) {
+    consoleState.confirm = false; consolePrompt('09>');
+    if (value === 's' || value === 'si' || value === 'sí') endStation(); else consoleLine('Prudente.');
+    return;
+  }
+  const order = consoleOrders[value];
+  (order ? order() : ['Orden desconocida. No responda si escucha su nombre.']).forEach(text => consoleLine(text));
+});
 
 // The station asks to be heard before you go in: once per session, only at the threshold.
 // "ESCUCHES" turns on the existing ambient sound (a click, so nothing plays by itself);

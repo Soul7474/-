@@ -91,7 +91,7 @@ Los siete archivos de `gifs/` se conservan sin modificaciones:
 | `giphy (5).gif` | Fragmentos |
 | `giphy (6).gif` | Huellas |
 
-Por la web, las cintas tienen tamaños, márgenes e inclinaciones distintos (no una columna centrada), llevan scanlines y grano encima y aparecen con un fundido la primera vez que entran en pantalla; en móvil se quitan los desplazamientos para que nada se solape. Los tres ojos abiertos de la entrada encuadran el ojo de su cinta, más grande y claro, y respiran despacio. También pueden abrirse en **Fragmentos → cintas**. Los fotogramas de `assets/gif-stills/` son capturas del navegador de los GIFs originales. Se muestran de entrada; `IntersectionObserver` carga la animación cuando entra en pantalla. Se vuelve al fotograma cuando sale de pantalla, se oculta la pestaña, se activa «calma» o el navegador pide movimiento reducido. La cinta con cortes más marcados no se reproduce automáticamente: requiere pulsarla o abrirla desde «cintas». Los GIFs no añaden audio.
+Cada cinta lleva un rótulo de cinta encontrada (CAM_09 · PASILLO B, CINTA 04 · DESDE EL FONDO DEL POZO, CINTA 06 · LA ÚLTIMA VISITA, CINTA 05 · SELLO, CINTA 03 · NO REPRODUCIR) que además dice qué está haciendo: «sintonizando…» mientras se descarga el GIF y «en pausa · calma» cuando está quieta a propósito. Los GIF empiezan a cargarse 240 px antes de entrar en pantalla. La cinta del archivo es el monitor en directo de la cámara 09, con REC y el reloj de la cámara; la criatura del interior se ve, respirando. Por la web, las cintas tienen tamaños, márgenes e inclinaciones distintos (no una columna centrada), llevan scanlines y grano encima y aparecen con un fundido la primera vez que entran en pantalla; en móvil se quitan los desplazamientos para que nada se solape. Los tres ojos abiertos de la entrada encuadran el ojo de su cinta, más grande y claro, y respiran despacio. También pueden abrirse en **Fragmentos → cintas**. Los fotogramas de `assets/gif-stills/` son capturas del navegador de los GIFs originales. Se muestran de entrada; `IntersectionObserver` carga la animación cuando entra en pantalla. Se vuelve al fotograma cuando sale de pantalla, se oculta la pestaña, se activa «calma» o el navegador pide movimiento reducido. La cinta con cortes más marcados no se reproduce automáticamente: requiere pulsarla o abrirla desde «cintas». Los GIFs no añaden audio.
 
 ## Interior cambiante (fases 2–5)
 
@@ -132,6 +132,28 @@ Algunas ideas vienen de dos webs personales antiguas: *Terminal 00* (angusnicnev
 - **404 propio.** `404.html`, que GitHub Pages sirve para cualquier dirección que no exista: fondo de «SIN SEÑAL», rótulos invertidos, las frecuencias conocidas para volver y la figura del ojo en una esquina. El servidor local devuelve la misma página con estado 404.
 - **Detalles.** Esquinas ⌈ ⌉ ⌊ ⌋ en la cabecera, cursores propios (un anillo y, sobre los enlaces, un ojo) y una selección de texto pálida.
 
+## El último turno
+
+La historia continúa la del operador 09, que dejó de escribir a las 03:33 con una «[ENTRADA BORRADA]». El archivo, la estatua, el libro de visitas y la cámara del pasillo B forman una cadena de acertijos que lleva a una sala nueva:
+
+- `inventario_1998.txt` (con el primer sello) habla de una **sala 0** con una consola que pide «el nombre del operador y la palabra de vigilia», de una cámara que graba un pasillo que no está en los planos y de un busto de mármol que nadie pidió.
+- `turno_noche.log` (con el segundo sello) recupera parte de la entrada borrada: la estatua solo se mueve cuando no la miras, lleva escrita la palabra en la nuca y está «al fondo, donde ya no se pide volver». Si alguien firma con el nombre del operador en el libro de visitas, la cámara le dejará pasar.
+- La **estatua** del descenso lleva la palabra tallada en la nuca, dentro de su propia trama de puntos. Solo se ve cuando te da la espalda, así que hay que dejar de seguirla con el puntero.
+- En **Los que llegaron**, firmar con el nombre del operador hace que `sin_remitente` conteste y enciende la cámara.
+- El monitor **CAM_09 · PASILLO B** del archivo muestra entonces «[ conectar con la sala 0 ]».
+- La **sala 0** (`#control`) es una consola: inicio de sesión, órdenes que cuentan el resto de la historia y un final.
+
+Para volver a jugar desde el principio basta con «Olvidar esta visita».
+
+## Sustos
+
+Hay dos niveles:
+
+- **Apariciones.** Las de siempre: una imagen aportada durante 850 ms, como mucho cada 18 s.
+- **Screamers.** El sonido ambiente (si está activado) se corta un instante; después hay un único corte a una cara a pantalla completa que entra de golpe, tiembla y se hunde en negro, con un golpe sonoro distorsionado sintetizado cuando hay sonido. Las caras son el rostro de ojos anulares y dientes (`c2f15d46…`), la cara de la puerta y la figura del pasillo. Saltan al fallar por segunda vez una contraseña, al tercer error del ritual, al quedarse leyendo `no_abrir.txt`, al llegar a «[Intentando…]» en el descenso, al quedarse quieto mirando la estatua hasta que te da la cara, al fallar tres veces la palabra en la consola y en el final.
+
+Ningún screamer parpadea: es un solo corte, como mucho de 820 ms. Hay como mucho uno cada 25 s, ninguno en los primeros 15 s de una visita, cada desencadenante salta una vez por sesión y ninguno salta con «calma» o con movimiento reducido. El del final es el único que ignora el intervalo mínimo.
+
 ## Recorrido
 
 - **Umbral:** entrada, cámara animada, registro y primeros documentos.
@@ -140,6 +162,7 @@ Algunas ideas vienen de dos webs personales antiguas: *Terminal 00* (angusnicnev
 - **Los que llegaron:** mensajes de ficción y entradas del visitante guardadas en su navegador.
 - **Subsuelo:** desenlace tras la segunda contraseña.
 - **Descenso:** oculto; solo se llega por las puertas que parecen texto.
+- **Sala 0:** la consola de la estación, tras firmar con el nombre del operador.
 - **Olvidar esta visita:** pide confirmación antes de borrar accesos y mensajes locales.
 
 El sistema respeta movimiento reducido con una imagen estática en vez del GIF principal. Tiene navegación por teclado, diálogos cerrables con Escape, foco visible y presentación adaptable a móvil. Todos los recursos se sirven desde el propio proyecto. No hay rastreo, peticiones externas ni recogida real de identidades.
@@ -160,6 +183,15 @@ Primer sello del archivo: `eco`. La pista está en `leeme_antes.txt` y en el lib
 Segunda puerta: `1998`. La pista está en `no_abrir.txt` y en las fechas de la estación.
 
 El descenso: la palabra «encontrado» de la cita de Fragmentos («No todo lo que está en la red quiere ser encontrado»), la palabra «PERDIDOS» del pie de página y «más abajo» en la página 404. La estatua: el «∴» bajo la revelación final del descenso.
+
+El último turno:
+
+1. Abrir el primer sello (`eco`) para leer `inventario_1998.txt` y el segundo (`1998`) para leer `turno_noche.log`.
+2. En la estatua, dejar de mover el puntero y esperar a que dé la espalda: en la nuca pone `VIGILIA`.
+3. Firmar en Los que llegaron con el nombre `operador_09` (da igual el mensaje).
+4. En el archivo, pulsar «[ conectar con la sala 0 ]» sobre el monitor de la cámara.
+5. En la consola: `operador_09`, luego `vigilia`. Órdenes: `ayuda`, `estado`, `registro`, `camaras`, `presencias`, `frecuencia`, `escuchar`, `salir`; también responde a `eco`, `umbra`, `1998` y `vigilia`.
+6. `apagar` y `s` terminan la historia: la estación pasa a tener dos presencias y tú eres el operador.
 
 </details>
 
