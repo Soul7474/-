@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="station-revision" content="una-puerta-1">
+  <meta name="station-revision" content="referencias-1">
   <meta name="theme-color" content="#090909">
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta name="description" content="Archivo residual de la Estación 09. La transmisión continúa.">
   <title>ESTACIÓN 09 — señal residual</title>
   <link rel="icon" href="assets/sigil.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=una-puerta-1">
-  <script src="app.js?v=una-puerta-1" defer></script>
-  <link rel="stylesheet" href="interior.css?v=una-puerta-1">
-  <script src="interior.js?v=una-puerta-1" defer></script>
+  <link rel="stylesheet" href="style.css?v=referencias-1">
+  <script src="app.js?v=referencias-1" defer></script>
+  <link rel="stylesheet" href="interior.css?v=referencias-1">
+  <script src="interior.js?v=referencias-1" defer></script>
 </head>
 <body data-page="inicio">
   <a class="skip" href="#archivo">Saltar al archivo</a>
@@ -45,7 +45,10 @@
       <p class="system-id">⌈ archivo residual · nodo 009 · ver. 0.98 ⌋</p>
       <a href="#inicio" class="identity" aria-label="Estación 09, inicio">estación<span>_09</span></a>
       <p class="header-message">Este lugar ya no existe. <span>Pero tú sigues aquí.</span></p>
+      <p class="plea" aria-hidden="true"><span id="plea">[recuérdame]</span></p>
       <div class="connection"><span class="live-dot"></span> connected to the other end<span class="cursor">_</span><small id="session-clock">00:00:00 / SESIÓN LOCAL</small></div>
+      <p class="visibility" id="visibility">Eres invisible. <a href="#visitantes">[hacerte visible]</a></p>
+      <span class="frame-corner corner-tl" aria-hidden="true">⌈</span><span class="frame-corner corner-tr" aria-hidden="true">⌉</span><span class="frame-corner corner-bl" aria-hidden="true">⌊</span><span class="frame-corner corner-br" aria-hidden="true">⌋</span>
     </header>
     <div class="layout">
         <nav class="main-nav" aria-label="Navegación del archivo">
@@ -132,6 +135,12 @@
 
     </div>
     <footer><span>© 1998 ESTACIÓN 09 <i> / </i> TODOS LOS DERECHOS PERDIDOS.</span><span><span class="live-dot"></span> <span id="footer-status">1 PRESENCIA EN ESTE NODO</span></span><button id="forget-button">OLVIDAR ESTA VISITA ↗</button></footer>
+  </div>
+  <div id="listen-cover" class="listen-cover" role="dialog" aria-modal="true" aria-labelledby="listen-title" hidden>
+    <div class="listen-figure" aria-hidden="true"><img src="images/2483130d0df7e07e5d073b244c4f0aad.png" width="499" height="620" alt=""></div>
+    <p id="listen-title" class="listen-text">Algo ha vuelto a encender la estación…</p>
+    <p class="listen-text">Da igual. Haré que <button type="button" id="listen-yes" class="listen-yes">ESCUCHES</button>.</p>
+    <button type="button" id="listen-no" class="listen-no">[ entrar en silencio ]</button>
   </div>
   <div id="door-passage" hidden aria-hidden="true"></div>
   <div id="scene-veil" hidden aria-hidden="true"></div>

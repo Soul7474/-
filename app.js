@@ -47,7 +47,23 @@ function renderGuests() {
     const date = new Date(guest.date); const time = element('time', Number.isNaN(date.valueOf()) ? 'FECHA DESCONOCIDA' : date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }));
     header.append(element('span', guest.alias), time); article.append(header, element('p', guest.message)); $('#guest-messages').append(article);
   }
+  renderVisibility();
 }
+// You stay invisible to the station until you leave a trace in the guestbook.
+function renderVisibility() {
+  const line = $('#visibility'); if (!line) return;
+  line.replaceChildren();
+  if (state.guests.length) line.append('Eres visible. La estación te ve.');
+  else { const link = element('a', '[hacerte visible]'); link.href = '#visitantes'; line.append('Eres invisible. ', link); }
+}
+// One plea, in many languages, the way a stuck transmission repeats itself.
+const pleas = ['[recuérdame]', '[remember me]', '[souviens-toi de moi]', '[erinnere dich an mich]', '[lembra-te de mim]', '[ricordami]', '[pamiętaj o mnie]', '[помни меня]', '[θυμήσου με]', '[覚えていて]', '[记住我]', '[تذكّرني]', '[recorda\'m]', '[gogoratu nazazu]'];
+let pleaIndex = 0;
+setInterval(() => {
+  const plea = $('#plea'); if (!plea || document.hidden || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  plea.classList.add('fading');
+  setTimeout(() => { pleaIndex = (pleaIndex + 1) % pleas.length; plea.textContent = pleas[pleaIndex]; plea.classList.remove('fading'); }, 450);
+}, 2800);
 let gateLevel = 1;
 let gateDestination = 'archivo';
 let returnFocus;
@@ -782,7 +798,28 @@ $('#door-passage').addEventListener('pointerup', event => {
 window.addEventListener('resize', () => { if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; } });
 motionQuery.addEventListener('change', () => { if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; } });
 
-renderArchive(); renderGuests(); renderDoor(); route(); applyMotionPreference();
+// The station asks to be heard before you go in: once per session, only at the threshold.
+// "ESCUCHES" turns on the existing ambient sound (a click, so nothing plays by itself);
+// "entrar en silencio" or Escape leaves it off.
+const listenKey = 'estacion09-escuchado';
+function maybeListen() {
+  let heard = false; try { heard = sessionStorage.getItem(listenKey) === '1'; } catch {}
+  if (heard || document.body.dataset.page !== 'inicio') return;
+  const cover = $('#listen-cover'); cover.hidden = false; $('#listen-yes').focus({ preventScroll: true });
+}
+function closeListen(withSound) {
+  const cover = $('#listen-cover'); if (cover.hidden || cover.classList.contains('leaving')) return;
+  try { sessionStorage.setItem(listenKey, '1'); } catch {}
+  if (withSound && !ambient) $('#sound-toggle').click();
+  const done = () => { cover.hidden = true; cover.classList.remove('leaving'); $('#portal-title').setAttribute('tabindex', '-1'); $('#portal-title').focus({ preventScroll: true }); };
+  if (motionQuery.matches) { done(); return; }
+  cover.classList.add('leaving'); setTimeout(done, 900);
+}
+$('#listen-yes').addEventListener('click', () => closeListen(true));
+$('#listen-no').addEventListener('click', () => closeListen(false));
+document.addEventListener('keydown', event => { if (event.key === 'Escape' && !$('#listen-cover').hidden) closeListen(false); });
+
+renderArchive(); renderGuests(); renderDoor(); route(); applyMotionPreference(); maybeListen();
 
 // Interior extension contract. Keep entrance and passage implementation independent.
 window.EstacionInterior = Object.freeze({

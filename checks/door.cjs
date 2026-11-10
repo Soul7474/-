@@ -16,6 +16,7 @@ const { existsSync } = require('node:fs');
       await page.addInitScript(quiet => {
         if (!localStorage.getItem('estacion09-v1')) localStorage.setItem('estacion09-v1', JSON.stringify({ level: 1, guests: [{ alias: 'test', message: 'Una visita anterior.', date: '2026-11-09T12:00:00Z' }] }));
         if (quiet && !localStorage.getItem('estacion09-omens')) localStorage.setItem('estacion09-omens', 'quiet');
+        sessionStorage.setItem('estacion09-escuchado', '1'); // skip the listening cover; this check is about the door
       }, quiet);
       await page.goto(base); return page;
     }
