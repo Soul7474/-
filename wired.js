@@ -23,10 +23,10 @@
   const captions = ['se abre cuando uno escucha', 'lo de arriba también mira', 'la palabra vuelve a quien la dice', 'lo que se deja atrás sigue aquí', 'quien ve, ya no puede no ver', 'el orden permanece', 'la cuenta no coincide', 'se acaba cuando siete son uno'];
   function artwork(number) {
     if (number !== 7) return window.renderSigil(number);
-    const image = el('img'); image.src = '/assets/still-here.gif'; image.alt = 'Emisión del nodo 009'; image.className = 'saturn-art'; image.width = 88; image.height = 31;
+    const image = el('img'); image.src = '/assets/still-here.gif'; image.alt = 'Emisión del nodo 009'; image.className = 'saturn-art fig-img'; image.width = 88; image.height = 31;
     if (!reduce.matches) return image;
     // Freeze a locally decoded frame; no animated image is displayed in reduced motion.
-    const still = el('canvas'); still.className = 'saturn-art'; still.setAttribute('role', 'img'); still.setAttribute('aria-label', image.alt);
+    const still = el('canvas'); still.className = 'saturn-art fig-img'; still.setAttribute('role', 'img'); still.setAttribute('aria-label', image.alt);
     image.onload = () => { still.width = image.naturalWidth; still.height = image.naturalHeight; still.getContext('2d')?.drawImage(image, 0, 0); };
     return still;
   }
@@ -37,7 +37,7 @@
   }
   function doorArtwork() {
     const figure = el('figure');
-    const image = el('img'); image.src = '/assets/door-009.png'; image.alt = 'Puerta de acceso'; image.className = 'door-art'; image.width = 1448; image.height = 1086;
+    const image = el('img'); image.src = '/assets/door-009.png'; image.alt = 'Puerta de acceso'; image.className = 'door-art fig-img'; image.width = 1448; image.height = 1086;
     figure.append(image, el('figcaption', captions[0], 'cap')); return figure;
   }
   function cleanTimers() { timers.forEach(clearTimeout); timers = []; clearTimeout(idleTimer); clearTimeout(logTimer); }
