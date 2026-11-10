@@ -265,3 +265,43 @@ input,textarea{cursor:text}
 .listen-no{margin-top:30px;padding:10px 14px;min-height:44px;border:0;background:none;color:#77776f;font:10px/1.6 'Courier New',monospace;letter-spacing:3px;text-decoration:underline;text-underline-offset:4px}
 .listen-no:hover,.listen-no:focus-visible{color:#cfcfc5}
 @media(max-width:540px){.listen-text{font-size:11px;letter-spacing:.24em}.listen-yes{letter-spacing:.24em}}
+/* The descent (#descenso): a long way down, over a lattice of static, that keeps asking you to
+   turn back while its words come apart. Hidden doors lead here; they look like plain text. */
+.hidden-door{color:inherit;text-decoration:none}
+.hidden-door:hover,.hidden-door:focus-visible{color:#e8e8de;text-decoration:none;background:none;text-shadow:0 0 6px #ffffff40}
+body[data-page="descenso"] .masthead,body[data-page="descenso"] .main-nav,body[data-page="descenso"] .sidebar,body[data-page="descenso"] .broadcast,body[data-page="descenso"] .inner-watchers{display:none}
+.descent{position:relative;overflow-x:clip;padding:60px 0 20px;text-align:center;--noise:var(--noise-0)}
+.descent.noise-1{--noise:var(--noise-1)}.descent.noise-2{--noise:var(--noise-2)}
+.descent::before{content:"";position:fixed;inset:0;z-index:0;background:#000 var(--noise) 0 0/192px 192px;opacity:.55;pointer-events:none}
+body[data-page="descenso"] footer,.descent .return-threshold{position:relative;z-index:1}
+.descent-gap{height:calc(var(--gap) * 110px)}
+.descent-panel{position:relative;z-index:1;word-break:keep-all;width:min(640px,100%);margin:0 auto;padding:22px 24px;background:#000;border-top:1px solid #5d5d57;border-bottom:1px solid #5d5d57;box-shadow:0 6px 14px #000;font:12px/2.3 'Courier New',monospace;letter-spacing:.16em;color:#c8c8be}
+.descent-panel p{margin:0}
+.descent-panel.intro{border:0;background:#000000c0;color:#9a9a91}
+.descent-panel.c1{letter-spacing:.38em;color:#b7b7ad}
+.descent-panel.c2{letter-spacing:.5em;color:#a6a69c;text-shadow:1px 0 #ffffff2a,-1px 0 #000;animation:descent-slip 2.6s steps(2) infinite}
+.descent-panel.c3{width:120px;padding:8px;margin-bottom:6px;color:#777770}
+.descent-panel.c4 p{border-bottom:1px solid #2c2c29;padding:6px 0}
+.descent-panel.c4 p:nth-child(1){letter-spacing:.5em}
+.descent-panel.c4 p:nth-child(3){animation:descent-try 2.4s ease-in-out infinite}
+.descent-panel.c4 p:nth-child(4){letter-spacing:.3em;color:#8f8f86}
+.descent-panel.reveal-end{background:#000000a8;border:0;box-shadow:0 0 40px 30px #000000a8;letter-spacing:.32em;color:#d8d8ce;line-height:2.6}
+.descent-coda{margin-top:18px!important;color:#7f7f77;font-size:10px}
+.descent-row{position:relative;z-index:1;display:flex;flex-wrap:wrap;justify-content:center;gap:10px 18px}
+.descent-chip{word-break:keep-all;padding:6px 14px;background:#000;border-bottom:1px solid #6a6a63;font:11px/1.8 'Courier New',monospace;letter-spacing:.3em;color:#b3b3a9}
+.descent-row .descent-chip:nth-child(2){translate:0 14px}.descent-row .descent-chip:nth-child(3){translate:0 -6px;color:#d3d3c8}
+.descent-sigils span{position:absolute;z-index:0;font:120px/1 Georgia,serif;color:#fff;opacity:.07;pointer-events:none}
+.descent-sigils span:nth-child(1){left:4%;top:9%;rotate:-12deg}.descent-sigils span:nth-child(2){right:3%;top:31%;font-size:170px;rotate:18deg}
+.descent-sigils span:nth-child(3){left:8%;top:58%;font-size:90px}.descent-sigils span:nth-child(4){right:9%;top:82%;rotate:-30deg}
+.eye-strips{position:relative;z-index:1;width:min(560px,100%);margin:0 auto;background:#000;box-shadow:0 0 30px 10px #000}
+.eye-strip{height:64px;background-color:#000;background-repeat:no-repeat;filter:grayscale(1) contrast(1.2) brightness(.85);translate:var(--shift,0) 0;transition:translate .25s steps(3);border-bottom:2px solid #000}
+.strip-1{background-image:url("assets/cutouts/presence-face.png");background-size:160% auto;background-position:26% 48%}
+.strip-2{background-image:url("assets/gif-stills/0.png");background-size:240% auto;background-position:47% 52%}
+.strip-3{background-image:url("images/08fe20c9273df37c67b19fc5ad0369e8.png");background-size:180% auto;background-position:18% 51%}
+.strip-4{background-image:url("assets/cutouts/sewn-eye.png");background-size:90% auto;background-position:50% 50%}
+.strip-5{background-image:url("images/71f43ece8f68bf946b666118ed26dbb5.jpg");background-size:120% auto;background-position:50% 50%}
+.strip-6{background-image:url("assets/cutouts/presence-face.png");background-size:160% auto;background-position:50% 35%;transform:scaleX(-1)}
+@keyframes descent-slip{0%,100%{translate:0 0}50%{translate:2px 0}}
+@keyframes descent-try{0%,100%{opacity:.45}50%{opacity:1}}
+body.quiet .descent-panel,body.quiet .descent-panel p{animation:none}
+@media(max-width:540px){.descent-panel{font-size:11px;letter-spacing:.08em;padding:18px 14px}.descent-panel.c1,.descent-panel.c2{letter-spacing:.2em}.descent-gap{height:calc(var(--gap) * 80px)}.eye-strip{height:46px}.descent-chip{letter-spacing:.14em}.descent-sigils span{font-size:70px}}

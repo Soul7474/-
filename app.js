@@ -137,7 +137,7 @@ function showVision(name) {
   $('#document-body').replaceChildren(image); openDialog($('#document-dialog'));
   registerGIFs($('#document-body'));
 }
-const viewNames = ['inicio', 'interior', 'archivo', 'fragmentos', 'transmisiones', 'visitantes', 'subsuelo'];
+const viewNames = ['inicio', 'interior', 'archivo', 'fragmentos', 'transmisiones', 'visitantes', 'subsuelo', 'descenso'];
 let currentView = '';
 function route() {
   const target = location.hash.slice(1) || 'inicio';
@@ -149,6 +149,7 @@ function route() {
   cancelDoorPassage();
   dismissOmen();
   document.body.dataset.page = name;
+  if (name === 'descenso') startDescent(); else stopDescent();
   $('#entry-portal').hidden = name !== 'inicio';
   document.querySelectorAll('.view').forEach(view => view.hidden = view.id !== `view-${name}`);
   document.querySelectorAll('[data-view]').forEach(link => { link.classList.toggle('active', link.dataset.view === name); if (link.dataset.view === name) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
@@ -797,6 +798,46 @@ $('#door-passage').addEventListener('pointerup', event => {
 });
 window.addEventListener('resize', () => { if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; } });
 motionQuery.addEventListener('change', () => { if (passageActive) { cancelDoorPassage(); location.hash = 'interior'; } });
+
+// The descent: a long way down that keeps asking you to turn back. Its backdrop is a lattice of
+// static drawn once into three tiles that alternate (grain, never a flash); the eye strips slip a
+// little as you scroll. Everything holds still with calma or reduced motion.
+let descentTimer = 0;
+let descentFrame = 0;
+let descentReady = false;
+function descentNoise() {
+  if (descentReady) return;
+  const view = $('#view-descenso'); const size = 192;
+  for (let frame = 0; frame < 3; frame++) {
+    const canvas = document.createElement('canvas'); canvas.width = canvas.height = size;
+    const context = canvas.getContext('2d'); if (!context) return;
+    const image = context.createImageData(size, size);
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+      const dx = Math.abs(x - size / 2), dy = Math.abs(y - size / 2), d = dx + dy, ring = d % 96;
+      const lit = (ring > 30 && ring < 56) || d < 12 || (dx < 1.5 && d > 72) || (dy < 1.5 && d > 72);
+      const v = lit && Math.random() < .55 ? 38 + Math.random() * 92 : 0; const i = (y * size + x) * 4;
+      image.data[i] = image.data[i + 1] = image.data[i + 2] = v; image.data[i + 3] = 255;
+    }
+    context.putImageData(image, 0, 0);
+    view.style.setProperty('--noise-' + frame, `url(${canvas.toDataURL('image/png')})`);
+  }
+  descentReady = true;
+}
+function startDescent() {
+  descentNoise(); clearInterval(descentTimer);
+  if (!omensEnabled || motionQuery.matches) return;
+  descentTimer = setInterval(() => {
+    if (document.hidden) return;
+    const view = $('#view-descenso'); view.classList.remove('noise-' + descentFrame);
+    descentFrame = (descentFrame + 1) % 3; view.classList.add('noise-' + descentFrame);
+  }, 140);
+}
+function stopDescent() { clearInterval(descentTimer); descentTimer = 0; }
+window.addEventListener('scroll', () => {
+  if (document.body.dataset.page !== 'descenso' || !omensEnabled || motionQuery.matches) return;
+  document.querySelectorAll('.eye-strip').forEach((strip, i) => strip.style.setProperty('--shift', `${Math.round(Math.sin(scrollY / 90 + i * 1.7) * 14)}px`));
+}, { passive: true });
+$('#omens-toggle').addEventListener('click', () => { if (document.body.dataset.page === 'descenso') startDescent(); });
 
 // The station asks to be heard before you go in: once per session, only at the threshold.
 // "ESCUCHES" turns on the existing ambient sound (a click, so nothing plays by itself);
