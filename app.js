@@ -182,6 +182,14 @@ function route() {
   currentView = name;
 }
 window.addEventListener('hashchange', route);
+// A hidden door that leads to the page you are already on takes you back to its beginning
+// (the footer's PERDIDOS sits at the bottom of the descent itself).
+document.addEventListener('click', event => {
+  const door = event.target.closest('a.hidden-door[href^="#"]');
+  if (!door || door.getAttribute('href') !== location.hash) return;
+  event.preventDefault();
+  window.scrollTo({ top: 0, behavior: motionQuery.matches ? 'instant' : 'smooth' });
+});
 $('#guest-form').addEventListener('submit', event => {
   event.preventDefault(); const message = $('#guest-message').value.trim();
   if (!message) { $('#guest-status').textContent = 'El vacío no deja rastro. Escribe una señal.'; return; }

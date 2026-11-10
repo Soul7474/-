@@ -367,3 +367,4 @@ footer>span:first-child .hidden-door:hover,footer>span:first-child .hidden-door:
 .reveal-end .hidden-door{display:inline-block;padding:6px 12px;font:22px/1 Georgia,serif;color:#b9b9af;animation:door-breathe 4s ease-in-out infinite}
 @keyframes door-breathe{0%,100%{opacity:.45;text-shadow:none}50%{opacity:1;text-shadow:0 0 10px #ffffff66}}
 body.quiet .reveal-end .hidden-door{animation:none;opacity:.8}
+body[data-page="descenso"] footer>span:first-child,body[data-page="estatua"] footer>span:first-child{background:#000000d9;padding:3px 8px;color:#8f8f87}
