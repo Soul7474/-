@@ -167,8 +167,8 @@ function showVision(name) {
   $('#document-body').replaceChildren(image); openDialog($('#document-dialog'));
   registerGIFs($('#document-body'));
 }
-const runeTitles = { inicio: 'ᚢᛗᛒᚱᚨᛚ', interior: 'ᛞᛖᚾᛏᚱᛟ', archivo: 'ᚱᛖᛊᛏᛟᛊ', fragmentos: 'ᚠᚱᚨᚷᛗᛖᚾᛏᛟᛊ', transmisiones: 'ᚹᛟᚲᛖᛊ', visitantes: 'ᚺᚢᛖᛚᛚᚨᛊ', subsuelo: 'ᛞᛖᛒᚨᛃᛟ', descenso: 'ᚨᛒᚨᛃᛟ', estatua: 'ᛖᛊᛏᚨᛏᚢᚨ', control: 'ᛊᚨᛚᚨ᛫ᚲᛖᚱᛟ' };
-const viewNames = ['inicio', 'interior', 'archivo', 'fragmentos', 'transmisiones', 'visitantes', 'subsuelo', 'descenso', 'estatua', 'control'];
+const runeTitles = { inicio: 'ᚢᛗᛒᚱᚨᛚ', interior: 'ᛞᛖᚾᛏᚱᛟ', archivo: 'ᚱᛖᛊᛏᛟᛊ', fragmentos: 'ᚠᚱᚨᚷᛗᛖᚾᛏᛟᛊ', transmisiones: 'ᚹᛟᚲᛖᛊ', visitantes: 'ᚺᚢᛖᛚᛚᚨᛊ', subsuelo: 'ᛞᛖᛒᚨᛃᛟ', descenso: 'ᚨᛒᚨᛃᛟ', estatua: 'ᛖᛊᛏᚨᛏᚢᚨ', control: 'ᛊᚨᛚᚨ᛫ᚲᛖᚱᛟ', pozo: 'ᛈᛟᛉᛟ', habitacion: 'ᚺᚨᛒᛁᛏᚨᚲᛁᛟᚾ', ellos: 'ᛖᛚᛚᛟᛊ', espejo: 'ᛖᛊᛈᛖᛃᛟ', nadie: 'ᚾᚨᛞᛁᛖ', volcado: 'ᚹᛟᛚᚲᚨᛞᛟ' };
+const viewNames = ['inicio', 'interior', 'archivo', 'fragmentos', 'transmisiones', 'visitantes', 'subsuelo', 'descenso', 'estatua', 'control', 'pozo', 'habitacion', 'ellos', 'espejo', 'nadie', 'volcado'];
 let currentView = '';
 function route() {
   const target = location.hash.slice(1) || 'inicio';
@@ -1099,6 +1099,10 @@ const consoleOrders = {
   1998: () => ['el año en que todo se detuvo. sigue detenido.'],
   vigilia: () => ['ya está despierto. no hace falta repetirlo.'],
   salir: () => { location.hash = 'archivo'; return []; },
+  volcado: () => { setTimeout(() => { location.hash = 'volcado'; }, 900); return ['abriendo estacion09.img…']; },
+  pozo: () => ['no hay pozo en los planos.', 'tampoco había pasillo B.'],
+  nadie: () => ['correcto.'],
+  ayuda2: () => ['no hay más ayuda.'],
   apagar: () => { consoleState.confirm = true; consolePrompt('¿APAGAR? (s/n)>'); return ['¿Apagar la estación? Alguien tendrá que quedarse dentro.']; }
 };
 function endStation() {

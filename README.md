@@ -172,6 +172,23 @@ Ninguno de estos efectos ocurre con «calma» ni con movimiento reducido, salvo 
 
 Verificación: `npm run test:vigilia` (Playwright + Chromium).
 
+## Salas ocultas (`ocultos.js`, `ocultos.css`)
+
+Seis salas que no salen en ningún plano. A cada una se llega por varios enlaces escondidos repartidos sin orden (y la consola del navegador muestra sus nombres en runas):
+
+| Sala | Qué es | Desde dónde se llega |
+| --- | --- | --- |
+| `#pozo` | Un pozo sin fondo que se genera mientras bajas: frases, runas, recortes, cosas sobre ti; un contador de profundidad. Las letras se van volviendo runas cuanto más bajas. A 333 m hay una salida a tu habitación; a 666 m todo se funde en negro con «AQUÍ» (fundido de 1,2 s, sin destello); a 999 m asoma la cara. | «↓» bajo la estatua |
+| `#habitacion` | Un informe sobre el visitante, escrito a máquina con lo que el navegador ya sabe: alias, primer acceso, hora y ciudad de su zona horaria, si hay luz, pantalla, si sostiene el móvil, idioma, modo oscuro, batería (si el navegador la da), núcleos; y en vivo, cuánto lleva y desde cuándo no se mueve. Una cámara «CAM_10 · TU HABITACIÓN». **No se envía nada.** | «⌗» en el suelo del interior; «tú» en la 404; el pozo |
+| `#ellos` | Lo que dejaron los que entraron antes, de 1998 a hoy, torcido y desordenado: tachones, censura, runas, entradas vacías, alguien de tu ciudad hace tres días, «hay uno nuevo» hace siete minutos… y `sin_remitente` escribiendo en directo. | «ver a los demás» en el libro de visitas; el pozo |
+| `#espejo` | Todo al revés. Una cara que se mueve al contrario que tu puntero, y el cursor fantasma, también en espejo. | La línea invertida del descenso; «mírate» en la habitación |
+| `#nadie` | Una página blanca de Times New Roman (entra con un fundido, sin destello): «no hay nadie aquí.» · «salvo tú.» · «no mires hacia abajo.». Muy abajo, algo. | El «©» del pie; «nadie» en el espejo y en la 404 |
+| `#volcado` | El volcado hexadecimal sin fin de `estacion09.img`, con palabras escondidas entre los bytes (SÁCAME, TE VEO, tu alias, lo que escribiste) y, tras un sector dañado, runas. | «nombre» en *fragmentos*; la orden `volcado` en la consola de la sala 0 |
+
+**Desorden.** El archivo cambia de orden cada vez que entras, y en cada sala algunos elementos quedan un poco torcidos y desplazados, distintos cada vez. A veces (como mucho dos por sesión, nunca en el primer minuto) la flecha de volver te lleva a una sala oculta: «ese no era el camino.».
+
+Verificación: `npm run test:ocultos`.
+
 ## El último turno
 
 La historia continúa la del operador 09, que dejó de escribir a las 03:33 con una «[ENTRADA BORRADA]». El archivo, la estatua, el libro de visitas y la cámara del pasillo B forman una cadena de acertijos que lleva a una sala nueva:

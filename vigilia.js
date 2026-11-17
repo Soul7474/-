@@ -263,7 +263,8 @@
   let nextWander = performance.now() + 45000;
   (function follow() {
     requestAnimationFrame(follow);
-    const allowed = finePointer.matches && pointer.seen && !calm() && !busy() && !document.hidden && (performance.now() - started > 25000 || shade.loose) && page() !== 'inicio';
+    const mirror = page() === 'espejo';
+    const allowed = finePointer.matches && pointer.seen && !calm() && !busy() && !document.hidden && (performance.now() - started > 25000 || shade.loose || mirror) && page() !== 'inicio' && page() !== 'nadie';
     ghost.classList.toggle('present', allowed);
     if (!allowed || shade.loose) return;
     const t = performance.now();
@@ -272,14 +273,14 @@
       if (links.length) { shade.target = links[Math.floor(Math.random() * links.length)]; shade.until = t + 3200; }
       nextWander = t + 40000 + Math.random() * 40000;
     }
-    let tx = pointer.x, ty = pointer.y, rate = .035;
+    let tx = mirror ? innerWidth - pointer.x : pointer.x, ty = pointer.y, rate = mirror ? .12 : .035;
     if (shade.target) {
       const box = shade.target.getBoundingClientRect(); tx = box.left + box.width / 2; ty = box.top + box.height / 2; rate = .05;
       if (t > shade.until || !shade.target.isConnected) shade.target = null;
     } else {
       // It stops a little short of you, never on top.
       const dx = tx - shade.x, dy = ty - shade.y, d = Math.hypot(dx, dy);
-      if (d < 46) { tx = shade.x; ty = shade.y; }
+      if (d < 46 && !mirror) { tx = shade.x; ty = shade.y; }
     }
     shade.x += (tx - shade.x) * rate; shade.y += (ty - shade.y) * rate;
     ghost.style.translate = `${shade.x}px ${shade.y}px`;
@@ -473,4 +474,7 @@
       nextWord();
     }, 35000 + Math.random() * 45000);
   })();
+
+  // Other parts of the station can whisper too.
+  window.EstacionVigilia = Object.freeze({ say: (text, key = null, urgent = false) => say(text, key, { urgent }) });
 })();
