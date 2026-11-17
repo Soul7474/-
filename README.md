@@ -56,7 +56,7 @@ No utiliza personajes, ilustraciones ni portadas de las referencias. El collage 
 
 ## Imágenes aportadas
 
-Los 16 originales de `images/` se conservan intactos (el ojo en la oscuridad `71f43ece…`, de 480 px y 2 KB, se retiró por resolución; su lugar en las apariciones lo ocupa la cara en la oscuridad `08fe20c9…`). La dirección actual utiliza sus ojos, figuras alargadas, manos y multitudes. Los 12 primeros se pueden abrir desde **Fragmentos → vestigios**, sin mostrar sus nombres en la interfaz.
+Los 27 originales de `images/` (incluidas las 11 imágenes y GIF añadidos el 17/11) se conservan intactos (el ojo en la oscuridad `71f43ece…`, de 480 px y 2 KB, se retiró por resolución; su lugar en las apariciones lo ocupa la cara en la oscuridad `08fe20c9…`). La dirección actual utiliza sus ojos, figuras alargadas, manos y multitudes. Los 12 primeros se pueden abrir desde **Fragmentos → vestigios**, sin mostrar sus nombres en la interfaz.
 
 Los cuatro últimos se aportaron para el ser de la puerta:
 
@@ -198,6 +198,14 @@ Verificación: `npm run test:ocultos`.
 - **Sonido grave en todos los sustos.** Todos los sustos (los gritos, las apariciones, CAM_10 y el apagón del pozo) suenan aunque no se haya activado el sonido ambiente: el primer toque o tecla desbloquea el audio en silencio. El sonido se sintetiza en el momento: un subgrave que cae de 62 a 21 Hz; un acorde disonante en lo más bajo del teclado (mi, fa, la#, si) saturado para que se oiga en altavoces pequeños; un golpe sordo; un gemido lejano de formantes que baja; y la cola de una sala oscura (reverberación generada). Pasa por un limitador para no saturar. Las apariciones usan una versión más corta y suave. «Calma» y el movimiento reducido siguen desactivando los sustos.
 
 Verificación: `npm run test:ocultos` incluye que el audio queda desbloqueado tras el primer toque con el ambiente apagado.
+
+### Imágenes del 17/11
+
+- **Caras de los sustos.** Cada tipo de susto elige una cara al azar entre varias y nunca repite la anterior: *dientes* (grito original, la sonrisa en la oscuridad `b3ea…`, la máscara blanca `ed97…`), *cara* (la cara de la puerta, el fantasma `92c3…`, el maniquí `4777…`) y *pasillo* (la figura del pasillo, la mueca `ac4b…`). Estas imágenes no aparecen sueltas en ninguna otra parte, para que no se pierda la sorpresa.
+- **Sustos nuevos.** Cuando `sin_remitente` deja de escribir en *ellos*, a los 4,5 s; tras 32 s mirando el *espejo*; y a 1500 m de profundidad en el *pozo*. Cada uno ocurre una vez por sesión.
+- **GIF.** La máscara que sonríe despacio (`f7d0…`) es ahora la cara que asoma en la esquina cuando te quedas quieto; la calavera de ojos inquietos (`d1ce…`) está a 999 m en el pozo; la cara oscura (`kamluve-kam.gif`) es el reflejo del espejo. En cada sala, una de cada cuatro veces no hay ningún GIF suelto; las demás veces hay uno (de los ligeros: `d1ce…`, `kamluve`, `giphy (5)`, `giphy (6)`, `giphy.gif`).
+- **Interior.** La polilla de ojos (`2b44…`) flota sobre la figura; la criatura agachada (`1fcd…`) aparece en una esquina distinta cada vez que entras, y a veces no está.
+- **Apariciones y fotos sueltas.** La polilla, la criatura y la cara borrosa (`b90c…`) se suman a las apariciones. Los recortes y las caras oscuras se reparten entre las fotos sueltas, el pozo y los mensajes de *ellos*, como adjuntos.
 
 ## El último turno
 

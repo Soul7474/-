@@ -22,9 +22,13 @@
     'images/6ae30bc87f2537c40cdb09d3b63bc07f.jpg', 'images/8ea51e04dca5ab2b5ab2a49c5aedab1c.jpg', 'images/8f0201d49a7c7816a5ed7256f6f4bee1.jpg',
     'images/91bcc74e941fa720f84af443207553f6.jpg', 'images/bdd5c1dd86d84a0fc78f47a880610902.jpg', 'images/ce8ad4bddf1ece13035ca941dcff674f.jpg',
     'assets/cutouts/revelation.png', 'assets/cutouts/sewn-eye.png', 'assets/cutouts/presence-hand.png', 'assets/cutouts/sentinel.png',
+    'images/1fcd456cf85d8e9552e51348c9b2329f-Photoroom.png', 'images/2b44b4f573b1804269248319d29d2d82-Photoroom.png', 'images/47777b90c8030217e6dab7591869335a-Photoroom.png',
+    'images/b90c6e0aedd2ea5ed4e573dea625b538-Photoroom.png', 'images/92c3c0a262c17ce734e0ce3ea7b85657.jpg', 'images/ac4bdf9ff2c705b72486c6131bc5c492.jpg',
     'assets/gif-stills/0.png', 'assets/gif-stills/1.png', 'assets/gif-stills/2.png', 'assets/gif-stills/3.png', 'assets/gif-stills/4.png', 'assets/gif-stills/5.png', 'assets/gif-stills/6.png'
   ];
   const quiet = new Set(['inicio', 'nadie']);
+  // Moving pictures: at most one per room, so the page does not get heavy.
+  const moving = ['images/d1ceba2760062a42ff49068ffdbcfcca.gif', 'images/kamluve-kam.gif', 'gifs/giphy%20(5).gif', 'gifs/giphy%20(6).gif', 'gifs/giphy.gif'];
 
   const back = document.createElement('div'); back.className = 'caos-layer'; back.setAttribute('aria-hidden', 'true');
   const front = document.createElement('div'); front.className = 'caos-layer front'; front.setAttribute('aria-hidden', 'true');
@@ -32,7 +36,7 @@
 
   function shot(layer, options = {}) {
     const image = document.createElement('img'); image.alt = ''; image.decoding = 'async'; image.loading = 'lazy';
-    image.src = pick(pool);
+    image.src = options.src || pick(pool);
     image.className = `caos-shot torn-${Math.floor(Math.random() * 5)}${Math.random() < .35 ? ' inv' : ''}${Math.random() < .2 ? ' soft' : ''}${Math.random() < .5 ? ' feather' : ''}`;
     const size = options.size ?? rand(wide() ? 9 : 22, wide() ? 34 : 62);
     Object.assign(image.style, {
@@ -54,6 +58,14 @@
     const interior = page() === 'interior';
     const count = interior ? 3 : wide() ? 9 : 6;
     for (let i = 0; i < count; i++) shot(back, interior ? { opacity: rand(.06, .16) } : {});
+    if (!interior && Math.random() < .75) shot(back, { src: pick(moving), opacity: rand(.18, .4), size: rand(wide() ? 18 : 40, wide() ? 36 : 70) });
+    // In the interior, the crouching thing is somewhere else every time. Sometimes it is not there.
+    const crouch = $('.chamber-crouch');
+    if (crouch) {
+      crouch.hidden = !interior || Math.random() < .45;
+      const corner = pick([{ left: '3%', bottom: '4%' }, { right: '4%', bottom: '3%' }, { left: '38%', bottom: '1%' }, { right: '30%', top: '58%' }]);
+      Object.assign(crouch.style, { left: 'auto', right: 'auto', top: 'auto', bottom: 'auto', ...corner, transform: Math.random() < .5 ? 'scaleX(-1)' : 'none' });
+    }
     // One or two in front of everything, barely there.
     for (let i = 0; i < (wide() ? 2 : 1); i++) shot(front, { opacity: rand(.05, .11), size: rand(30, 70) });
   }

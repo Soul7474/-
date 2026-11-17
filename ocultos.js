@@ -49,7 +49,7 @@
     'no te pares', 'para', 'ya casi', 'mentira', 'las letras se gastan aquí abajo', '¿quién te dijo que esto era una web?', 'no grites. el eco tarda en volver.',
     'ESTO NO ES UN JUEGO', 'te hemos guardado sitio', 'aquí abajo nadie firma', 'el busto también bajó', 'sube sube sube sube sube sube sube'
   ];
-  const pozoImages = ['assets/cutouts/sewn-eye.png', 'assets/cutouts/revelation.png', 'images/6ae30bc87f2537c40cdb09d3b63bc07f.jpg', 'images/91bcc74e941fa720f84af443207553f6.jpg', 'images/ce8ad4bddf1ece13035ca941dcff674f.jpg', 'images/4580f857040ef0339156318493389d7c.jpg', 'assets/cutouts/presence-hand.png'];
+  const pozoImages = ['assets/cutouts/sewn-eye.png', 'assets/cutouts/revelation.png', 'images/6ae30bc87f2537c40cdb09d3b63bc07f.jpg', 'images/91bcc74e941fa720f84af443207553f6.jpg', 'images/ce8ad4bddf1ece13035ca941dcff674f.jpg', 'images/4580f857040ef0339156318493389d7c.jpg', 'assets/cutouts/presence-hand.png', 'images/1fcd456cf85d8e9552e51348c9b2329f-Photoroom.png', 'images/2b44b4f573b1804269248319d29d2d82-Photoroom.png', 'images/47777b90c8030217e6dab7591869335a-Photoroom.png', 'images/b90c6e0aedd2ea5ed4e573dea625b538-Photoroom.png', 'images/92c3c0a262c17ce734e0ce3ea7b85657.jpg', 'images/ac4bdf9ff2c705b72486c6131bc5c492.jpg'];
   const fonts = ["'Courier New',monospace", "'Times New Roman',serif", 'Georgia,serif', 'Arial,sans-serif'];
   const pozoState = { placed333: false, placed999: false, black: false };
   function personalLine() {
@@ -74,7 +74,7 @@
     }
     if (!pozoState.placed999 && generated > 999) {
       pozoState.placed999 = true; block.classList.add('pozo-face');
-      const face = el('img'); face.src = 'assets/cutouts/presence-face.png'; face.alt = '';
+      const face = el('img'); face.src = 'images/d1ceba2760062a42ff49068ffdbcfcca.gif'; face.alt = '';
       const link = el('a', 'los demás también bajaron', 'hidden-door'); link.href = '#ellos';
       const note = el('p'); note.append(link, '.');
       block.append(face, note); block.style.marginLeft = '10%'; shaft.append(block); return;
@@ -110,6 +110,7 @@
     const depth = Math.max(0, Math.floor(scrollY / METRE));
     depthLabel.textContent = `-${depth} m`;
     if (depth >= 666 && !pozoState.black) { pozoState.black = true; blackout(); }
+    if (depth >= 1500) window.EstacionInterior?.scare?.('cara', { key: 'pozo' });
   }
   function blackout() {
     say('aquí.', null, true);
@@ -189,13 +190,13 @@
       { alias: 'kain_', date: new Date('1998-11-18T02:14:00'), text: 'entré por un enlace de un foro de radioaficionados. la cámara del pasillo B se ha movido cuando he escrito esto.' },
       { alias: 'm.r.', date: new Date('1999-02-02T03:31:00'), text: '¿alguien sabe qué es la sala 0? el ordenador se me ha reiniciado dos veces' },
       { alias: 'm.r.', date: new Date('1999-02-02T03:33:00'), text: 'ya no hace falta que contestéis', cls: 'faded' },
-      { alias: 'lucia_88', date: new Date('2001-06-30T23:58:00'), text: 'la estatua no estaba de cara a la pared. estaba de cara a mí.' },
+      { alias: 'lucia_88', date: new Date('2001-06-30T23:58:00'), text: 'la estatua no estaba de cara a la pared. estaba de cara a mí.', img: 'images/92c3c0a262c17ce734e0ce3ea7b85657.jpg' },
       { alias: '████████', date: new Date('2003-10-13T04:02:00'), text: '███ ██ ████ █████ no ██████ ████ ██ pasillo ███ ████ ██ ████', cls: 'redacted' },
       { alias: 'ANONIMO', date: new Date('2004-01-01T00:40:00'), text: 'BAJÉ AL ', link: ['POZO', '#pozo'], after: '. 400 METROS. DEJÉ UN ZAPATO PARA SABER VOLVER' },
-      { alias: 'ANONIMO', date: new Date('2004-01-01T05:12:00'), text: 'no está el zapato' },
+      { alias: 'ANONIMO', date: new Date('2004-01-01T05:12:00'), text: 'no está el zapato', img: 'images/ac4bdf9ff2c705b72486c6131bc5c492.jpg' },
       { alias: 'dnz', date: new Date('2007-08-19T01:20:00'), text: 'si cierras la pestaña, el título sigue cambiando. lo he visto en el portátil de mi hermana. ella nunca ha entrado.' },
-      { alias: 'sinnombre', date: new Date('2009-12-12T03:03:00'), text: 'ᚾᛟ᛫ᛚᛖᚨᛊ᛫ᛖᛊᛏᛟ', cls: 'runic' },
-      { alias: 'papá de iker', date: new Date('2011-03-03T22:10:00'), text: 'mi hijo dice que en esta web hay una señora que le habla. he entrado yo y no he visto nada. ¿por qué sale mi nombre en el registro?' },
+      { alias: 'sinnombre', date: new Date('2009-12-12T03:03:00'), text: 'ᚾᛟ᛫ᛚᛖᚨᛊ᛫ᛖᛊᛏᛟ', cls: 'runic', img: 'images/2b44b4f573b1804269248319d29d2d82-Photoroom.png' },
+      { alias: 'papá de iker', date: new Date('2011-03-03T22:10:00'), text: 'mi hijo dice que en esta web hay una señora que le habla. he entrado yo y no he visto nada. ¿por qué sale mi nombre en el registro?', img: 'images/b90c6e0aedd2ea5ed4e573dea625b538-Photoroom.png' },
       { alias: 'test', date: new Date('2013-05-21T12:00:00'), text: 'test' },
       { alias: 'test', date: new Date('2013-05-21T12:00:01'), text: 'test' },
       { alias: 'test', date: new Date('2013-05-21T12:00:02'), text: 'por qué no puedo borrar esto', cls: 'struck' },
@@ -217,6 +218,7 @@
         const body = el('p', entry.text);
         if (entry.link) { const link = el('a', entry.link[0], 'hidden-door'); link.href = entry.link[1]; body.append(link, entry.after || ''); }
         article.append(head, body);
+        if (entry.img) { const shot = el('img', undefined, 'otro-adjunto'); shot.src = entry.img; shot.alt = ''; shot.loading = 'lazy'; shot.style.rotate = rand(-6, 6).toFixed(1) + 'deg'; article.append(shot); }
         Object.assign(article.style, { rotate: rand(-2.6, 2.6).toFixed(1) + 'deg', marginLeft: Math.round(rand(0, 26)) + '%', fontFamily: pick(fonts), fontSize: Math.round(rand(11, 15)) + 'px', width: Math.round(rand(55, 92)) + '%' });
         wall.append(article);
       }
@@ -227,7 +229,7 @@
       let line = 0, char = 0;
       later(function type() {
         if (page() !== 'ellos') return;
-        if (line >= lines.length) { live.classList.add('stopped'); return; }
+        if (line >= lines.length) { live.classList.add('stopped'); later(() => { if (page() === 'ellos') window.EstacionInterior?.scare?.('dientes', { key: 'ellos' }); }, 4500); return; }
         body.textContent += lines[line][char++];
         if (char >= lines[line].length) { line++; char = 0; later(type, 2600); } else later(type, rand(60, 220));
       }, 3500);
@@ -245,6 +247,7 @@
       document.querySelectorAll('.espejo-line.late').forEach(line => line.classList.remove('shown'));
       document.querySelectorAll('.espejo-line.late').forEach((line, i) => later(() => line.classList.add('shown'), calm() ? 0 : 4500 + i * 3800));
       later(() => say('¿has levantado la mano?', 'espejo-1'), 7000);
+      later(() => { if (page() === 'espejo') window.EstacionInterior?.scare?.('pasillo', { key: 'espejo' }); }, 32000);
       cancelAnimationFrame(mirrorFrame);
       (function follow() {
         if (page() !== 'espejo') return;

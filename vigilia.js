@@ -304,7 +304,7 @@
   // a face comes out of the corner. The moment you move, it is gone. Never a flash: the dark takes
   // eight seconds to arrive and leaves in under half a second. Not with calma or reduced motion.
   const creep = document.createElement('div'); creep.className = 'creep'; creep.setAttribute('aria-hidden', 'true');
-  const creepFace = document.createElement('img'); creepFace.src = 'assets/cutouts/presence-face.png'; creepFace.alt = ''; creep.append(creepFace);
+  const creepFace = document.createElement('img'); creepFace.src = 'images/f7d0bceda1da8c718444f52a0291cdf3.gif'; creepFace.alt = ''; creep.append(creepFace);
   document.body.append(creep);
   let creeping = false; let lastCreep = -Infinity; let creepPeak = 0;
   function releaseCreep() {

@@ -92,11 +92,11 @@ test('HEAD returns resource headers without a body', async () => {
 
 test('serves supplied originals unchanged and transparent cutout PNGs', async () => {
   const originals = await readdir(new URL('../images/', import.meta.url));
-  assert.equal(originals.length, 16);
+  assert.equal(originals.length, 27);
   for (const name of originals) {
     const response = await fetch(base + '/images/' + name);
     assert.equal(response.status, 200);
-    assert.equal(response.headers.get('content-type'), name.endsWith('.png') ? 'image/png' : 'image/jpeg');
+    assert.equal(response.headers.get('content-type'), name.endsWith('.png') ? 'image/png' : name.endsWith('.gif') ? 'image/gif' : 'image/jpeg');
     assert.deepEqual(Buffer.from(await response.arrayBuffer()), await readFile(new URL('../images/' + name, import.meta.url)));
   }
   for (const name of ['sentinel', 'revelation', 'sewn-eye', 'presence-face', 'presence-hand']) {

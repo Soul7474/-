@@ -53,3 +53,26 @@ body[data-page="nadie"] .caos-layer{display:none}
 
 @media(prefers-reduced-motion:reduce){.caos-shot.moving{animation:none}}
 body[data-page="interior"] .sidebar{opacity:1!important}
+
+/* ---- Caras nuevas de los sustos ---- */
+.screamer[data-face="sonrisa"] img{object-fit:cover;object-position:50% 46%;filter:grayscale(1) contrast(1.7) brightness(1.9)}
+.screamer[data-face="mascara"] img{object-fit:cover;object-position:42% 30%;filter:grayscale(1) contrast(1.4) brightness(1.1)}
+.screamer[data-face="fantasma"] img{object-fit:cover;object-position:50% 45%;filter:grayscale(1) contrast(1.8) brightness(2.1)}
+.screamer[data-face="maniqui"] img{object-fit:contain;object-position:50% 60%;filter:grayscale(1) contrast(1.5) brightness(1.15)}
+.screamer[data-face="mueca"] img{object-fit:cover;object-position:50% 30%;filter:grayscale(1) contrast(1.7) brightness(2)}
+
+/* ---- Interior: la polilla y lo que se agacha ---- */
+.chamber-moth{position:absolute;left:50%;top:3%;z-index:1;width:clamp(120px,15vw,250px);height:auto;translate:-50% 0;opacity:.42;filter:grayscale(1) contrast(1.2);pointer-events:none;animation:moth-float 11s ease-in-out infinite alternate}
+@keyframes moth-float{to{translate:-46% 10px;rotate:2deg}}
+.chamber-crouch{position:absolute;z-index:1;width:clamp(90px,11vw,170px);height:auto;opacity:.3;filter:grayscale(1) brightness(.8) contrast(1.2);pointer-events:none}
+.chamber-crouch[hidden]{display:none}
+@media(max-width:540px){.chamber-moth{top:9%}}
+@media(prefers-reduced-motion:reduce){.chamber-moth{animation:none}}
+
+/* ---- Adjuntos en «ellos» ---- */
+.otro-adjunto{display:block;width:min(170px,55%);height:auto;margin:10px 0 2px auto;filter:grayscale(1) contrast(1.4) brightness(1.3);-webkit-mask-image:radial-gradient(ellipse,#000 45%,transparent 75%);mask-image:radial-gradient(ellipse,#000 45%,transparent 75%)}
+
+/* ---- Caras en movimiento ---- */
+.creep img{width:min(520px,80vw)!important;filter:grayscale(1) brightness(1) contrast(1.3)!important}
+.espejo-face{width:min(460px,86vw)!important;filter:grayscale(1) contrast(1.35) brightness(3.4)!important;opacity:.7!important}
+.pozo-face img{filter:grayscale(1) contrast(1.5) brightness(1.8)!important;opacity:.6!important}

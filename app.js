@@ -361,7 +361,10 @@ let omenIndex = 0;
 const omenImages = [
   { src: 'images/0cef067d6389316753e85350caa85388.jpg', ink: false },
   { src: 'images/91bcc74e941fa720f84af443207553f6.jpg', ink: true },
-  { src: 'images/08fe20c9273df37c67b19fc5ad0369e8.png', ink: false }
+  { src: 'images/08fe20c9273df37c67b19fc5ad0369e8.png', ink: false },
+  { src: 'images/2b44b4f573b1804269248319d29d2d82-Photoroom.png', ink: false },
+  { src: 'images/1fcd456cf85d8e9552e51348c9b2329f-Photoroom.png', ink: false },
+  { src: 'images/b90c6e0aedd2ea5ed4e573dea625b538-Photoroom.png', ink: false }
 ];
 // Warm the three small originals so the first apparition is not an empty frame.
 for (const source of omenImages) { const image = new Image(); image.src = source.src; }
@@ -1053,7 +1056,17 @@ function labelStatue(frame) {
   const text = away(24) <= 3 ? 'de espaldas' : away(0) <= 2 ? 'de frente' : 'girando';
   if (text !== statueState) { statueState = text; const label = $('#statue-state'); if (label) label.textContent = text; }
 }
-const scareImages = { dientes: 'images/c2f15d46dadaea0d78573a3436c1f21d.png', cara: 'assets/cutouts/presence-face.png', pasillo: 'images/2483130d0df7e07e5d073b244c4f0aad.png' };
+// Each kind of scare has several faces; one is chosen at random, never the same twice in a row.
+const scareFaces = {
+  dientes: [{ id: 'dientes', src: 'images/c2f15d46dadaea0d78573a3436c1f21d.png' }, { id: 'sonrisa', src: 'images/b3ea8e3d92facb1648067a119a1e7fdb.jpg' }, { id: 'mascara', src: 'images/ed9797711e7f9321d182ac28af84d5fc-Photoroom.png' }],
+  cara: [{ id: 'cara', src: 'assets/cutouts/presence-face.png' }, { id: 'fantasma', src: 'images/92c3c0a262c17ce734e0ce3ea7b85657.jpg' }, { id: 'maniqui', src: 'images/47777b90c8030217e6dab7591869335a-Photoroom.png' }],
+  pasillo: [{ id: 'pasillo', src: 'images/2483130d0df7e07e5d073b244c4f0aad.png' }, { id: 'mueca', src: 'images/ac4bdf9ff2c705b72486c6131bc5c492.jpg' }]
+};
+let lastFace = '';
+function scareFace(kind) {
+  const faces = (scareFaces[kind] || scareFaces.dientes).filter(face => face.id !== lastFace);
+  const face = faces[Math.floor(Math.random() * faces.length)]; lastFace = face.id; return face;
+}
 const pageStart = performance.now();
 let lastScare = -Infinity;
 let scareBusy = false;
@@ -1077,13 +1090,13 @@ function scare(kind = 'dientes', { key = null, delay = 0, force = false } = {}) 
   const allowed = force ? omensEnabled && !motionQuery.matches && !document.hidden && !scareBusy : scareAllowed();
   if (!allowed || (key && !scareOnce(key))) return false;
   scareBusy = true; lastScare = performance.now();
-  if (!scaresWarm) { scaresWarm = true; for (const src of Object.values(scareImages)) { const image = new Image(); image.src = src; } }
+  if (!scaresWarm) { scaresWarm = true; for (const face of Object.values(scareFaces).flat()) { const image = new Image(); image.src = face.src; } }
   duckAmbient(delay + 1600);
   setTimeout(() => {
     if (!omensEnabled || motionQuery.matches || document.hidden) { scareBusy = false; return; }
     dismissOmen();
     const screamer = $('#screamer'); const image = screamer.querySelector('img'); const shake = screamer.querySelector('.screamer-shake');
-    screamer.dataset.kind = kind; image.src = scareImages[kind] || scareImages.dientes;
+    const face = scareFace(kind); screamer.dataset.kind = kind; screamer.dataset.face = face.id; image.src = face.src;
     screamer.hidden = false;
     if (typeof screamer.showPopover === 'function') screamer.showPopover(); else screamer.removeAttribute('popover');
     scareSound();
@@ -1237,6 +1250,7 @@ window.EstacionInterior = Object.freeze({
   sound: () => ambient && audio?.state === 'running' ? audio : null,
   apparition: () => showOmen(true),
   fear: strength => fearSound(strength),
+  scare: (kind, options) => scare(kind, options),
   inspect: showVision,
   subsoil: () => openGate(2),
 });
