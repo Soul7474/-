@@ -22,12 +22,16 @@ const { existsSync } = require('node:fs');
     await page.locator('#listen-no').click();
     assert.equal((await page.locator('#forbidden-whisper').textContent()).trim(), 'no.');
     await page.locator('#listen-cover').waitFor({ state: 'hidden', timeout: 5000 });
-    assert.match(await page.title(), /ESTACIÓN 09/);
+    assert.match(await page.title(), /^[ᚠ-ᛪ᛫]+$/);
+    // The choice asked for full screen; there is no menu and no site name, only a way back.
+    assert.equal(await page.evaluate(() => Boolean(document.fullscreenElement)), true, 'full screen after choosing');
+    await page.evaluate(() => document.exitFullscreen());
+    assert.equal(await page.locator('.main-nav').isVisible(), false);
 
     // The favicon is a drawn eye; the first whisper starts in runes and ends in Spanish.
     assert.match(await page.locator('link[rel="icon"]').getAttribute('href'), /^data:image\/png/);
     await page.waitForFunction(() => /[ᚠ-ᛪ]/.test(document.querySelector('.susurro').textContent), null, { timeout: 15000 });
-    await page.waitForFunction(() => /\d\d:\d\d\./.test(document.querySelector('.susurro').textContent), null, { timeout: 8000 });
+    await page.waitForFunction(() => /^[^ᚠ-ᛪ]{4,}$/.test(document.querySelector(".susurro").textContent), null, { timeout: 8000 });
 
     // Your own visits are in the archive, in a log that says you are reading it.
     await page.evaluate(() => { localStorage.setItem('estacion09-v1', JSON.stringify({ level: 2, guests: [] })); localStorage.setItem('estacion09-door-scene-v1', 'seen'); });
@@ -79,11 +83,17 @@ const { existsSync } = require('node:fs');
     assert.equal(await timed.locator('.cam-monitor').getAttribute('data-tape'), 'CAM_09 · PASILLO B · EN DIRECTO');
     await timed.clock.runFor(16000);
     assert.match(await timed.locator('.creep').getAttribute('class'), /closing/);
-    assert.match(await timed.locator('.susurro').textContent(), /[lᛚ][uᚢ]c[íᛁ][aᚨ]/);
+    assert.match(await timed.locator('.susurro').textContent(), /[lᛚ][uᚢ][cᚲ][íᛁ][aᚨ]/);
     await timed.mouse.move(300, 300); await timed.clock.runFor(300);
     assert.doesNotMatch(await timed.locator('.creep').getAttribute('class'), /closing/);
     await timed.clock.runFor(45000);
     assert.equal(await timed.locator('#footer-status').textContent(), '2 PRESENCIAS EN ESTE NODO');
+    // Your cursor disappears for a few seconds and comes back.
+    await timed.evaluate(() => new MutationObserver(() => { if (document.body.classList.contains('cursor-lost')) window.cursorWasLost = true; }).observe(document.body, { attributes: true, attributeFilter: ['class'] }));
+    for (let i = 0; i < 25 && !(await timed.evaluate(() => window.cursorWasLost === true)); i++) { await timed.mouse.move(400 + (i % 7) * 20, 300); await timed.clock.runFor(10000); }
+    assert.ok(await timed.evaluate(() => window.cursorWasLost === true), 'the cursor is lost at some point');
+    await timed.clock.runFor(8000);
+    assert.equal(await timed.evaluate(() => document.body.classList.contains('cursor-lost')), false);
     await timed.goto(base + '/#visitantes');
     await timed.fill('#guest-message', 'he oído algo detrás de la puerta');
     await timed.locator('#guest-form [type="submit"]').click();
@@ -91,7 +101,7 @@ const { existsSync } = require('node:fs');
     assert.match(await timed.locator('.guest-reply').last().textContent(), /he oído algo detrás de la puerta.*Lo leí antes de que lo enviaras/);
 
     assert.deepEqual(errors, []);
-    console.log('PASS: 403 cover and refusal, runic whispers, drawn favicon, visit log, rune key, rewritten document, archive title, trace survives reset, reduced motion, CAM_10, the dark that comes when you keep still, two presences, guestbook reply, your alias.');
+    console.log('PASS: 403 cover and refusal, runic whispers, drawn favicon, visit log, rune key, rewritten document, archive title, trace survives reset, reduced motion, CAM_10, the dark that comes when you keep still, two presences, guestbook reply, your alias, full screen, no menu, lost cursor.');
   } finally {
     await browser?.close(); server.closeAllConnections(); server.close();
   }

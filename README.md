@@ -56,7 +56,7 @@ No utiliza personajes, ilustraciones ni portadas de las referencias. El collage 
 
 ## Imágenes aportadas
 
-Los 17 originales de `images/` se conservan intactos. La dirección actual utiliza sus ojos, figuras alargadas, manos y multitudes. Los 13 primeros se pueden abrir desde **Fragmentos → vestigios**, sin mostrar sus nombres en la interfaz.
+Los 16 originales de `images/` se conservan intactos (el ojo en la oscuridad `71f43ece…`, de 480 px y 2 KB, se retiró por resolución; su lugar en las apariciones lo ocupa la cara en la oscuridad `08fe20c9…`). La dirección actual utiliza sus ojos, figuras alargadas, manos y multitudes. Los 12 primeros se pueden abrir desde **Fragmentos → vestigios**, sin mostrar sus nombres en la interfaz.
 
 Los cuatro últimos se aportaron para el ser de la puerta:
 
@@ -159,6 +159,16 @@ Rama `intruso`. La idea: esta web no es para ti. Está hecha para otros (notas i
 - **Consola del navegador.** Quien la abra encuentra un mensaje.
 - **Menos protección a la vista.** La navegación son rutas (`../umbral`, `dentro/`, `restos/`, `fragmentos/`, `voces/`, `huellas/`, `debajo/`). «calma» es un ◌, «saltar» es «›» y «Olvidar esta visita» es «borrar rastro». Todo mantiene sus etiquetas accesibles y su funcionamiento.
 - **Textos.** El subsuelo dice «No eras *tú.*». La estatua tiene una etiqueta de inventario cuyo estado cambia mientras gira («de espaldas», «de frente», «girando»).
+
+### Perdido
+
+- **Sin menú y sin nombre.** Ya no hay barra de navegación ni el título «estación_09»: solo quedan la súplica que cambia de idioma y «Crees que eres invisible.». Se avanza por las puertas del interior (restos, voces, huellas, debajo) y se vuelve con un «↶» discreto al final de cada sala. A *fragmentos* se llega desde el pie del archivo («quedan fragmentos.») o desde la 404. El sonido es un pequeño control fijo arriba a la derecha (en móvil, solo ▥).
+- **La pestaña no dice dónde estás.** El título es el nombre de la sala en runas (ᚱᛖᛊᛏᛟᛊ, ᚹᛟᚲᛖᛊ…), y antes de que cargue nada, «403 Forbidden».
+- **Pantalla completa.** Al elegir en la portada 403, la web pide pantalla completa (los navegadores solo lo permiten tras un clic; el iPhone no lo admite y se queda como está). Si sales, «no hay salida por ahí.» y el siguiente clic te vuelve a meter, como mucho dos veces por sesión; a la tercera te deja: «vale. mira desde fuera, si eso te tranquiliza.».
+- **Tu cursor desaparece.** Con ratón, cada pocos minutos tu puntero se esconde unos 5 s y solo queda el otro cursor, más visible, moviéndose por su cuenta: «¿cuál de los dos eres tú?». Escape lo devuelve al instante. Cuando el otro cursor se posa en un enlace, lo «pulsa» (un anillo tenue).
+- **Palabras en el vacío.** De vez en cuando, una palabra enorme y casi invisible (DETRÁS, QUÉDATE, TE VEO…) aparece unos segundos detrás de todo.
+
+Ninguno de estos efectos ocurre con «calma» ni con movimiento reducido, salvo los títulos y el menú.
 
 Verificación: `npm run test:vigilia` (Playwright + Chromium).
 

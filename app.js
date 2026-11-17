@@ -167,6 +167,7 @@ function showVision(name) {
   $('#document-body').replaceChildren(image); openDialog($('#document-dialog'));
   registerGIFs($('#document-body'));
 }
+const runeTitles = { inicio: 'ᚢᛗᛒᚱᚨᛚ', interior: 'ᛞᛖᚾᛏᚱᛟ', archivo: 'ᚱᛖᛊᛏᛟᛊ', fragmentos: 'ᚠᚱᚨᚷᛗᛖᚾᛏᛟᛊ', transmisiones: 'ᚹᛟᚲᛖᛊ', visitantes: 'ᚺᚢᛖᛚᛚᚨᛊ', subsuelo: 'ᛞᛖᛒᚨᛃᛟ', descenso: 'ᚨᛒᚨᛃᛟ', estatua: 'ᛖᛊᛏᚨᛏᚢᚨ', control: 'ᛊᚨᛚᚨ᛫ᚲᛖᚱᛟ' };
 const viewNames = ['inicio', 'interior', 'archivo', 'fragmentos', 'transmisiones', 'visitantes', 'subsuelo', 'descenso', 'estatua', 'control'];
 let currentView = '';
 function route() {
@@ -188,7 +189,8 @@ function route() {
   document.querySelectorAll('[data-view]').forEach(link => { link.classList.toggle('active', link.dataset.view === name); if (link.dataset.view === name) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
   $('.restricted').classList.toggle('active', name === 'subsuelo');
   $('.masthead').hidden = name === 'interior';
-  document.title = `ESTACIÓN 09 — ${name === 'inicio' ? 'señal residual' : name}`;
+  // No site name in the tab: only where you are, in runes (abecedario.txt reads them).
+  document.title = runeTitles[name] || '᛫';
   if (currentView && currentView !== name) {
     const focusTarget = name === 'inicio' ? $('#portal-title') : $('#main');
     focusTarget.setAttribute('tabindex', '-1'); focusTarget.focus({ preventScroll: true });
@@ -283,7 +285,7 @@ let omenIndex = 0;
 const omenImages = [
   { src: 'images/0cef067d6389316753e85350caa85388.jpg', ink: false },
   { src: 'images/91bcc74e941fa720f84af443207553f6.jpg', ink: true },
-  { src: 'images/71f43ece8f68bf946b666118ed26dbb5.jpg', ink: false }
+  { src: 'images/08fe20c9273df37c67b19fc5ad0369e8.png', ink: false }
 ];
 // Warm the three small originals so the first apparition is not an empty frame.
 for (const source of omenImages) { const image = new Image(); image.src = source.src; }
@@ -1166,7 +1168,7 @@ function closeListen(withSound) {
   if (withSound && !ambient) $('#sound-toggle').click();
   const done = () => {
     cover.hidden = true; cover.classList.remove('leaving');
-    if (document.title === '403 Forbidden') document.title = listenTitle || 'ESTACIÓN 09 — señal residual';
+    if (document.title === '403 Forbidden') document.title = listenTitle || 'ᚢᛗᛒᚱᚨᛚ';
     $('#portal-title').setAttribute('tabindex', '-1'); $('#portal-title').focus({ preventScroll: true });
   };
   if (motionQuery.matches) { done(); return; }

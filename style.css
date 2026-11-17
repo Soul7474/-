@@ -299,7 +299,7 @@ body[data-page="descenso"] footer,.descent .return-threshold{position:relative;z
 .strip-2{background-image:url("assets/gif-stills/0.png");background-size:240% auto;background-position:47% 52%}
 .strip-3{background-image:url("images/08fe20c9273df37c67b19fc5ad0369e8.png");background-size:180% auto;background-position:18% 51%}
 .strip-4{background-image:url("assets/cutouts/sewn-eye.png");background-size:90% auto;background-position:50% 50%}
-.strip-5{background-image:url("images/71f43ece8f68bf946b666118ed26dbb5.jpg");background-size:120% auto;background-position:50% 50%}
+.strip-5{background-image:url("images/bdd5c1dd86d84a0fc78f47a880610902.jpg");background-size:150% auto;background-position:50% 48%;filter:invert(1) grayscale(1) contrast(1.3)}
 .strip-6{background-image:url("assets/cutouts/presence-face.png");background-size:160% auto;background-position:50% 35%;transform:scaleX(-1)}
 @keyframes descent-slip{0%,100%{translate:0 0}50%{translate:2px 0}}
 @keyframes descent-try{0%,100%{opacity:.45}50%{opacity:1}}

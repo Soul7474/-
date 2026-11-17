@@ -155,11 +155,11 @@
   let savedTitle = ''; let titleTimer = 0; let hiddenAt = 0; let returns = 0;
   // When you come back, one small thing you already read has changed. Only one, each time.
   const mutations = [
-    ['.header-message', 'Este lugar ya no existe. <span>¿Por qué has vuelto?</span>'],
-    ['.sidebar-note p', 'Ya no es la primera vez<br>que estás aquí.'],
-    ['.system-box small', 'quedas tú.'],
-    ['.sidebar-foot', 'hecho a mano, al otro lado de la red.<br>optimizado para ti.'],
+    ['#view-interior .return-threshold', '↶ ya no hay umbral'],
     ['.archive-foot', 'FIN DEL ÍNDICE RECUPERABLE · <span id="unlock-status">sabe que lo has leído</span>'],
+    ['#view-transmisiones .page-intro h1', '¿Hay alguien <em>contigo?</em>'],
+    ['#view-visitantes .page-intro h1', '¿Quién <em>eres?</em>'],
+    ['.bottom-note>span:last-child', 'NO ESTÁS EN NINGUNA CAPA'],
     ['.statue-note', 'INV. 1998-114 · busto · mármol · procedencia: —<br>estado: <span id="statue-state">esperando</span>']
   ];
   document.addEventListener('visibilitychange', () => {
@@ -258,14 +258,14 @@
   const ghost = document.createElement('span'); ghost.className = 'ghost-cursor'; ghost.setAttribute('aria-hidden', 'true');
   document.body.append(ghost);
   const pointer = { x: innerWidth / 2, y: innerHeight / 2, seen: false };
-  const shade = { x: innerWidth / 2, y: innerHeight + 40, target: null, until: 0 };
+  const shade = { x: innerWidth / 2, y: innerHeight + 40, target: null, until: 0, loose: null };
   addEventListener('pointermove', event => { if (event.pointerType === 'mouse') { pointer.x = event.clientX; pointer.y = event.clientY; pointer.seen = true; } }, { passive: true });
   let nextWander = performance.now() + 45000;
   (function follow() {
     requestAnimationFrame(follow);
-    const allowed = finePointer.matches && pointer.seen && !calm() && !busy() && !document.hidden && performance.now() - started > 25000 && page() !== 'inicio';
+    const allowed = finePointer.matches && pointer.seen && !calm() && !busy() && !document.hidden && (performance.now() - started > 25000 || shade.loose) && page() !== 'inicio';
     ghost.classList.toggle('present', allowed);
-    if (!allowed) return;
+    if (!allowed || shade.loose) return;
     const t = performance.now();
     if (t > nextWander && !shade.target) {
       const links = [...document.querySelectorAll('main a, main button, .main-nav a')].filter(node => { const box = node.getBoundingClientRect(); return box.width && box.top > 0 && box.bottom < innerHeight; });
@@ -392,4 +392,85 @@
       reply.scrollIntoView({ block: 'nearest', behavior: reduce.matches ? 'instant' : 'smooth' });
     }, 7000);
   }, true);
+
+  // ==== Perdido ======================================================================================
+
+  // Your cursor goes. Now and then, with a mouse, your own pointer disappears for a few seconds and
+  // only the other one stays on screen, moving by itself, a little brighter. Which one were you?
+  let cursorLostAt = performance.now() + 70000 + Math.random() * 40000;
+  let lostTimer = 0;
+  function loseCursor() {
+    if (calm() || busy() || document.hidden || !finePointer.matches || !pointer.seen || page() === 'inicio' || document.querySelector('dialog[open]')) { cursorLostAt = performance.now() + 15000; return; }
+    document.body.classList.add('cursor-lost'); ghost.classList.add('loose');
+    shade.target = null;
+    const drift = { x: Math.random() * innerWidth * .8 + innerWidth * .1, y: Math.random() * innerHeight * .7 + innerHeight * .15 };
+    shade.loose = drift;
+    say('¿cuál de los dos eres tú?', 'cursor-1', { urgent: true });
+    lostTimer = setTimeout(findCursor, 5200);
+  }
+  function findCursor() {
+    clearTimeout(lostTimer); shade.loose = null;
+    document.body.classList.remove('cursor-lost'); ghost.classList.remove('loose');
+    cursorLostAt = performance.now() + 150000 + Math.random() * 90000;
+  }
+  setInterval(() => { if (performance.now() > cursorLostAt && !document.body.classList.contains('cursor-lost')) loseCursor(); }, 1000);
+  addEventListener('keydown', event => { if (event.key === 'Escape') findCursor(); });
+  // While it is loose, the other cursor drifts to its own place instead of following you.
+  (function drift() {
+    requestAnimationFrame(drift);
+    if (!shade.loose) return;
+    shade.x += (shade.loose.x - shade.x) * .02; shade.y += (shade.loose.y - shade.y) * .02;
+    ghost.style.translate = `${shade.x}px ${shade.y}px`;
+  })();
+  // When it rests on a link, it presses it: a faint ring, nothing happens. Or nothing you can see.
+  let lastPress = null;
+  setInterval(() => {
+    if (!shade.target || shade.target === lastPress || calm()) return;
+    const box = shade.target.getBoundingClientRect();
+    if (Math.hypot(box.left + box.width / 2 - shade.x, box.top + box.height / 2 - shade.y) > 14) return;
+    lastPress = shade.target;
+    const ring = document.createElement('span'); ring.className = 'touch-echo'; ring.setAttribute('aria-hidden', 'true');
+    ring.style.left = shade.x + 'px'; ring.style.top = shade.y + 'px'; document.body.append(ring);
+    setTimeout(() => ring.remove(), 1400);
+  }, 250);
+
+  // Full screen. Browsers only allow it from a click, so it is asked for when you choose at the 403
+  // page; if you leave it, the next time you click it pulls you back in, twice at most per session.
+  // Phones that do not support it (iPhone) simply stay as they are.
+  const root = document.documentElement;
+  const canFull = typeof root.requestFullscreen === 'function' && document.fullscreenEnabled !== false;
+  const wantFull = () => { try { return sessionStorage.getItem('estacion09-dentro') === '1'; } catch { return false; } };
+  let pulls = 0; try { pulls = Number(sessionStorage.getItem('estacion09-tirones')) || 0; } catch {}
+  let pullArmed = false;
+  function goFull() { if (!canFull || document.fullscreenElement) return; root.requestFullscreen({ navigationUI: 'hide' }).catch(() => {}); }
+  for (const id of ['listen-yes', 'listen-no']) $('#' + id)?.addEventListener('click', () => {
+    try { sessionStorage.setItem('estacion09-dentro', '1'); } catch {}
+    goFull();
+  });
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) { pullArmed = false; return; }
+    if (!wantFull()) return;
+    if (pulls < 2) { pullArmed = true; say(pulls === 0 ? 'no hay salida por ahí.' : 'otra vez no.', null, { urgent: true }); }
+    else say('vale. mira desde fuera, si eso te tranquiliza.', 'fuera');
+  });
+  document.addEventListener('click', () => {
+    if (!pullArmed || calm() || document.fullscreenElement) return;
+    pullArmed = false; pulls++; try { sessionStorage.setItem('estacion09-tirones', String(pulls)); } catch {}
+    goFull();
+  }, true);
+
+  // Words in the empty space. Once in a while, huge and almost invisible, a word stands behind
+  // everything for a few seconds. Most visitors will not be sure they saw it.
+  const voidWords = ['DETRÁS', 'AQUÍ', 'QUÉDATE', 'NO', 'TE VEO', 'ᚾᛟ', 'SIGUE', 'ABAJO', 'NADIE', 'ᛞᛖᚾᛏᚱᛟ'];
+  const voidWord = document.createElement('div'); voidWord.className = 'void-word'; voidWord.setAttribute('aria-hidden', 'true'); document.body.append(voidWord);
+  (function nextWord() {
+    setTimeout(() => {
+      if (!calm() && !busy() && !document.hidden && page() !== 'inicio') {
+        voidWord.textContent = voidWords[Math.floor(Math.random() * voidWords.length)];
+        voidWord.style.left = 5 + Math.random() * 40 + 'vw'; voidWord.style.top = 10 + Math.random() * 55 + 'vh';
+        voidWord.classList.add('shown'); setTimeout(() => voidWord.classList.remove('shown'), 7000);
+      }
+      nextWord();
+    }, 35000 + Math.random() * 45000);
+  })();
 })();

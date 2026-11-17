@@ -92,7 +92,7 @@ test('HEAD returns resource headers without a body', async () => {
 
 test('serves supplied originals unchanged and transparent cutout PNGs', async () => {
   const originals = await readdir(new URL('../images/', import.meta.url));
-  assert.equal(originals.length, 17);
+  assert.equal(originals.length, 16);
   for (const name of originals) {
     const response = await fetch(base + '/images/' + name);
     assert.equal(response.status, 200);

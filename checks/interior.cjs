@@ -56,7 +56,7 @@ mkdirSync(captures, { recursive: true });
     assert.match(await page.locator('.signal-word').textContent(), /UMBRA/);
     assert.equal(await page.evaluate(() => EstacionInterior.sound()), null);
     await page.screenshot({ path: join(captures, 'visual-clue.png') });
-    await page.locator('[data-view="interior"]').click();
+    await page.locator('#view-transmisiones .way-back').click();
     await page.locator('[data-memory="seal"]').click();
     for (const sign of ['absence', 'touch', 'witness']) await page.locator(`[data-sign="${sign}"]`).click();
     assert.match(await page.locator('.seal-status').textContent(), /No responde/);
