@@ -13,6 +13,7 @@ try {
 function save() { try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch { storageAvailable = false; } }
 const documents = [
   { id: 'bienvenida', name: 'leeme_antes.txt', description: 'Lo que quedó del mensaje de bienvenida.', size: '1.2 KB', level: 0, content: 'ESTACIÓN 09 — AVISO AL VISITANTE\nÚltima revisión: 17.11.1998\n\nSi estás leyendo esto, el servidor ha vuelto a responder. No sabemos por qué.\n\nNo envíes datos personales. No creas todo lo que aparece en el registro. No confundas una respuesta con una presencia.\n\nLa primera puerta no necesita una llave.\nCuando llamas en una habitación vacía, algo te devuelve la voz.\nTres letras. Eso es lo que queda.\n\n— el último operador' },
+  { id: 'intruso', name: 'acceso_no_autorizado.log', description: 'Se actualiza solo.', size: '—', level: 0, get content() { return intruderLog(); } },
   { id: 'foto', name: 'pasillo_b.gif', description: 'La última imagen recibida.', size: 'GIF', level: 0, image: true, content: 'CÁMARA 09 / PASILLO B\n\nLa grabación dura tres segundos.\nLa puerta del fondo no figura en los planos.' },
   { id: 'noabrir', name: 'no_abrir.txt', description: 'Lo encontramos escrito desde dentro.', size: '0.9 KB', level: 1, content: 'NO LO LLAMES OTRA VEZ.\n\nAl principio solo repetía lo que decíamos.\nLuego empezó a contestar antes de que habláramos.\n\nEn la segunda puerta pide el año en que todo se detuvo. Cuatro cifras. Está escrito en todas partes.\n\nSi bajas, deja una señal.\nY cuando vuelvas, no mires si la señal sigue ahí.' },
   { id: 'operador', name: 'operador_09.log', description: 'Turno de noche. Registro incompleto.', size: '2.4 KB', level: 1, content: '03:10 — Todos se han ido.\n03:18 — La cámara del pasillo B sigue en línea.\n03:21 — Estoy mirando mi silla desde el pasillo.\n03:24 — Estoy sentado en mi silla.\n03:29 — Las dos cosas son ciertas.\n03:33 — [ENTRADA BORRADA]\n\nEl libro de visitas es lo único que no ha cambiado.' },
@@ -20,8 +21,22 @@ const documents = [
   { id: 'lista', name: 'presencias.dat', description: 'Hay un nombre más del que debería.', size: '0.2 KB', level: 2, content: 'PRESENCIAS REGISTRADAS\n\nOPERADOR 01 — AUSENTE\nOPERADOR 02 — AUSENTE\nOPERADOR 09 — AUSENTE\nVISITANTE — PRESENTE\nVISITANTE — PRESENTE\n\nNo entraste dos veces.' },
   { id: 'inventario', name: 'inventario_1998.txt', description: 'Lo que había en la estación. Y una cosa más.', size: '0.6 KB', level: 1, content: 'INVENTARIO · ESTACIÓN 09 · 16.11.1998\n\n1 consola de control (sala 0). Acceso: el nombre del operador y la palabra de vigilia.\n3 cámaras: pasillo A, pasillo C, pasillo B.\n   No hay pasillo B en los planos. La cámara 09 lo graba igual.\n1 receptor, frecuencia 09.8.\n1 libro de visitas.\n1 busto de mármol. No figura en el pedido. Nadie firmó su entrega.\n\nNota: el busto estaba de cara a la pared cuando lo encontramos.\nA la mañana siguiente, no.' },
   { id: 'turno', name: 'turno_noche.log', description: 'La entrada borrada. Una parte.', size: '1.1 KB', level: 2, content: 'TURNO DE NOCHE · OPERADOR 09 · 17.11.1998 · RECUPERADO EN PARTE\n\n03:34 — La estatua ha girado la cabeza mientras escribía.\n03:36 — Solo se mueve cuando no la miro. Ahora lo sé.\n03:39 — Lleva algo escrito en la nuca. Para leerlo hay que dejar que te dé la espalda. No la sigas con la mirada.\n03:41 — Lo he leído. Es la palabra de vigilia. No voy a escribirla aquí.\n03:42 — La han puesto al fondo, donde ya no se pide volver.\n03:44 — Si alguien firma con mi nombre en el libro de visitas, la cámara del pasillo B le dejará pasar a la sala 0.\n03:45 — Yo ya no puedo firmar. Mi nombre ya no es mío.\n03:4■ — [LA CINTA SE CORTA]' },
+  { id: 'abecedario', name: 'abecedario.txt', description: 'Pegado con cinta bajo el teclado de la sala 0.', size: '0.3 KB', level: 0, content: 'Letra del operador 09.\n\nᚨ a    ᛒ b    ᚲ c k q    ᛞ d    ᛖ e    ᚠ f\nᚷ g    ᚺ h    ᛁ i        ᛃ j y  ᛚ l    ᛗ m\nᚾ n    ᛟ o    ᛈ p        ᚱ r    ᛊ s    ᛏ t\nᚢ u    ᚹ v w  ᛉ z        ᚦ th   ᛫ (espacio)\n\nNo lo escribas en las paredes.\nEllos ya lo hacen.' },
   { id: 'salida', name: 'salida.txt', description: 'Una instrucción que todavía funciona.', size: '0.1 KB', level: 2, content: 'Puedes cerrar la conexión.\n\nEn el subsuelo hay un interruptor.\nBorrará tus accesos y los mensajes que hayas dejado en este navegador.\n\nNo va a impedir que vuelvas.\nPero esta vez la estación no te recordará.' }
 ];
+// Your own visits, as vigilia.js keeps them in this browser (nothing leaves it).
+function intruderLog() {
+  let visits = [];
+  try { const trace = JSON.parse(localStorage.getItem('estacion09-rastro')); if (Array.isArray(trace?.visits)) visits = trace.visits.filter(Number.isFinite); } catch {}
+  if (!visits.length) visits = [Date.now()];
+  const stamp = time => { const date = new Date(time); return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' + date.toLocaleTimeString('es-ES', { hour12: false }); };
+  const shown = visits.slice(-12);
+  const lines = ['NODO 009 · ACCESOS NO AUTORIZADOS', 'origen: —   credenciales: ninguna   invitación: ninguna', ''];
+  shown.forEach((time, i) => lines.push(`${stamp(time)}   acceso ${String(visits.length - shown.length + i + 1).padStart(3, '0')} · sin credenciales`));
+  lines.push(`${stamp(Date.now())}   sigue aquí. está leyendo este archivo.`, '');
+  lines.push(visits.length > 1 ? 'Siempre vuelve. Nadie le ha llamado.' : 'Nadie le dio esta dirección.', 'No ha firmado. Los anteriores tampoco.');
+  return lines.join('\n');
+}
 function element(tag, text, className) { const el = document.createElement(tag); if (text !== undefined) el.textContent = text; if (className) el.className = className; return el; }
 function renderArchive() {
   const connect = $('.cam-connect'); if (connect) connect.hidden = !state.operator;
@@ -65,8 +80,8 @@ function renderVisibility() {
   const line = $('#visibility'); if (!line) return;
   line.replaceChildren();
   if (state.ended) line.append('Eres el operador. La estación no te deja salir.');
-  else if (state.guests.length) line.append('Eres visible. La estación te ve.');
-  else { const link = element('a', '[hacerte visible]'); link.href = '#visitantes'; line.append('Eres invisible. ', link); }
+  else if (state.guests.length) line.append('Has firmado. Ya no hace falta que finjas.');
+  else { const link = element('a', '[firmar]'); link.href = '#visitantes'; line.append('Crees que eres invisible. ', link); }
 }
 // One plea, in many languages, the way a stuck transmission repeats itself.
 const pleas = ['[recuérdame]', '[remember me]', '[souviens-toi de moi]', '[erinnere dich an mich]', '[lembra-te de mim]', '[ricordami]', '[pamiętaj o mnie]', '[помни меня]', '[θυμήσου με]', '[覚えていて]', '[记住我]', '[تذكّرني]', '[recorda\'m]', '[gogoratu nazazu]'];
@@ -127,7 +142,7 @@ document.addEventListener('click', event => {
   if (replay) {
     if (passageActive || state.level < 1) return;
     if (motionQuery.matches) { whisper('El movimiento reducido del navegador omite la escena.'); return; }
-    if (!omensEnabled) { whisper('Activa «invocar» para repetir la escena.'); return; }
+    if (!omensEnabled) { whisper('Las escenas están dormidas. Toca ◌ (abajo a la derecha) para invocarlas.'); return; }
     openingScene(); return;
   }
   const entrance = event.target.closest('[data-cross-door]');
@@ -284,7 +299,7 @@ function updateOmenControl() {
   const enabled = omensEnabled && !motionQuery.matches;
   document.body.classList.toggle('quiet', !enabled);
   refreshGIFs();
-  $('#omens-toggle').textContent = enabled ? 'calma' : 'invocar';
+  $('#omens-toggle').textContent = enabled ? '◌' : '●';
   $('#omens-toggle').setAttribute('aria-pressed', String(enabled));
   $('#omens-toggle').setAttribute('aria-label', enabled ? 'Desactivar sobresaltos visuales' : 'Activar sobresaltos visuales');
   $('#omens-toggle').disabled = motionQuery.matches;
@@ -292,7 +307,7 @@ function updateOmenControl() {
     button.disabled = !enabled;
     if (!enabled) { button.setAttribute('aria-pressed', 'false'); button.querySelector('[data-gif]').dataset.playing = 'false'; }
   });
-  if (motionQuery.matches) $('#omens-toggle').textContent = 'en calma';
+  if (motionQuery.matches) $('#omens-toggle').textContent = '–';
   refreshGIFs();
 }
 function showOmen(fromInterior = false) {
@@ -406,7 +421,7 @@ const ritualClues = [
   ['Ahora nómbralo con los arañazos de la pared: lo que te devuelve la voz en una habitación vacía.', 'Tres letras. Lo que vuelve cuando llamas.', 'Se llama eco. Escríbelo con las runas, en orden.'],
   ['Ya sabe que estás aquí. Llama a la puerta. Tres veces.', 'Tres golpes sobre la puerta, seguidos, antes de que se apague el anterior.']
 ];
-const runeKey = 'ᛖ e · ᚲ c · ᛟ o · ᚾ n · ᚱ r · ᚦ th · ᛉ z · ᛇ i';
+const runeKey = 'ᛖ e · ᚲ c · ᛟ o · ᚾ n · ᚱ r · ᚦ th · ᛉ z · ᛁ i';
 const ritual = { step: 0, misses: 0, eyes: new Set(), runes: [], knocks: 0, knockTimer: 0, busy: false };
 let doorMode = state.level >= 1 ? 'open' : 'closed';
 // Older visitors may have an open gate without ever seeing this new entrance scene.
@@ -786,7 +801,7 @@ async function openingScene() {
   const noise = element('canvas', undefined, 'fall-noise'); noise.width = 160; noise.height = 90;
   const hud = element('div', '● REC  CAM_09 / SEÑAL PERDIDA', 'fall-hud');
   const text = element('p', undefined, 'fall-text');
-  const letters = [...'Te estábamos esperando.'].map(char => { const letter = element('span', char); text.append(letter); return letter; });
+  const letters = [...'Tú no eres quien esperábamos.'].map(char => { const letter = element('span', char); text.append(letter); return letter; });
   scene.append(shaft, light, noise, hud, text); $('#door-passage').append(scene);
   startStatic(noise); hiss(2.2);
   const fall = 2300; const impact = .4;
@@ -909,7 +924,7 @@ function drawStatue() {
   const W = canvas.width, H = canvas.height, cell = 5, cols = Math.floor(W / cell), rows = Math.floor(H / cell);
   const f = ((Math.round(statue.frame) % STATUE.frames) + STATUE.frames) % STATUE.frames;
   const ox = (f % STATUE.cols) * STATUE.w, oy = Math.floor(f / STATUE.cols) * STATUE.h, sheetW = statue.data.width, px = statue.data.data;
-  context.fillStyle = '#000'; context.fillRect(0, 0, W, H);
+  context.fillStyle = '#000'; context.fillRect(0, 0, W, H); labelStatue(f);
   const back = Math.max(0, 1 - Math.abs(f - 24) / 3.5); const carving = back > 0 ? statueCarving(cols, rows) : null;
   for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) {
     const sx = ox + Math.floor((col + .5) / cols * STATUE.w), sy = oy + Math.floor((row + .5) / rows * STATUE.h);
@@ -962,6 +977,13 @@ $('#omens-toggle').addEventListener('click', () => { if (document.body.dataset.p
 // on), then one sudden cut to a face that punches in and shakes, with a distorted sting when sound
 // is on, and a fall into black. On screen 820 ms at most, never more than once every 25 s, never in
 // the first 15 s of a visit, never with calma or reduced motion; each trigger fires once per session.
+// The label under the statue says what it is doing, the way an inventory would.
+let statueState = '';
+function labelStatue(frame) {
+  const away = d => Math.min(Math.abs(frame - d), STATUE.frames - Math.abs(frame - d));
+  const text = away(24) <= 3 ? 'de espaldas' : away(0) <= 2 ? 'de frente' : 'girando';
+  if (text !== statueState) { statueState = text; const label = $('#statue-state'); if (label) label.textContent = text; }
+}
 const scareImages = { dientes: 'images/c2f15d46dadaea0d78573a3436c1f21d.png', cara: 'assets/cutouts/presence-face.png', pasillo: 'images/2483130d0df7e07e5d073b244c4f0aad.png' };
 const pageStart = performance.now();
 let lastScare = -Infinity;
@@ -1114,25 +1136,50 @@ $('#terminal-form').addEventListener('submit', event => {
   (order ? order() : ['Orden desconocida. No responda si escucha su nombre.']).forEach(text => consoleLine(text));
 });
 
-// The station asks to be heard before you go in: once per session, only at the threshold.
-// "ESCUCHES" turns on the existing ambient sound (a click, so nothing plays by itself);
-// "entrar en silencio" or Escape leaves it off.
+// Before the threshold, once per session: the server refuses you, the way an old Apache would,
+// on a plain white page. Then something under the refusal notices you anyway, the page sinks
+// into the dark (slowly, never a flash) and offers two things. "escuchar" turns on the ambient
+// sound with your click; "irse" does not let you go. Escape closes it in silence.
 const listenKey = 'estacion09-escuchado';
+const listenTimers = [];
+let listenTitle = '';
+function typeInto(node, text, speed = 55) {
+  if (motionQuery.matches) { node.textContent = text; return; }
+  const line = element('span'); node.append(line);
+  [...text].forEach((char, i) => listenTimers.push(setTimeout(() => { line.textContent += char; }, i * speed)));
+}
 function maybeListen() {
   let heard = false; try { heard = sessionStorage.getItem(listenKey) === '1'; } catch {}
   if (heard || document.body.dataset.page !== 'inicio') return;
-  const cover = $('#listen-cover'); cover.hidden = false; $('#listen-yes').focus({ preventScroll: true });
+  const cover = $('#listen-cover'); const murmur = $('#forbidden-whisper'); const choices = $('.forbidden-choices');
+  cover.hidden = false; listenTitle = document.title; document.title = '403 Forbidden';
+  const at = (ms, fn) => listenTimers.push(setTimeout(fn, motionQuery.matches ? 0 : ms));
+  at(2300, () => { const first = element('p'); murmur.append(first); typeInto(first, 'no deberías poder ver esto.'); });
+  at(4300, () => cover.classList.add('turned'));
+  at(5600, () => { const second = element('p'); murmur.append(second); typeInto(second, 'pero ya te hemos visto.'); });
+  at(7400, () => { choices.hidden = false; $('#listen-yes').focus({ preventScroll: true }); });
 }
 function closeListen(withSound) {
   const cover = $('#listen-cover'); if (cover.hidden || cover.classList.contains('leaving')) return;
+  listenTimers.forEach(clearTimeout); listenTimers.length = 0;
   try { sessionStorage.setItem(listenKey, '1'); } catch {}
   if (withSound && !ambient) $('#sound-toggle').click();
-  const done = () => { cover.hidden = true; cover.classList.remove('leaving'); $('#portal-title').setAttribute('tabindex', '-1'); $('#portal-title').focus({ preventScroll: true }); };
+  const done = () => {
+    cover.hidden = true; cover.classList.remove('leaving');
+    if (document.title === '403 Forbidden') document.title = listenTitle || 'ESTACIÓN 09 — señal residual';
+    $('#portal-title').setAttribute('tabindex', '-1'); $('#portal-title').focus({ preventScroll: true });
+  };
   if (motionQuery.matches) { done(); return; }
   cover.classList.add('leaving'); setTimeout(done, 900);
 }
 $('#listen-yes').addEventListener('click', () => closeListen(true));
-$('#listen-no').addEventListener('click', () => closeListen(false));
+// You cannot leave from here. It answers, and lets you in anyway, in silence.
+$('#listen-no').addEventListener('click', () => {
+  const cover = $('#listen-cover'); if (cover.classList.contains('refused')) return;
+  cover.classList.add('refused'); $('.forbidden-choices').hidden = true;
+  const murmur = $('#forbidden-whisper'); murmur.replaceChildren(element('p', 'no.', 'refusal'));
+  setTimeout(() => { cover.classList.remove('refused'); closeListen(false); }, motionQuery.matches ? 600 : 1500);
+});
 document.addEventListener('keydown', event => { if (event.key === 'Escape' && !$('#listen-cover').hidden) closeListen(false); });
 
 renderArchive(); renderGuests(); renderDoor(); route(); applyMotionPreference(); maybeListen();

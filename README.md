@@ -19,7 +19,7 @@ Para futuras tareas en la nube, usa este checkout existente. Cada tarea ya está
 
 La entrada es una única pantalla negra: una imagen pequeña rodeada de runas, trazos rituales y siete ojos interactivos, con un solo enlace para entrar y una línea de pistas susurradas bajo él. No muestra nombres de archivo, frases de bienvenida ni el archivo al hacer scroll. Las runas también son botones (se añadió ᛖ a la columna izquierda). Dentro quedan otros dos ojos y una marca rúnica. No hay marcadores de nivel ni puntuaciones. La imagen `assets/door-009.png` es una escena ficticia original generada para el proyecto; no es una cámara real ni una fotografía de un visitante.
 
-Tocar un ojo cosido, fallar un paso del ritual o fallar una palabra puede invocar una aparición visual de 850 ms (los aciertos del ritual no la invocan), sin destellos, con un intervalo mínimo de 18 segundos. Escape la oculta, cambiar de página o pestaña también. El control «calma» desactiva las apariciones y guarda la preferencia; con movimiento reducido se desactivan. El sonido sigue siendo optativo, activado por el control existente. `assets/presence.png` es un fragmento fotográfico original generado para esta web.
+Tocar un ojo cosido, fallar un paso del ritual o fallar una palabra puede invocar una aparición visual de 850 ms (los aciertos del ritual no la invocan), sin destellos, con un intervalo mínimo de 18 segundos. Escape la oculta, cambiar de página o pestaña también. El control «calma» (ahora un pequeño ◌ abajo a la derecha, con su etiqueta accesible) desactiva las apariciones y guarda la preferencia; con movimiento reducido se desactivan. El sonido sigue siendo optativo, activado por el control existente. `assets/presence.png` es un fragmento fotográfico original generado para esta web.
 
 La entrada muestra la fotografía tal cual: una sola puerta, entreabierta, con la hoja a la derecha y una cara apenas visible en la sombra del hueco. No se dibuja ninguna puerta encima. El paso está **sellado** hasta completar el ritual. Bajo `[ entrar ]` hay una línea de susurros que da la pista del paso actual y se vuelve más explícita con cada error. Para abrirla hay que completar un ritual de tres pasos tocando elementos de la propia pantalla (la solución está más abajo, en el bloque de spoilers). Tocar la puerta antes de tiempo solo la hace temblar y repite la pista. El progreso del ritual no se guarda: al recargar vuelve a empezar, pero la puerta abierta sí se recuerda.
 
@@ -34,11 +34,11 @@ Al completar el ritual, la puerta tiembla y las runas y los ojos se funden en ne
    - Se cierra: está hecha de tres capas de la misma imagen (palma, dedos y pulgar); los dedos se curvan y el pulgar baja (280 ms).
    - Aprieta (800 ms): una viñeta negra se cierra desde los bordes en dos latidos y el encuadre tiembla. Con el sonido ambiente activado suenan dos golpes graves.
    - Te arrastra (700 ms): la mano se queda fija en el encuadre y todo lo demás se estira hacia el hueco (zoom acelerado, desplazamiento, rayas radiales y desenfoque). Funde a negro antes de que la cara se amplíe lo bastante para pixelarse.
-4. **Dentro (2,3 s).** La cámara cae entre paredes: franjas gruesas y difusas a dos velocidades y dos luces tenues que pasan. Golpe seco al llegar (rebote de 34 px y un oscurecimiento breve, nunca un destello). Estática de bajo contraste, el rótulo `● REC CAM_09 / SEÑAL PERDIDA` y «Te estábamos esperando.», que escala con la pantalla y se escribe letra a letra. El interior aparece con un fundido desde negro.
+4. **Dentro (2,3 s).** La cámara cae entre paredes: franjas gruesas y difusas a dos velocidades y dos luces tenues que pasan. Golpe seco al llegar (rebote de 34 px y un oscurecimiento breve, nunca un destello). Estática de bajo contraste, el rótulo `● REC CAM_09 / SEÑAL PERDIDA` y «Tú no eres quien esperábamos.», que escala con la pantalla y se escribe letra a letra. El interior aparece con un fundido desde negro.
 
 Todo está hecho con CSS y la Web Animations API, sin librerías ni recursos externos (el grano es un SVG de ruido incrustado). Ningún efecto brusco dura más de 850 ms y no hay destellos ni parpadeos fuertes. Si el sonido ambiente está activado, la caída añade un siseo de estática sintetizado.
 
-**Saltar.** A los 2 s aparece un botón discreto «saltar ›» abajo a la izquierda, y un doble toque en cualquier punto también salta: los dos llevan directamente al interior y cuentan como escena vista. Escape, en cambio, cancela la escena, te deja en el umbral con la puerta abierta y no la marca como vista. Con «calma» o con movimiento reducido no hay animación: la puerta queda abierta con la mano en el marco y la cara en el hueco, quietas. Los encuadres se calculan a partir del tamaño de la ventana, en escritorio y en móvil.
+**Saltar.** A los 2 s aparece un botón discreto «›» (etiquetado «Saltar la escena») abajo a la izquierda, y un doble toque en cualquier punto también salta: los dos llevan directamente al interior y cuentan como escena vista. Escape, en cambio, cancela la escena, te deja en el umbral con la puerta abierta y no la marca como vista. Con «calma» o con movimiento reducido no hay animación: la puerta queda abierta con la mano en el marco y la cara en el hueco, quietas. Los encuadres se calculan a partir del tamaño de la ventana, en escritorio y en móvil.
 
 Con el sello ya abierto, la fotografía de la puerta es interactiva. Al tocarla, un acercamiento de 1,6 segundos enfoca el hueco de la puerta y termina en negro. Después abre `#interior`: una cámara con una forma orgánica abstracta original y cuatro accesos simbólicos, con nombres breves, a los restos, voces, huellas y subsuelo. Escape cancela el acercamiento; se omite con movimiento reducido o «calma».
 
@@ -99,7 +99,7 @@ La extensión está separada en `interior.js` y `interior.css`. La entrada y `cr
 
 La sala está compuesta en profundidad: la figura del ojo, cerca y grande; las figuras de la luna y de los brazos justo detrás, más pequeñas, tenues y desenfocadas cuanto más lejos; la multitud y la neblina al fondo. Máscaras radiales y una viñeta de sala las funden con la oscuridad. Se desplazan un poco con el ratón (o con la inclinación del móvil, donde el navegador la da sin pedir permiso) y la figura del ojo y la de la luna giran levemente para seguirte; se hace con las propiedades `translate` y `rotate`, aparte de `transform`, para que los cambios de posición de las presencias sigan funcionando. Las figuras llegan una tras otra cada vez que se entra. Los cuatro accesos nunca se mueven. «Calma» y movimiento reducido lo desactivan todo.
 
-Cerrar un documento, vestigio o marca cambia las posiciones de las presencias. Los cuatro accesos permanecen fijos. La memoria se guarda en `sessionStorage` durante la sesión; «Olvidar esta visita» también la borra. «Calma» y movimiento reducido fijan la escena y cancelan los sucesos pendientes.
+Cerrar un documento, vestigio o marca cambia las posiciones de las presencias. Los cuatro accesos permanecen fijos. La memoria se guarda en `sessionStorage` durante la sesión; «borrar rastro» también la borra. «Calma» y movimiento reducido fijan la escena y cancelan los sucesos pendientes.
 
 Las apariciones interiores requieren una interacción, tienen un retardo breve y al menos 48 segundos entre invocaciones. No se lanzan en segundo plano, al mirar un diálogo ni al entrar por primera vez. Escape cancela los sonidos añadidos y las invocaciones pendientes, con una pausa de 20 segundos. El sonido ambiental solo se amplía después de activar el control existente: roce de cinta, filtrado grave y golpes lejanos; los nodos se liberan al terminar y al desactivar el sonido, cambiar de vista o esconder la pestaña.
 
@@ -123,14 +123,40 @@ El comando levanta un servidor local temporal, comprueba las mutaciones, posicio
 
 Algunas ideas vienen de dos webs personales antiguas: *Terminal 00* (angusnicneven.com) y *Wired Sound for Wired People* (fauux.neocities.org). Se ha tomado la idea, nunca imágenes, textos ni código: todo está hecho con recursos propios de la estación, en su paleta monocroma y en español.
 
-- **Portada «ESCUCHA».** Al llegar al umbral, una vez por sesión, una figura en penumbra (la foto del pasillo aportada, `2483130d…`) y «Da igual. Haré que ESCUCHES». Ese botón activa con tu clic el sonido ambiente que ya existía; «entrar en silencio» o Escape lo dejan apagado. Se recuerda en `sessionStorage`.
+- **Portada 403** (sustituye a la antigua «ESCUCHA»; ver *Intruso*).
 - **Una súplica en muchos idiomas.** Bajo la cabecera, «[recuérdame]» va cambiando entre catorce idiomas (fija con movimiento reducido).
-- **Eres invisible.** «Eres invisible. [hacerte visible]» hasta que firmas el libro de visitas; después, «Eres visible. La estación te ve».
+- **Crees que eres invisible.** «Crees que eres invisible. [firmar]» hasta que firmas el libro de visitas; después, «Has firmado. Ya no hace falta que finjas».
 - **El descenso (`#descenso`).** Una vista oculta muy larga, sobre un fondo de estática en forma de rombos (tres teselas de canvas que se alternan, sin destellos). Paneles en caracteres de ancho completo repiten «Vuelve atrás. Esto es un [CALLEJÓN SIN SALIDA]» mientras el texto se descompone: espaciado, sombra que resbala, corchetes vacíos, una línea entre barras, «[Intentando…]», otra al revés. Hay una franja de ojos recortados de las imágenes de la estación que se desliza al bajar, y al fondo del todo una revelación. Con «calma» o movimiento reducido todo queda quieto.
 - **Puertas que parecen texto.** Enlaces sin subrayado que llevan al descenso (ver soluciones).
 - **La estatua (`#estatua`).** Al fondo del descenso, un «∴» lleva a una sala oscura con un busto de mármol que gira dibujado como una pantalla de fósforo (tríadas de puntos en grises y líneas de barrido) sobre un `<canvas>`. Si mueves el puntero sobre él, vuelve la cara hacia ti. Con «calma» o movimiento reducido se queda quieto, de frente. El busto es *Marble Bust 01* de Rico Cilliers en Poly Haven (CC0). Se renderizó en Blender como un giro de 48 fotogramas, con fondo negro, luz principal dura y contraluz débil, y se guardó en una sola hoja en escala de grises: `assets/statue-turntable.png` (8×6 fotogramas de 168×224 px).
 - **404 propio.** `404.html`, que GitHub Pages sirve para cualquier dirección que no exista: fondo de «SIN SEÑAL», rótulos invertidos, las frecuencias conocidas para volver y la figura del ojo en una esquina. El servidor local devuelve la misma página con estado 404.
 - **Detalles.** Esquinas ⌈ ⌉ ⌊ ⌋ en la cabecera, cursores propios (un anillo y, sobre los enlaces, un ojo) y una selección de texto pálida.
+
+## Intruso: la estación se da cuenta de que estás
+
+Rama `intruso`. La idea: esta web no es para ti. Está hecha para otros (notas internas, inventarios, inscripciones) y poco a poco se da cuenta de que hay alguien que no debería estar. No se explica el miedo: se nota en detalles normales que están mal. Todo pasa en el navegador del visitante; **no se envía ni se recoge nada**. La lógica está en `vigilia.js` y `vigilia.css`; `app.js` solo cambia en textos, en la portada y en dos documentos.
+
+- **Portada 403.** Una vez por sesión, antes del umbral, aparece una página de error de Apache de 1998, blanca y normal, con la pestaña titulada «403 Forbidden». A los 2 s, debajo, se escribe «no deberías poder ver esto.»; la página se hunde despacio en negro (1,8 s, nunca un destello) y añade «pero ya te hemos visto.». Después hay dos opciones: «[ escuchar ]» activa el sonido ambiente con tu clic; «[ irse ]» contesta «no.» y te deja entrar igualmente, en silencio. Escape la cierra. Con movimiento reducido aparece todo a la vez.
+- **Susurros.** Abajo a la izquierda aparecen frases que primero se escriben en runas y se «traducen» solas, letra a letra (con movimiento reducido salen ya en letras). Hablan de cosas reales del visitante, sin guardar nada fuera de su navegador:
+  - la hora local («17:34. aquí siempre son las 03:33.»; de madrugada, «a esta hora no debería haber nadie»);
+  - cuántas veces ha venido («has vuelto», «hace 2 días cerraste la ventana. no sirvió», «5.ª vez. ya no hace falta que llames»);
+  - el aparato («lo tienes muy cerca de la cara»);
+  - quedarse quieto («¿sigues ahí?», «te oigo respirar.»);
+  - sacar el puntero por arriba de la ventana («no te vayas.»), copiar texto («eso no es tuyo.»), abrir el menú contextual, las herramientas de desarrollo o el código fuente, encoger la ventana;
+  - entrar en cada sala, escribir en el libro de visitas («te leemos mientras escribes.», «ese no es tu nombre.»);
+  - y, tras «borrar rastro», «has borrado tu rastro. nosotros no.».
+
+  Cada frase sale como mucho una vez por sesión, con al menos 6,5 s entre una y otra.
+- **La pestaña.** Al cambiar de pestaña, el título va pasando por «¿adónde vas?», «vuelve», «sigo aquí»… Al volver, «te he visto volver». El favicon es un ojo dibujado en un canvas que parpadea, y que se queda abierto de par en par mientras no miras.
+- **Cosas que cambian.** Cada vez que vuelves de otra pestaña, una sola frase que ya habías leído ha cambiado («Este lugar ya no existe. ¿Por qué has vuelto?»). Un documento abierto durante unos segundos reescribe una frase sin avisar («No sabemos por qué.» pasa a ser «Ahora sabemos por qué.»). Al bajar por el archivo y volver arriba, el título termina su frase: «Lo que queda *de ti.*».
+- **Alguien más.** Con ratón, en las salas interiores y tras 25 s, un segundo cursor tenue te sigue con retraso, se para un poco antes de llegar a ti y, de vez en cuando, se va solo a un enlace y se queda encima, como si otra persona estuviera eligiendo. En móvil, a veces, un momento después de tocar, aparece un anillo tenue en el lugar simétrico. Ninguno de los dos aparece con «calma» ni con movimiento reducido.
+- **Tus accesos.** `acceso_no_autorizado.log`, en el archivo, lista tus propias visitas con fecha y hora (las guarda `localStorage` en `estacion09-rastro`) y termina con la hora de ahora: «sigue aquí. está leyendo este archivo.». «borrar rastro» no lo borra: hay que borrar los datos del sitio en el navegador.
+- **Runas que se leen.** Las inscripciones están en futhark antiguo real y se descifran con `abecedario.txt` (archivo, pegado «bajo el teclado de la sala 0»): el umbral (ᚾᛟ᛫ᛖᚱᛖᛊ᛫ᛞᛖ᛫ᛚᛟᛊ᛫ᚾᚢᛖᛊᛏᚱᛟᛊ), el anillo que gira alrededor de la figura del interior, el pie, el fondo del descenso y la 404. La runa de la pared para la i pasa a ser ᛁ (isa), la correcta. El ritual no cambia.
+- **Consola del navegador.** Quien la abra encuentra un mensaje.
+- **Menos protección a la vista.** La navegación son rutas (`../umbral`, `dentro/`, `restos/`, `fragmentos/`, `voces/`, `huellas/`, `debajo/`). «calma» es un ◌, «saltar» es «›» y «Olvidar esta visita» es «borrar rastro». Todo mantiene sus etiquetas accesibles y su funcionamiento.
+- **Textos.** El subsuelo dice «No eras *tú.*». La estatua tiene una etiqueta de inventario cuyo estado cambia mientras gira («de espaldas», «de frente», «girando»).
+
+Verificación: `npm run test:vigilia` (Playwright + Chromium).
 
 ## El último turno
 
@@ -143,7 +169,7 @@ La historia continúa la del operador 09, que dejó de escribir a las 03:33 con 
 - El monitor **CAM_09 · PASILLO B** del archivo muestra entonces «[ conectar con la sala 0 ]».
 - La **sala 0** (`#control`) es una consola: inicio de sesión, órdenes que cuentan el resto de la historia y un final.
 
-Para volver a jugar desde el principio basta con «Olvidar esta visita».
+Para volver a jugar desde el principio basta con «borrar rastro».
 
 ## Sustos
 
@@ -207,12 +233,13 @@ npm test
 
 Los accesos de visitas anteriores ya no implican haber visto la nueva escena de la puerta. El indicador `estacion09-door-scene-v1` solo se guarda al completarla. Si el visitante ya tenía acceso antes de esta actualización, su siguiente entrada con efectos activos muestra la escena completa sin borrar accesos ni mensajes. Si se cancela antes de terminar, puede intentarse de nuevo.
 
-El botón `[ repetir ]` permite volver a ver la escena una vez abierta la puerta. Respeta «calma» y movimiento reducido; si están activos, explica por qué se omite. «Olvidar esta visita» borra también el indicador de escena vista. La preferencia «calma» se conserva por separado.
+El botón `[ repetir ]` permite volver a ver la escena una vez abierta la puerta. Respeta «calma» y movimiento reducido; si están activos, explica por qué se omite. «borrar rastro» borra también el indicador de escena vista. La preferencia «calma» se conserva por separado.
 
 Verificación de visitantes antiguos, repetición y preferencias (requiere Playwright y Chromium):
 
 ```sh
 npm run test:door
+npm run test:vigilia
 ```
 
 Los tests de Node verifican el HTML y los recursos (incluidas las runas, la puerta cerrada y los recortes con transparencia), los GIFs, respuestas HEAD, errores 404 y el bloqueo de archivos de configuración. Durante el desarrollo también se recorrieron las puertas, la navegación, los documentos, el libro de visitas, la persistencia, el audio, el reinicio y movimiento reducido mediante Chromium/Playwright, en escritorio y móvil.

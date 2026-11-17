@@ -31,7 +31,11 @@ test('serves the Spanish station and its working client scripts', async () => {
   assert.match(html, /id="screamer"/);
   assert.match(html, /data-tape="CAM_09/);
   for (const rune of ['e', 'c', 'o']) assert.match(html, new RegExp(`data-rune="${rune}"`));
-  for (const path of ['/app.js', '/style.css', '/interior.js', '/interior.css']) {
+  assert.match(html, /403 Forbidden|Forbidden/);
+  assert.match(html, /id="listen-no"/);
+  assert.match(html, /vigilia\.js/);
+  assert.match(html, /ᚾᛟ᛫ᛖᚱᛖᛊ᛫ᛞᛖ᛫ᛚᛟᛊ᛫ᚾᚢᛖᛊᛏᚱᛟᛊ/);
+  for (const path of ['/app.js', '/style.css', '/interior.js', '/interior.css', '/vigilia.js', '/vigilia.css']) {
     const response = await fetch(base + path);
     assert.equal(response.status, 200);
     assert.ok((await response.text()).length > 1000);

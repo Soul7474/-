@@ -1,0 +1,66 @@
+/* Vigilia: la portada 403, los susurros, las inscripciones y lo que hay en la pantalla además de ti. */
+
+/* ---- 403: una página blanca y normal, que se hunde despacio en el negro ---- */
+.listen-cover{display:block;justify-content:initial;align-items:initial;gap:0;padding:8px max(8px,env(safe-area-inset-right,0px)) 8px max(8px,env(safe-area-inset-left,0px));background:#fff;color:#000;text-align:left;transition:background-color 1.8s ease-in,color 1.8s ease-in;overflow:auto}
+.listen-cover[hidden]{display:none}
+.forbidden{font:16px/1.25 'Times New Roman',Times,serif;letter-spacing:0;transition:opacity 1.8s ease-in,filter 1.8s ease-in}
+.forbidden h1{margin:.67em 0;font:bold 32px/1.15 'Times New Roman',Times,serif;color:inherit;letter-spacing:0;text-shadow:none}
+.forbidden p,.forbidden address{color:inherit;letter-spacing:0}
+.forbidden p{margin:1em 0}
+.forbidden hr{border:0;border-top:1px solid #808080;border-bottom:1px solid #c0c0c0;margin:8px 0}
+.forbidden address{font-style:italic}
+.forbidden-whisper{margin:38px 0 0;min-height:3.6em;font:13px/1.9 'Courier New',monospace;color:#9a9a9a;letter-spacing:.12em}
+.forbidden-whisper p{margin:0}
+.forbidden-whisper .refusal{font-size:15px;color:#ddd;letter-spacing:.5em}
+.listen-cover.turned{background:#020202;color:#555}
+.listen-cover.turned .forbidden{opacity:.28;filter:blur(.3px)}
+.listen-cover.turned .forbidden hr{border-color:#333}
+.listen-cover.turned .forbidden-whisper{color:#c9c9c0}
+.forbidden-choices{display:flex;flex-wrap:wrap;gap:6px 26px;margin-top:26px}
+.forbidden-choices[hidden]{display:none}
+.forbidden-choices .listen-yes,.forbidden-choices .listen-no{margin:0;min-height:44px;padding:10px 4px;border:0;background:none;font:12px/1.6 'Courier New',monospace;letter-spacing:.3em;text-decoration:underline;text-underline-offset:5px;text-shadow:none}
+.forbidden-choices .listen-yes{color:#e8e8de}
+.forbidden-choices .listen-no{color:#6d6d66}
+.forbidden-choices button:hover,.forbidden-choices button:focus-visible{color:#fff;background:#141414}
+.listen-cover.leaving{transition:opacity .9s ease-out;opacity:0}
+
+/* ---- Susurros: abajo a la izquierda, en runas que se traducen solas ---- */
+.susurro{position:fixed;left:calc(14px + env(safe-area-inset-left,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:110;max-width:min(430px,calc(100vw - 90px));margin:0;padding:6px 10px;background:#000000c4;color:#c4c4ba;font:11px/1.7 'Courier New',monospace;letter-spacing:.14em;pointer-events:none;opacity:0;transition:opacity .9s ease-out}
+.susurro.shown{opacity:1}
+.susurro.fading{opacity:0;transition:opacity 1.3s ease-in}
+.susurro:empty{padding:0}
+
+/* ---- Inscripciones en futhark real (se descifran con abecedario.txt) ---- */
+.inscription{font-family:'Segoe UI Historic','Noto Sans Runic',serif;letter-spacing:.32em}
+.inscription-threshold{position:absolute;top:22px;left:50%;z-index:1;margin:0;translate:-50% 0;width:max-content;max-width:92vw;color:#4d4d48;font-size:14px;pointer-events:none;animation:inscription-breathe 9s ease-in-out infinite}
+@keyframes inscription-breathe{0%,100%{opacity:.55}50%{opacity:.95}}
+footer .inscription{display:block;margin-top:6px;color:#4f4f4a;font-size:10px}
+.descent-coda.inscription{color:#77776f;font-size:15px}
+.ring-text text{fill:#e6e6dc}
+#view-interior .ring-text{animation:ring-turn 240s linear infinite;transform-box:view-box;transform-origin:50% 50%}
+@keyframes ring-turn{to{rotate:360deg}}
+
+/* ---- Menos protección a la vista ---- */
+.omens-toggle{padding:10px 12px;min-width:44px;min-height:44px;background:none;color:#4a4a45;font-size:14px;line-height:1;text-decoration:none}
+.omens-toggle:hover,.omens-toggle:focus-visible{color:#cfcfc5}
+.scene-skip{font-size:15px;color:#77776f}
+#forget-button{font-size:9px;letter-spacing:.2em;color:#66665f}
+.statue-note{font-size:10px;letter-spacing:.18em;color:#77776f}
+
+/* ---- Alguien más ---- */
+.ghost-cursor{position:fixed;left:0;top:0;z-index:105;width:16px;height:16px;margin:-8px 0 0 -8px;border:1px solid #d8d8cc;border-radius:50%;pointer-events:none;opacity:0;transition:opacity 2.5s ease}
+.ghost-cursor.present{opacity:.2}
+.touch-echo{position:fixed;z-index:105;width:34px;height:34px;margin:-17px 0 0 -17px;border:1px solid #d8d8cc;border-radius:50%;pointer-events:none;opacity:0;animation:touch-echo 1.3s ease-out forwards}
+@keyframes touch-echo{0%{opacity:0;scale:.6}25%{opacity:.32}100%{opacity:0;scale:1.5}}
+
+@media(max-width:540px){
+  .inscription-threshold{top:14px;font-size:11px;letter-spacing:.22em}
+  .susurro{font-size:10px;max-width:calc(100vw - 80px)}
+  .forbidden h1{font-size:28px}
+}
+@media(prefers-reduced-motion:reduce){
+  .listen-cover,.forbidden{transition:none}
+  .inscription-threshold,#view-interior .ring-text{animation:none}
+  .ghost-cursor,.touch-echo{display:none}
+}
+body.quiet #view-interior .ring-text{animation:none}
