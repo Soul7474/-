@@ -296,4 +296,100 @@
       setTimeout(() => ring.remove(), 1400);
     }, 900);
   }, { passive: true });
+
+  // ==== Más cerca ===================================================================================
+
+  // Stillness. If you stop moving for a while, the dark closes in from the edges and, very faint,
+  // a face comes out of the corner. The moment you move, it is gone. Never a flash: the dark takes
+  // eight seconds to arrive and leaves in under half a second. Not with calma or reduced motion.
+  const creep = document.createElement('div'); creep.className = 'creep'; creep.setAttribute('aria-hidden', 'true');
+  const creepFace = document.createElement('img'); creepFace.src = 'assets/cutouts/presence-face.png'; creepFace.alt = ''; creep.append(creepFace);
+  document.body.append(creep);
+  let creeping = false; let lastCreep = -Infinity; let creepPeak = 0;
+  function releaseCreep() {
+    if (!creeping) return;
+    creeping = false; creep.classList.remove('closing'); stopBreath();
+    say('te has movido.', 'creep-1', { urgent: true });
+  }
+  for (const type of ['pointermove', 'pointerdown', 'keydown', 'scroll', 'wheel', 'touchstart']) addEventListener(type, releaseCreep, { passive: true });
+  setInterval(() => {
+    const idle = performance.now() - idleSince;
+    if (!creeping && idle > 55000 && !calm() && !busy() && !document.hidden && !document.querySelector('dialog[open]') && performance.now() - lastCreep > 150000) {
+      creeping = true; lastCreep = creepPeak = performance.now(); creep.classList.add('closing'); startBreath();
+    }
+    if (creeping && performance.now() - creepPeak > 26000) { say('no te des la vuelta.', 'creep-2', { urgent: true }); }
+  }, 1000);
+
+  // Breathing, close to one ear. Only when the visitor has turned the sound on themselves.
+  let breathTimer = 0;
+  function breathe() {
+    const ctx = window.EstacionInterior?.sound?.(); if (!ctx) return;
+    const length = 3.6, buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * length), ctx.sampleRate), data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      const t = i / ctx.sampleRate;
+      const envelope = t < 1.5 ? Math.sin(Math.PI * t / 1.5) ** 2 * .7 : t > 1.8 ? Math.sin(Math.PI * (t - 1.8) / 1.8) ** 2 : 0;
+      data[i] = (Math.random() * 2 - 1) * envelope;
+    }
+    const source = ctx.createBufferSource(); source.buffer = buffer;
+    const band = ctx.createBiquadFilter(); band.type = 'bandpass'; band.frequency.value = 780; band.Q.value = .9;
+    const gain = ctx.createGain(); gain.gain.value = .05;
+    const pan = ctx.createStereoPanner?.(); source.connect(band); band.connect(gain);
+    if (pan) { pan.pan.value = -.85; gain.connect(pan); pan.connect(ctx.destination); } else gain.connect(ctx.destination);
+    source.start(); source.onended = () => { source.disconnect(); band.disconnect(); gain.disconnect(); pan?.disconnect(); };
+  }
+  function startBreath() { stopBreath(); breathe(); breathTimer = setInterval(breathe, 4600); }
+  function stopBreath() { clearInterval(breathTimer); breathTimer = 0; }
+
+  // The archive camera changes channel, once per session: for a few seconds it is not the corridor
+  // any more but the room you are sitting in, from behind. Nothing is filmed: it is static and a figure.
+  const monitor = $('.cam-monitor');
+  let monitorShown = false;
+  const camLabel = monitor?.dataset.tape;
+  function behindYou() {
+    if (!monitor || monitorShown || calm() || busy() || page() !== 'archivo' || said.has('cam-10')) return;
+    const box = monitor.getBoundingClientRect(); if (box.bottom < 60 || box.top > innerHeight - 60) return;
+    monitorShown = true; remember('cam-10');
+    const feed = document.createElement('div'); feed.className = 'cam-behind'; feed.setAttribute('aria-hidden', 'true');
+    const snow = document.createElement('canvas'); snow.width = 96; snow.height = 54;
+    const figure = document.createElement('img'); figure.src = 'images/2483130d0df7e07e5d073b244c4f0aad.png'; figure.alt = '';
+    feed.append(snow, figure); monitor.append(feed);
+    monitor.dataset.tape = 'CAM_10 · DETRÁS DE TI · EN DIRECTO'; monitor.classList.add('behind');
+    const paint = snow.getContext('2d'); let frame = 0; let live = true;
+    (function grain() {
+      if (!live || !paint) return;
+      if (frame++ % 3 === 0) { const image = paint.createImageData(96, 54); for (let i = 0; i < image.data.length; i += 4) { const v = 20 + Math.random() * 60; image.data[i] = image.data[i + 1] = image.data[i + 2] = v; image.data[i + 3] = 255; } paint.putImageData(image, 0, 0); }
+      requestAnimationFrame(grain);
+    })();
+    say('no te gires.', null, { urgent: true });
+    setTimeout(() => { live = false; feed.remove(); monitor.dataset.tape = camLabel; monitor.classList.remove('behind'); }, 6500);
+  }
+  setInterval(() => { if (page() === 'archivo' && performance.now() - started > 40000) behindYou(); }, 3000);
+
+  // After a while, the node counts one more presence than there should be.
+  setTimeout(function second() {
+    const status = $('#footer-status'); if (!status || /2 PRESENCIAS/.test(status.textContent)) return;
+    if (busy() || document.hidden) { setTimeout(second, 5000); return; }
+    status.textContent = '2 PRESENCIAS EN ESTE NODO';
+    say('ya no estás solo en el nodo.', 'presencias');
+    setTimeout(() => { if (!/ended":true/.test(localStorage.getItem('estacion09-v1') || '')) status.textContent = '1 PRESENCIA EN ESTE NODO'; say('¿cuál de las dos eres tú?', 'presencias-2'); }, 45000);
+  }, 110000);
+
+  // If you signed the guestbook, it knows what you called yourself. And it answers what you write.
+  let alias = '';
+  try { const guests = JSON.parse(localStorage.getItem('estacion09-v1'))?.guests; const last = Array.isArray(guests) ? guests[guests.length - 1]?.alias : ''; if (typeof last === 'string' && !/^(anónimo|operador_09)$/i.test(last)) alias = last.slice(0, 32).toLocaleLowerCase('es'); } catch {}
+  if (alias) setTimeout(() => say(`${alias}. sabemos que no te llamas así. sirve igual.`, 'nombre'), 45000);
+  $('#guest-form')?.addEventListener('submit', () => {
+    const text = $('#guest-message')?.value.trim(); const name = ($('#guest-name')?.value.trim() || '').toLocaleLowerCase('es');
+    if (!text || name === 'operador_09') return;
+    const snippet = text.length > 42 ? text.slice(0, 42).trimEnd() + '…' : text;
+    setTimeout(() => {
+      if (page() !== 'visitantes') return;
+      const reply = document.createElement('article'); reply.className = 'guest-entry guest-reply';
+      const head = document.createElement('div'); const who = document.createElement('span'); who.textContent = 'sin_remitente';
+      const when = document.createElement('time'); when.textContent = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      const body = document.createElement('p'); body.textContent = `«${snippet}» — Lo leí antes de que lo enviaras.`;
+      head.append(who, when); reply.append(head, body); $('#guest-messages')?.append(reply);
+      reply.scrollIntoView({ block: 'nearest', behavior: reduce.matches ? 'instant' : 'smooth' });
+    }, 7000);
+  }, true);
 })();

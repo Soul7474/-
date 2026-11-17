@@ -66,8 +66,32 @@ const { existsSync } = require('node:fs');
     assert.doesNotMatch(await still.locator('.susurro').textContent(), /[ᚠ-ᛪ]/);
     assert.equal(await still.locator('.ghost-cursor').isVisible(), false);
 
+    // With a simulated clock: the camera turns to "behind you", the dark closes in when you keep
+    // still and lets go when you move, the guestbook answers, and it knows the name you signed with.
+    const timed = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+    timed.on('pageerror', error => errors.push(error.message));
+    await timed.clock.install();
+    await timed.addInitScript(() => { sessionStorage.setItem('estacion09-escuchado', '1'); localStorage.setItem('estacion09-v1', JSON.stringify({ level: 2, guests: [{ alias: 'Lucía', message: 'hola', date: '2026-11-10T10:00:00Z' }] })); localStorage.setItem('estacion09-door-scene-v1', 'seen'); });
+    await timed.goto(base + '/#archivo');
+    await timed.clock.runFor(46000);
+    assert.equal(await timed.locator('.cam-monitor').getAttribute('data-tape'), 'CAM_10 · DETRÁS DE TI · EN DIRECTO');
+    await timed.clock.runFor(8000);
+    assert.equal(await timed.locator('.cam-monitor').getAttribute('data-tape'), 'CAM_09 · PASILLO B · EN DIRECTO');
+    await timed.clock.runFor(16000);
+    assert.match(await timed.locator('.creep').getAttribute('class'), /closing/);
+    assert.match(await timed.locator('.susurro').textContent(), /[lᛚ][uᚢ]c[íᛁ][aᚨ]/);
+    await timed.mouse.move(300, 300); await timed.clock.runFor(300);
+    assert.doesNotMatch(await timed.locator('.creep').getAttribute('class'), /closing/);
+    await timed.clock.runFor(45000);
+    assert.equal(await timed.locator('#footer-status').textContent(), '2 PRESENCIAS EN ESTE NODO');
+    await timed.goto(base + '/#visitantes');
+    await timed.fill('#guest-message', 'he oído algo detrás de la puerta');
+    await timed.locator('#guest-form [type="submit"]').click();
+    await timed.clock.runFor(8000);
+    assert.match(await timed.locator('.guest-reply').last().textContent(), /he oído algo detrás de la puerta.*Lo leí antes de que lo enviaras/);
+
     assert.deepEqual(errors, []);
-    console.log('PASS: 403 cover and refusal, runic whispers, drawn favicon, visit log, rune key, rewritten document, archive title, trace survives reset, reduced motion.');
+    console.log('PASS: 403 cover and refusal, runic whispers, drawn favicon, visit log, rune key, rewritten document, archive title, trace survives reset, reduced motion, CAM_10, the dark that comes when you keep still, two presences, guestbook reply, your alias.');
   } finally {
     await browser?.close(); server.closeAllConnections(); server.close();
   }
