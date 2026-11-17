@@ -1,0 +1,31 @@
+/* Intrusión: terminal a toda pantalla, después una dirección enorme. Sin destellos. */
+.intrusion{position:fixed;inset:0;z-index:230;overflow:hidden;background:#000;color:#a9a99f;font:clamp(13px,1.3vw,21px)/1.55 'Courier New',monospace;letter-spacing:.02em;cursor:default}
+.intrusion[hidden]{display:none}
+.intrusion::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(transparent 0 2px,#00000059 2px 3px),radial-gradient(ellipse at 50% 50%,transparent 55%,#000 100%)}
+.intrusion-log{position:absolute;inset:0;padding:22px max(18px,4vw);overflow:hidden;transition:opacity .5s ease,filter .5s ease}
+.intrusion-log p{margin:0;white-space:pre-wrap;word-break:break-word}
+.intrusion-log p:last-child::after{content:"▌";margin-left:2px;animation:intrusion-caret .9s steps(1) infinite}
+.intrusion-log .ok{color:#dcdcd2}
+.intrusion-log .data{color:#8f8f86}
+.intrusion-log .warn{color:#ecece2}
+.intrusion-log .red{color:#ff2b2b;letter-spacing:.12em}
+@keyframes intrusion-caret{50%{opacity:0}}
+.intrusion-big{position:absolute;inset:0;display:grid;place-content:center;gap:2vh;text-align:center;opacity:0;pointer-events:none}
+.intrusion-ip{margin:0;white-space:nowrap;font:700 clamp(36px,11.5vw,230px)/1 'Courier New',monospace;letter-spacing:-.02em;color:#f2f2ea;text-shadow:.04em 0 #ff1e1e,-.03em 0 #ffffff55}
+.intrusion-sub{margin:0;font:700 clamp(13px,2.6vw,34px)/1.2 'Courier New',monospace;letter-spacing:.55em;text-transform:uppercase;color:#ff2b2b}
+.intrusion.big-phase .intrusion-log{opacity:.14;filter:blur(1.5px)}
+.intrusion.big-phase .intrusion-big{opacity:1}
+.intrusion.glitch .intrusion-big{animation:intrusion-jitter .9s steps(9) both}
+@keyframes intrusion-jitter{
+  0%{translate:0 0;clip-path:inset(0 0 0 0)}
+  20%{translate:-14px 3px;clip-path:inset(12% 0 40% 0)}
+  35%{translate:18px -6px;clip-path:inset(48% 0 8% 0)}
+  50%{translate:-6px 9px;clip-path:inset(0 0 62% 0)}
+  65%{translate:22px 0;clip-path:inset(30% 0 22% 0)}
+  80%{translate:-20px -4px;clip-path:inset(70% 0 0 0)}
+  100%{translate:0 0;clip-path:inset(0 0 0 0)}
+}
+.intrusion-skip{position:absolute;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:2;min-width:44px;min-height:44px;padding:10px;border:0;background:none;color:#3b3b37;font:15px 'Courier New',monospace}
+.intrusion-skip:hover,.intrusion-skip:focus-visible{color:#ddd}
+@media(max-width:540px){.intrusion{font-size:10.5px}.intrusion-log{padding:16px 14px}.intrusion-sub{letter-spacing:.35em}}
+@media(prefers-reduced-motion:reduce){.intrusion-log,.intrusion-big{transition:none}.intrusion.glitch .intrusion-big{animation:none}.intrusion-log p:last-child::after{animation:none}}

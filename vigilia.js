@@ -12,7 +12,7 @@
   const calm = () => document.body.classList.contains('quiet') || reduce.matches;
   const page = () => document.body.dataset.page || 'inicio';
   const screaming = () => { try { return Boolean(document.querySelector('#screamer:popover-open')); } catch { return !$('#screamer')?.hidden; } };
-  const busy = () => !$('#listen-cover')?.hidden || !$('#door-passage')?.hidden || screaming();
+  const busy = () => !$('#intrusion')?.hidden || !$('#listen-cover')?.hidden || !$('#door-passage')?.hidden || screaming();
   const started = performance.now();
 
   // ---- Rastro: tus visitas, guardadas aquí mismo --------------------------------------------

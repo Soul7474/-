@@ -1211,12 +1211,18 @@ function maybeListen() {
   let heard = false; try { heard = sessionStorage.getItem(listenKey) === '1'; } catch {}
   if (heard || document.body.dataset.page !== 'inicio') return;
   const cover = $('#listen-cover'); const murmur = $('#forbidden-whisper'); const choices = $('.forbidden-choices');
-  cover.hidden = false; listenTitle = document.title; document.title = '403 Forbidden';
+  listenTitle = document.title;
+  // First the intrusion (intrusion.js): a terminal that pretends to break into the device. Then,
+  // with a hard cut, the white 403.
+  if (window.EstacionIntrusion) window.EstacionIntrusion.run(forbidden); else forbidden();
+  function forbidden() {
+  cover.hidden = false; document.title = '403 Forbidden';
   const at = (ms, fn) => listenTimers.push(setTimeout(fn, motionQuery.matches ? 0 : ms));
   at(2300, () => { const first = element('p'); murmur.append(first); typeInto(first, 'no deberías poder ver esto.'); });
   at(4300, () => cover.classList.add('turned'));
   at(5600, () => { const second = element('p'); murmur.append(second); typeInto(second, 'pero ya te hemos visto.'); });
   at(7400, () => { choices.hidden = false; $('#listen-yes').focus({ preventScroll: true }); });
+  }
 }
 function closeListen(withSound) {
   const cover = $('#listen-cover'); if (cover.hidden || cover.classList.contains('leaving')) return;

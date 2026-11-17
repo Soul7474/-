@@ -136,6 +136,14 @@ Algunas ideas vienen de dos webs personales antiguas: *Terminal 00* (angusnicnev
 
 Rama `intruso`. La idea: esta web no es para ti. Está hecha para otros (notas internas, inventarios, inscripciones) y poco a poco se da cuenta de que hay alguien que no debería estar. No se explica el miedo: se nota en detalles normales que están mal. Todo pasa en el navegador del visitante; **no se envía ni se recoge nada**. La lógica está en `vigilia.js` y `vigilia.css`; `app.js` solo cambia en textos, en la portada y en dos documentos.
 
+- **Intrusión (`intrusion.js`, `intrusion.css`).** Lo primero, una vez por sesión, antes del 403, es una terminal negra a toda pantalla que finge que la estación ha entrado en el dispositivo (unos 11 s):
+  - abre una «sesión» desde una dirección de red local (192.168.1.x, inventada);
+  - «identifica» el aparato con lo que el navegador ya sabe: sistema, navegador, pantalla, gráfica (WebGL), núcleos y memoria, idioma, zona horaria, hora y batería si el navegador la da;
+  - dice que ya tenía la cámara y el micrófono, y «copia» Fotos, Documentos y Conversaciones (o el Escritorio) con barras;
+  - repite «no cierres esta ventana» y enseña la dirección en tamaño enorme con «te estamos viendo» en rojo (con el grave del susto si el audio ya está activo);
+  - se rompe con un temblor y corta de golpe al 403 en blanco.
+
+  Es teatro: no pide ningún permiso, no lee nada y no hace ninguna petición fuera de la web (el test lo comprueba). No imita avisos de ningún sistema, antivirus ni autoridad, y no pide nada. Un toque durante la intrusión pide pantalla completa y contesta «no toques nada.». Escape o «›» la saltan. Con movimiento reducido sale todo a la vez y dura unos 4,6 s. Para lectores de pantalla hay una línea oculta que dice que es parte de la historia.
 - **Portada 403.** Una vez por sesión, antes del umbral, aparece una página de error de Apache de 1998, blanca y normal, con la pestaña titulada «403 Forbidden». A los 2 s, debajo, se escribe «no deberías poder ver esto.»; la página se hunde despacio en negro (1,8 s, nunca un destello) y añade «pero ya te hemos visto.». Después hay dos opciones: «[ escuchar ]» activa el sonido ambiente con tu clic; «[ irse ]» contesta «no.» y te deja entrar igualmente, en silencio. Escape la cierra. Con movimiento reducido aparece todo a la vez.
 - **Susurros.** Abajo a la izquierda aparecen frases que primero se escriben en runas y se «traducen» solas, letra a letra (con movimiento reducido salen ya en letras). Hablan de cosas reales del visitante, sin guardar nada fuera de su navegador:
   - la hora local («17:34. aquí siempre son las 03:33.»; de madrugada, «a esta hora no debería haber nadie»);

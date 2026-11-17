@@ -14,6 +14,18 @@ const { existsSync } = require('node:fs');
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(base);
 
+    // First the intrusion: a terminal that reads only what the browser already knows, a huge local
+    // address, then a hard cut to the 403. No permission is asked for and nothing is requested.
+    const outside = [];
+    page.on('request', request => { if (!request.url().startsWith(base) && !request.url().startsWith('data:')) outside.push(request.url()); });
+    assert.equal(await page.locator('#intrusion').isVisible(), true);
+    assert.equal(await page.title(), 'conexión entrante…');
+    await page.waitForFunction(() => /sistema[\s\S]*copiando \/Fotos/.test(document.querySelector('.intrusion-log').textContent), null, { timeout: 8000 });
+    await page.locator('#intrusion.big-phase').waitFor({ timeout: 8000 });
+    assert.match(await page.locator('.intrusion-ip').textContent(), /^192\.168\.1\.\d{1,3}$/);
+    await page.locator('#intrusion').waitFor({ state: 'hidden', timeout: 6000 });
+    assert.deepEqual(outside, [], 'the intrusion requests nothing outside the site');
+
     // The server refuses you, then notices you; "irse" answers "no." and lets you in anyway.
     assert.equal(await page.title(), '403 Forbidden');
     assert.equal(await page.locator('.forbidden-choices').isHidden(), true);
@@ -63,6 +75,10 @@ const { existsSync } = require('node:fs');
     const still = await browser.newPage({ reducedMotion: 'reduce', viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
     still.on('pageerror', error => errors.push(error.message));
     await still.goto(base);
+    // Escape skips the intrusion.
+    await still.locator('#intrusion').waitFor({ state: 'visible', timeout: 2000 });
+    await still.keyboard.press('Escape');
+    assert.equal(await still.locator('#intrusion').isHidden(), true);
     await still.locator('.forbidden-choices').waitFor({ state: 'visible', timeout: 2000 });
     await still.locator('#listen-yes').click();
     await still.locator('#listen-cover').waitFor({ state: 'hidden', timeout: 3000 });
@@ -101,7 +117,7 @@ const { existsSync } = require('node:fs');
     assert.match(await timed.locator('.guest-reply').last().textContent(), /he oído algo detrás de la puerta.*Lo leí antes de que lo enviaras/);
 
     assert.deepEqual(errors, []);
-    console.log('PASS: 403 cover and refusal, runic whispers, drawn favicon, visit log, rune key, rewritten document, archive title, trace survives reset, reduced motion, CAM_10, the dark that comes when you keep still, two presences, guestbook reply, your alias, full screen, no menu, lost cursor.');
+    console.log('PASS: intrusion (local only, skippable), 403 cover and refusal, runic whispers, drawn favicon, visit log, rune key, rewritten document, archive title, trace survives reset, reduced motion, CAM_10, the dark that comes when you keep still, two presences, guestbook reply, your alias, full screen, no menu, lost cursor.');
   } finally {
     await browser?.close(); server.closeAllConnections(); server.close();
   }
