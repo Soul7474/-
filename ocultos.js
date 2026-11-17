@@ -116,8 +116,7 @@
     if (calm()) return;
     const dark = el('div', undefined, 'pozo-black'); dark.append(el('p', 'AQUÍ'));
     document.body.append(dark);
-    const ctx = window.EstacionInterior?.sound?.();
-    if (ctx) { const tone = ctx.createOscillator(), gain = ctx.createGain(), t = ctx.currentTime; tone.frequency.setValueAtTime(52, t); tone.frequency.exponentialRampToValueAtTime(30, t + 1.2); gain.gain.setValueAtTime(.0001, t); gain.gain.exponentialRampToValueAtTime(.12, t + .05); gain.gain.exponentialRampToValueAtTime(.0001, t + 1.4); tone.connect(gain); gain.connect(ctx.destination); tone.start(t); tone.stop(t + 1.5); tone.onended = () => { tone.disconnect(); gain.disconnect(); }; }
+    window.EstacionInterior?.fear?.(.95);
     setTimeout(() => dark.classList.add('out'), 3200);
     setTimeout(() => dark.remove(), 4600);
   }

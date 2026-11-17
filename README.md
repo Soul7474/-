@@ -189,6 +189,16 @@ Seis salas que no salen en ningún plano. A cada una se llega por varios enlaces
 
 Verificación: `npm run test:ocultos`.
 
+## Caos (`caos.js`, `caos.css`) y sonido grave
+
+- **Pantalla entera.** El interior ocupa toda la pantalla (la cámara, las figuras y las puertas se reparten por todo el ancho), sin pie ni cabecera; «↶ umbral» queda fijo abajo a la izquierda. Las demás salas también usan todo el ancho y el fondo es negro puro.
+- **Fotos por todas partes.** En cada sala, cada vez que entras, se reparten entre 6 y 9 imágenes del repositorio (recortes, fotogramas de los GIF, originales): torcidas, cortadas, invertidas, medio fuera, algunas a la deriva muy despacio y una o dos por delante de todo, casi invisibles. Las del grito y la cara no se usan, para que los sustos conserven su efecto. En el interior solo hay 3 y muy tenues; en *nadie* y en el umbral, ninguna.
+- **Nada es un rectángulo.** Las cámaras, cintas, vestigios y pantallas pierden marcos y bordes: tienen bordes rotos (cinco formas de recorte) y fundidos, y aparecen torcidas y desplazadas de forma distinta en cada visita.
+- **Menos datos.** Fuera las descripciones y los tamaños del archivo, las migas de pan, las etiquetas técnicas, los relojes de las cámaras y las ondas. El archivo es una lista de nombres desparramada por la pantalla. Los títulos se escriben medio en runas, distinto cada vez.
+- **Sonido grave en todos los sustos.** Todos los sustos (los gritos, las apariciones, CAM_10 y el apagón del pozo) suenan aunque no se haya activado el sonido ambiente: el primer toque o tecla desbloquea el audio en silencio. El sonido se sintetiza en el momento: un subgrave que cae de 62 a 21 Hz; un acorde disonante en lo más bajo del teclado (mi, fa, la#, si) saturado para que se oiga en altavoces pequeños; un golpe sordo; un gemido lejano de formantes que baja; y la cola de una sala oscura (reverberación generada). Pasa por un limitador para no saturar. Las apariciones usan una versión más corta y suave. «Calma» y el movimiento reducido siguen desactivando los sustos.
+
+Verificación: `npm run test:ocultos` incluye que el audio queda desbloqueado tras el primer toque con el ambiente apagado.
+
 ## El último turno
 
 La historia continúa la del operador 09, que dejó de escribir a las 03:33 con una «[ENTRADA BORRADA]». El archivo, la estatua, el libro de visitas y la cámara del pasillo B forman una cadena de acertijos que lleva a una sala nueva:

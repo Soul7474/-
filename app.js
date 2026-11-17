@@ -228,6 +228,82 @@ let ambient;
 let transmissionNodes;
 let transmissionTimer;
 function audioContext() { audio ??= new (window.AudioContext || window.webkitAudioContext)(); return audio; }
+// Fear in the low end. Every scare sounds, whether the ambient drone is on or not: browsers only
+// let audio start after a gesture, so the first touch or key unlocks it (silently) and from then
+// on every scare and apparition uses it. Phone speakers cannot play the lowest notes, so part of
+// the sub is driven into distortion, which turns it into harmonics they can play.
+function unlockAudio() { try { const ctx = audioContext(); if (ctx.state !== 'running') ctx.resume().catch(() => {}); } catch {} }
+for (const type of ['pointerdown', 'keydown', 'touchend']) addEventListener(type, unlockAudio, { capture: true, passive: true });
+let fearBus = null;
+function fearOutput(ctx) {
+  if (fearBus?.ctx === ctx) return fearBus;
+  const limiter = ctx.createDynamicsCompressor();
+  limiter.threshold.value = -12; limiter.knee.value = 8; limiter.ratio.value = 10; limiter.attack.value = .002; limiter.release.value = .35;
+  limiter.connect(ctx.destination);
+  // A long, dark room: a generated impulse response, low-passed.
+  const length = Math.floor(ctx.sampleRate * 3.4); const impulse = ctx.createBuffer(2, length, ctx.sampleRate);
+  for (let channel = 0; channel < 2; channel++) { const data = impulse.getChannelData(channel); for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / length) ** 3; }
+  const room = ctx.createConvolver(); room.buffer = impulse;
+  const roomTone = ctx.createBiquadFilter(); roomTone.type = 'lowpass'; roomTone.frequency.value = 700;
+  const roomLevel = ctx.createGain(); roomLevel.gain.value = .7;
+  room.connect(roomTone); roomTone.connect(roomLevel); roomLevel.connect(limiter);
+  fearBus = { ctx, input: limiter, room };
+  return fearBus;
+}
+function fearSound(strength = 1) {
+  const ctx = audio; if (!ctx || ctx.state !== 'running') return;
+  const bus = fearOutput(ctx); const t = ctx.currentTime + .004;
+  const length = .7 + 2.1 * strength;
+  const nodes = [];
+  const keep = node => { nodes.push(node); return node; };
+  const master = keep(ctx.createGain());
+  master.gain.setValueAtTime(.0001, t); master.gain.exponentialRampToValueAtTime(.95 * strength + .05, t + .012);
+  master.gain.setTargetAtTime(.0001, t + .22 + .3 * strength, length / 4.5);
+  master.connect(bus.input);
+  const send = keep(ctx.createGain()); send.gain.value = .9; master.connect(send); send.connect(bus.room);
+  // Saturated low body.
+  const drive = keep(ctx.createWaveShaper()); const curve = new Float32Array(2048);
+  for (let i = 0; i < curve.length; i++) curve[i] = Math.tanh((i / 1024 - 1) * 10);
+  drive.curve = curve; drive.oversample = '4x';
+  const body = keep(ctx.createBiquadFilter()); body.type = 'lowpass'; body.Q.value = 7;
+  body.frequency.setValueAtTime(1300, t); body.frequency.exponentialRampToValueAtTime(110, t + length * .85);
+  drive.connect(body); body.connect(master);
+  // The sub falls through the floor.
+  const sub = keep(ctx.createOscillator()); sub.type = 'sine';
+  sub.frequency.setValueAtTime(62, t); sub.frequency.exponentialRampToValueAtTime(21, t + length);
+  const subDirty = keep(ctx.createGain()); subDirty.gain.value = .9; sub.connect(subDirty); subDirty.connect(drive);
+  const subClean = keep(ctx.createGain()); subClean.gain.value = .75; sub.connect(subClean); subClean.connect(master);
+  sub.start(t); sub.stop(t + length + .1);
+  // A cluster at the bottom of the keyboard: E1, F1, A#1, B1 (a semitone and a tritone), sinking.
+  [41.2, 43.65, 58.27, 61.74].forEach((frequency, i) => {
+    const voice = keep(ctx.createOscillator()); voice.type = 'sawtooth'; voice.detune.value = (i - 1.5) * 11;
+    voice.frequency.setValueAtTime(frequency, t); voice.frequency.exponentialRampToValueAtTime(frequency * .6, t + length);
+    const level = keep(ctx.createGain()); level.gain.value = .3; voice.connect(level); level.connect(drive);
+    voice.start(t); voice.stop(t + length + .1);
+  });
+  // The hit: a low, dull blow.
+  const hitBuffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * .55), ctx.sampleRate); const hitData = hitBuffer.getChannelData(0);
+  for (let i = 0; i < hitData.length; i++) hitData[i] = (Math.random() * 2 - 1) * Math.exp(-i / ctx.sampleRate * 8);
+  const hit = keep(ctx.createBufferSource()); hit.buffer = hitBuffer;
+  const hitTone = keep(ctx.createBiquadFilter()); hitTone.type = 'lowpass'; hitTone.frequency.value = 320;
+  const hitLevel = keep(ctx.createGain()); hitLevel.gain.value = 1.6 * strength;
+  hit.connect(hitTone); hitTone.connect(hitLevel); hitLevel.connect(master); hit.start(t);
+  // Far down, something like a voice: noise through two formants, groaning downwards.
+  if (strength > .45) {
+    const groanBuffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * length), ctx.sampleRate); const groanData = groanBuffer.getChannelData(0);
+    for (let i = 0; i < groanData.length; i++) groanData[i] = Math.random() * 2 - 1;
+    const groan = keep(ctx.createBufferSource()); groan.buffer = groanBuffer;
+    const groanLevel = keep(ctx.createGain()); groanLevel.gain.setValueAtTime(.0001, t); groanLevel.gain.exponentialRampToValueAtTime(.55 * strength, t + .25); groanLevel.gain.exponentialRampToValueAtTime(.0001, t + length);
+    [[420, 150], [690, 260]].forEach(([from, to]) => {
+      const formant = keep(ctx.createBiquadFilter()); formant.type = 'bandpass'; formant.Q.value = 9;
+      formant.frequency.setValueAtTime(from, t); formant.frequency.exponentialRampToValueAtTime(to, t + length);
+      groan.connect(formant); formant.connect(groanLevel);
+    });
+    groanLevel.connect(drive); groan.start(t); groan.stop(t + length);
+  }
+  setTimeout(() => nodes.forEach(node => { try { node.disconnect(); } catch {} }), (length + 4) * 1000);
+}
+
 function drone(volume) {
   const ctx = audioContext(); const gain = ctx.createGain(); gain.gain.value = volume; gain.connect(ctx.destination);
   const nodes = [48, 49.4, 96].map(frequency => { const oscillator = ctx.createOscillator(); oscillator.type = 'sine'; oscillator.frequency.value = frequency; oscillator.connect(gain); oscillator.start(); return oscillator; });
@@ -326,16 +402,7 @@ function showOmen(fromInterior = false) {
   if (typeof apparition.showPopover === 'function') apparition.showPopover();
   else apparition.removeAttribute('popover');
   document.body.classList.add('observed');
-  // Sound remains opt-in through the existing audio control.
-  if (ambient && audio?.state === 'running') {
-    const tone = audio.createOscillator(); const volume = audio.createGain();
-    tone.type = 'sine'; tone.frequency.setValueAtTime(118, audio.currentTime);
-    tone.frequency.exponentialRampToValueAtTime(43, audio.currentTime + .3);
-    volume.gain.setValueAtTime(.025, audio.currentTime);
-    volume.gain.exponentialRampToValueAtTime(.001, audio.currentTime + .32);
-    tone.connect(volume); volume.connect(audio.destination); tone.start(); tone.stop(audio.currentTime + .35);
-    tone.onended = () => { tone.disconnect(); volume.disconnect(); };
-  }
+  fearSound(.4);
   omenTimer = setTimeout(dismissOmen, 850);
 }
 document.querySelectorAll('[data-omen]').forEach(eye => eye.addEventListener('click', () => {
@@ -1005,34 +1072,7 @@ function duckAmbient(ms) {
   level.cancelScheduledValues(now); level.setTargetAtTime(0, now, .06);
   level.setTargetAtTime(ambient.volume, now + ms / 1000, .8);
 }
-function scareSound() {
-  if (!ambient || audio?.state !== 'running') return;
-  const ctx = audio, t = ctx.currentTime;
-  const master = ctx.createGain(); master.gain.setValueAtTime(.0001, t);
-  master.gain.exponentialRampToValueAtTime(.5, t + .012); master.gain.exponentialRampToValueAtTime(.0001, t + .85);
-  master.connect(ctx.destination);
-  const shaper = ctx.createWaveShaper(); const curve = new Float32Array(1024);
-  for (let i = 0; i < curve.length; i++) curve[i] = Math.tanh((i / 512 - 1) * 6);
-  shaper.curve = curve;
-  const tone = ctx.createBiquadFilter(); tone.type = 'lowpass';
-  tone.frequency.setValueAtTime(5200, t); tone.frequency.exponentialRampToValueAtTime(480, t + .7);
-  shaper.connect(tone); tone.connect(master);
-  [196, 207.6, 293, 415].forEach((frequency, i) => {
-    const oscillator = ctx.createOscillator(); oscillator.type = i % 2 ? 'sawtooth' : 'square';
-    oscillator.frequency.setValueAtTime(frequency, t); oscillator.frequency.exponentialRampToValueAtTime(frequency * .55, t + .8);
-    const gain = ctx.createGain(); gain.gain.value = .22; oscillator.connect(gain); gain.connect(shaper);
-    oscillator.start(t); oscillator.stop(t + .9);
-  });
-  const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * .6), ctx.sampleRate); const data = buffer.getChannelData(0);
-  for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length) ** 2;
-  const noise = ctx.createBufferSource(); noise.buffer = buffer;
-  const band = ctx.createBiquadFilter(); band.type = 'bandpass'; band.frequency.value = 1800; band.Q.value = .7;
-  const noiseGain = ctx.createGain(); noiseGain.gain.value = .6; noise.connect(band); band.connect(noiseGain); noiseGain.connect(master); noise.start(t);
-  const thump = ctx.createOscillator(); thump.frequency.setValueAtTime(70, t); thump.frequency.exponentialRampToValueAtTime(32, t + .35);
-  const thumpGain = ctx.createGain(); thumpGain.gain.setValueAtTime(.7, t); thumpGain.gain.exponentialRampToValueAtTime(.001, t + .4);
-  thump.connect(thumpGain); thumpGain.connect(master); thump.start(t); thump.stop(t + .45);
-  setTimeout(() => master.disconnect(), 1300);
-}
+function scareSound() { fearSound(1); }
 function scare(kind = 'dientes', { key = null, delay = 0, force = false } = {}) {
   const allowed = force ? omensEnabled && !motionQuery.matches && !document.hidden && !scareBusy : scareAllowed();
   if (!allowed || (key && !scareOnce(key))) return false;
@@ -1196,6 +1236,7 @@ window.EstacionInterior = Object.freeze({
   effects: () => omensEnabled && !motionQuery.matches && !document.hidden,
   sound: () => ambient && audio?.state === 'running' ? audio : null,
   apparition: () => showOmen(true),
+  fear: strength => fearSound(strength),
   inspect: showVision,
   subsoil: () => openGate(2),
 });

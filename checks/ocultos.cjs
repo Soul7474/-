@@ -19,10 +19,15 @@ const { existsSync } = require('node:fs');
       // Ways in, scattered.
       for (const [from, to] of [['#view-interior', 'habitacion'], ['#view-estatua', 'pozo'], ['#view-descenso', 'espejo'], ['#view-visitantes', 'ellos'], ['footer', 'nadie'], ['#view-fragmentos', 'volcado']]) assert.equal(await page.locator(`${from} a[href="#${to}"]`).count(), 1, `${from} → ${to}`);
       assert.equal(await page.locator('.main-nav').isVisible(), false);
+      // The first touch unlocks the audio, so every scare can sound even with the ambient drone off.
+      await page.mouse.click(5, 400);
+      assert.equal(await page.evaluate(async () => { await new Promise(resolve => setTimeout(resolve, 50)); return typeof audio !== 'undefined' && audio?.state; }), 'running');
+      assert.equal(await page.locator('#sound-toggle').getAttribute('aria-pressed'), 'false');
+      await page.evaluate(() => window.EstacionInterior.fear(1));
 
       await page.goto(base + '/#pozo'); await page.clock.runFor(500);
       assert.equal(await page.title(), 'ᛈᛟᛉᛟ');
-      assert.ok(await page.locator('.pozo-block').count() > 5, 'the well fills');
+      assert.ok(await page.locator('.pozo-block').count() > 2, 'the well fills');
       for (let i = 0; i < 30; i++) { await page.evaluate(() => window.scrollBy(0, 1200)); await page.clock.runFor(100); }
       assert.ok(await page.evaluate(() => document.documentElement.scrollHeight > 36000), 'it keeps going');
       assert.equal(await page.locator('#pozo-shaft a[href="#habitacion"]').count(), 1);

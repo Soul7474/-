@@ -361,6 +361,7 @@
       if (frame++ % 3 === 0) { const image = paint.createImageData(96, 54); for (let i = 0; i < image.data.length; i += 4) { const v = 20 + Math.random() * 60; image.data[i] = image.data[i + 1] = image.data[i + 2] = v; image.data[i + 3] = 255; } paint.putImageData(image, 0, 0); }
       requestAnimationFrame(grain);
     })();
+    window.EstacionInterior?.fear?.(.75);
     say('no te gires.', null, { urgent: true });
     setTimeout(() => { live = false; feed.remove(); monitor.dataset.tape = camLabel; monitor.classList.remove('behind'); }, 6500);
   }

@@ -109,7 +109,7 @@ mkdirSync(captures, { recursive: true });
     }
     await page.setViewportSize({ width: 390, height: 844 });
     await page.screenshot({ path: join(captures, 'living-mobile.png'), fullPage: true });
-    await page.locator('#forget-button').click(); await page.locator('#confirm-reset').click();
+    await page.goto(base + '/#archivo'); await page.locator('#forget-button').click(); await page.locator('#confirm-reset').click();
     await page.waitForURL('**/#inicio'); await page.waitForLoadState();
     assert.equal(await page.evaluate(() => sessionStorage.getItem('estacion09-interior')), null);
     assert.deepEqual(errors, []); assert.deepEqual(missing, []);

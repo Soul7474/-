@@ -58,7 +58,7 @@ const { existsSync } = require('node:fs');
     await quiet.keyboard.press('Escape');
     await quiet.setViewportSize({ width: 390, height: 844 });
     assert.equal(await quiet.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-    await page.goto(base + '/#interior'); await page.locator('#forget-button').click(); await page.locator('#confirm-reset').click();
+    await page.goto(base + '/#archivo'); await page.locator('#forget-button').click(); await page.locator('#confirm-reset').click();
     await page.waitForURL('**/#inicio'); await page.waitForLoadState();
     assert.equal(await page.evaluate(() => localStorage.getItem('estacion09-door-scene-v1')), null);
     assert.deepEqual(errors, []);
